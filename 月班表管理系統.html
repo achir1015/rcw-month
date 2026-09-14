@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>月班表管理系統</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
+<style>
+  :root{
+    --bg: #F4F7F6;
+    --surface: #FFFFFF;
+    --ink: #1E2A28;
+    --ink-muted: #5C6D68;
+    --line: #DCE4E1;
+    --line-strong: #C3CFCB;
+
+    --nurse: #1F6F63;
+    --nurse-tint: #E4F1EE;
+    --assistant: #A9721F;
+    --assistant-tint: #F5EBDA;
+
+    --shift-d: #B4780E;
+    --shift-d-bg: #FBEBCD;
+    --shift-e: #A24B30;
+    --shift-e-bg: #F6E1D8;
+    --shift-n: #34437A;
+    --shift-n-bg: #E3E6F3;
+    --shift-off: #7C8683;
+    --shift-off-bg: #ECEFED;
+    --shift-other: #4A4A46;
+    --shift-other-bg: #EFEEE8;
+
+    --radius: 8px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Noto Sans TC", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header.app-header{
+    padding: 28px 32px 20px;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface);
+  }
+  header.app-header h1{
+    font-family: "Noto Serif TC", serif;
+    font-size:32.5px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    letter-spacing: 0.02em;
+  }
+  header.app-header p{
+    margin: 0;
+    color: var(--ink-muted);
+    font-size:17.5px;
+  }
+
+  main{
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 24px 20px 64px;
+  }
+
+  /* ---- 類別切換 ---- */
+  .category-picker{
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .category-btn{
+    flex: 1;
+    max-width: 260px;
+    padding: 16px 18px;
+    border-radius: var(--radius);
+    border: 1.5px solid var(--line-strong);
+    background: var(--surface);
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .category-btn .cat-name{
+    display:block;
+    font-size:21.2px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .category-btn .cat-hint{
+    display:block;
+    font-size:15.6px;
+    color: var(--ink-muted);
+  }
+  .category-btn[data-cat="nurse"].active{
+    border-color: var(--nurse);
+    background: var(--nurse-tint);
+  }
+  .category-btn[data-cat="nurse"].active .cat-name{ color: var(--nurse); }
+  .category-btn[data-cat="assistant"].active{
+    border-color: var(--assistant);
+    background: var(--assistant-tint);
+  }
+  .category-btn[data-cat="assistant"].active .cat-name{ color: var(--assistant); }
+
+  .empty-hint{
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--ink-muted);
+    border: 1.5px dashed var(--line-strong);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .workspace{ display:none; }
+  .workspace.active{ display:block; }
+
+  .panel{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 18px;
+  }
+  .panel h2{
+    font-size:18.8px;
+    font-weight: 700;
+    margin: 0 0 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .field-row{
+    display:flex;
+    align-items:flex-end;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .field{ display:flex; flex-direction:column; gap:5px; }
+  .field label{ font-size:15.6px; color: var(--ink-muted); }
+  .field input, .field select{
+    font-family: inherit;
+    font-size:17.5px;
+    padding: 8px 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--ink);
+    width: 110px;
+  }
+
+  button.btn{
+    font-family: inherit;
+    font-size:17.5px;
+    font-weight: 600;
+    padding: 9px 18px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+  button.btn-primary{ background: var(--ink); color: #fff; }
+  button.btn-primary:disabled{ background:#B8BEBB; cursor:not-allowed; }
+  button.btn-ghost{ background: transparent; color: var(--ink-muted); border-color: var(--line-strong); }
+  button.btn-danger{ background: transparent; color: #A24B30; border-color: #E3C4B7; }
+
+  input[type="file"]{ font-family: inherit; font-size:16.9px; }
+
+  .upload-note{ font-size:15.6px; color: var(--ink-muted); margin-top: 8px; line-height:1.6; }
+
+  /* ---- 匯入預覽區 ---- */
+  .import-preview{
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--line);
+    display:none;
+  }
+  .import-preview.show{ display:block; }
+  .import-warning{
+    font-size:16.2px;
+    color: #A24B30;
+    background: var(--shift-e-bg);
+    border: 1px solid #E3C4B7;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+  }
+  .import-actions{ display:flex; gap:10px; margin-top: 14px; }
+
+  /* ---- 班表格 ---- */
+  /* 手機用需要「上下左右都能滑、重要欄位/列都凍結」，
+     所以限制捲動容器的高度，讓表頭(上)和員編/姓名欄(左)都能用 position:sticky 固定住 */
+  .table-scroll{
+    overflow: auto;
+    max-height: 70vh;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+  table.schedule-table{
+    border-collapse: collapse;
+    font-size:15.6px;
+    white-space: nowrap;
+  }
+  table.schedule-table th, table.schedule-table td{
+    border: 1px solid var(--line);
+    padding: 6px 8px;
+    text-align: center;
+  }
+  table.schedule-table thead{
+    position: sticky;
+    top: 0;
+    z-index: 3;
+  }
+  table.schedule-table thead th{
+    background: #F0F3F2;
+    font-weight: 600;
+    color: var(--ink-muted);
+  }
+  table.schedule-table thead th.weekend{
+    color: var(--shift-e);
+    background: var(--shift-e-bg);
+  }
+  table.schedule-table .col-id, table.schedule-table .col-name{
+    position: sticky;
+    background: var(--surface);
+    font-weight: 600;
+  }
+  table.schedule-table .col-id{ left: 0; min-width: 66px; }
+  table.schedule-table .col-name{ left: 66px; min-width: 76px; text-align:left; }
+  table.schedule-table tbody .col-id, table.schedule-table tbody .col-name{ z-index:1; }
+  /* 表頭左上角那兩格，同時吃到「上」跟「左」兩種凍結，層級要最高才不會被別的格子蓋住 */
+  table.schedule-table thead .col-id, table.schedule-table thead .col-name{ background:#F0F3F2; z-index:4; }
+
+  td.shift-d{ color: var(--shift-d); background: var(--shift-d-bg); }
+  td.shift-e{ color: var(--shift-e); background: var(--shift-e-bg); }
+  td.shift-n{ color: var(--shift-n); background: var(--shift-n-bg); }
+  td.shift-off{ color: var(--shift-off); background: var(--shift-off-bg); }
+  td.shift-other{ color: var(--shift-other); background: var(--shift-other-bg); }
+  td.shift-empty{ color: var(--line-strong); }
+
+  .legend{ display:flex; gap:14px; flex-wrap:wrap; margin: 12px 2px 0; font-size:15px; color: var(--ink-muted); }
+  .legend span.swatch{ display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:5px; vertical-align:-1px; }
+
+  .clickable-name{ cursor:pointer; text-decoration: underline dotted; text-underline-offset: 2px; }
+  .clickable-name:hover{ background: rgba(31,111,99,0.08); }
+
+  /* ---- 個人月班表(月曆樣式) ---- */
+  /* 同樣限制高度，讓「星期」表頭在垂直捲動時固定在上方；欄位有最小寬度，
+     手機螢幕太窄時會出現水平捲動，此時表頭仍會固定在上面 */
+  .calendar-scroll{
+    overflow: auto;
+    max-height: 70vh;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+  table.calendar-table{
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 560px;
+  }
+  table.calendar-table th, table.calendar-table td{
+    border: 1px solid var(--line);
+    text-align: center;
+    vertical-align: top;
+    min-width: 76px;
+  }
+  table.calendar-table thead{
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  table.calendar-table thead th{
+    background: #F0F3F2;
+    font-weight: 600;
+    color: var(--ink-muted);
+    padding: 8px 4px;
+    font-size:15.6px;
+  }
+  table.calendar-table thead th.weekend{ color: var(--shift-e); background: var(--shift-e-bg); }
+  table.calendar-table td.cal-day{ height: 64px; padding: 6px 4px; }
+  table.calendar-table td.cal-empty{ background: #FAFBFA; }
+  .cal-day-num{ font-size:15px; color: var(--ink-muted); text-align: left; margin-bottom: 6px; }
+  .cal-day-shift{ font-size:17.5px; font-weight: 700; }
+
+  .toast-wrap{ position: fixed; bottom: 22px; right: 22px; display:flex; flex-direction:column; gap:8px; z-index: 50; }
+  .toast{
+    background: var(--ink); color:#fff; padding: 10px 16px; border-radius: 6px;
+    font-size:16.9px; box-shadow: 0 4px 14px rgba(0,0,0,.18);
+    animation: toast-in .18s ease;
+  }
+  .toast.error{ background: #A24B30; }
+  @keyframes toast-in{ from{ opacity:0; transform: translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  /* ---- 資料備份區 ---- */
+  .backup-panel{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .backup-panel .backup-info{ font-size:15.6px; color: var(--ink-muted); line-height:1.6; }
+  .backup-panel .backup-actions{ display:flex; gap:10px; align-items:center; }
+  .backup-panel .btn-import-xml-label{
+    font-family: inherit; font-size:17.5px; font-weight:600; padding:9px 18px;
+    border-radius:6px; border:1px solid var(--line-strong); color: var(--ink-muted);
+    cursor:pointer; background: transparent;
+  }
+
+  /* ---- 登入畫面 ---- */
+  #loginScreen{
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .login-card{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 32px 28px;
+    width: 100%;
+    max-width: 360px;
+  }
+  .login-card h1{
+    font-family: "Noto Serif TC", serif;
+    font-size:25px;
+    margin: 0 0 4px;
+  }
+  .login-card p.login-sub{ font-size:15.6px; color:var(--ink-muted); margin:0 0 20px; }
+  .login-card .field{ margin-bottom: 14px; }
+  .login-card .field label{ display:block; font-size:15.6px; color:var(--ink-muted); margin-bottom:5px; }
+  .login-card .field input{
+    width: 100%; font-family: inherit; font-size:17.5px; padding:9px 10px;
+    border:1px solid var(--line-strong); border-radius:6px; background:#fff; color:var(--ink);
+    box-sizing: border-box;
+  }
+  .login-card button.btn-login{
+    width:100%; margin-top:6px;
+    font-family: inherit; font-size:17.5px; font-weight:700; padding:10px 18px;
+    border-radius:6px; border:none; background:var(--ink); color:#fff; cursor:pointer;
+  }
+  .login-card button.btn-login:disabled{ background:#B8BEBB; cursor:not-allowed; }
+  .login-error{ font-size:15.6px; color:#A24B30; margin-top:10px; min-height:1em; }
+
+  .header-user-bar{
+    display:flex; align-items:center; justify-content:space-between;
+    max-width:1180px; margin:0 auto; padding:0 32px;
+  }
+  .header-user-bar .user-email{ font-size:15.6px; color:var(--ink-muted); }
+  .header-user-bar button.btn-logout{
+    font-family: inherit; font-size:15.6px; color:var(--ink-muted);
+    background:transparent; border:1px solid var(--line-strong); border-radius:6px;
+    padding:5px 12px; cursor:pointer;
+  }
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <form class="login-card" id="loginForm">
+    <h1>月班表管理系統</h1>
+    <p class="login-sub">請先登入才能查詢或匯入班表</p>
+    <div class="field">
+      <label>帳號 (Email)</label>
+      <input type="email" id="loginEmail" autocomplete="username" required>
+    </div>
+    <div class="field">
+      <label>密碼</label>
+      <input type="password" id="loginPassword" autocomplete="current-password" required>
+    </div>
+    <button type="submit" class="btn-login" id="btnLogin">登入</button>
+    <div class="login-error" id="loginError"></div>
+  </form>
+</div>
+
+<div id="appRoot" style="display:none;">
+
+<header class="app-header">
+  <h1>月班表管理系統</h1>
+  <p>查詢護理師 / 病房助理的月班表，並可上傳 PDF 班表自動匯入儲存格</p>
+  <div class="header-user-bar" style="margin-top:10px;">
+    <span class="user-email" id="currentUserEmail"></span>
+    <button type="button" class="btn-logout" id="btnLogout">登出</button>
+  </div>
+</header>
+
+<main>
+  <div class="category-picker">
+    <button type="button" class="category-btn" data-cat="nurse">
+      <span class="cat-name">護理師</span>
+      <span class="cat-hint">查詢或匯入護理師月班表</span>
+    </button>
+    <button type="button" class="category-btn" data-cat="assistant">
+      <span class="cat-name">病房助理</span>
+      <span class="cat-hint">查詢或匯入病房助理月班表</span>
+    </button>
+  </div>
+
+  <div class="backup-panel">
+    <div class="backup-info">
+      資料備份與還原：可將護理師／病房助理所有月份的班表匯出成一份 XML 檔留存；<br>
+      匯入 XML 時，若該月份已有資料會先詢問是否覆蓋。
+    </div>
+    <div class="backup-actions">
+      <button type="button" class="btn btn-ghost" id="btnExportXml">匯出 XML 備份</button>
+      <label class="btn-import-xml-label">
+        匯入 XML 備份
+        <input type="file" id="importXmlInput" accept=".xml,application/xml" style="display:none;">
+      </label>
+    </div>
+  </div>
+
+  <div id="emptyHint" class="empty-hint">請先選擇上方的「護理師」或「病房助理」，才能查詢或匯入班表</div>
+
+  <div id="workspace-nurse" class="workspace" data-cat="nurse"></div>
+  <div id="workspace-assistant" class="workspace" data-cat="assistant"></div>
+</main>
+
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* =========================================================================
+   一、共用小工具
+   ========================================================================= */
+
+// 將民國年轉換為西元年 (例如 115 -> 2026)
+function rocToWest(rocYear){ return rocYear + 1911; }
+// 將西元年轉換為民國年 (例如 2026 -> 115)
+function westToRoc(westYear){ return westYear - 1911; }
+
+function escapeHtml(str){
+  return String(str ?? '').replace(/[&<>"']/g, ch => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  }[ch]));
+}
+
+function showToast(message, isError){
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast' + (isError ? ' error' : '');
+  el.textContent = message;
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), 3600);
+}
+
+const CATEGORY_LABEL = { nurse: '護理師', assistant: '病房助理' };
+const WEEKDAY_LABELS = ['日','一','二','三','四','五','六']; // 對應 JS Date.getDay() 的 0~6
+
+/* =========================================================================
+   二、領域模型 (Domain Model)
+   把「月班表」想成一個資料夾：
+     - 資料夾的標籤是「類別 + 西元年 + 月份」
+     - 資料夾裡放著每一位員工的「個人班表卡」(員編、姓名、每天的班別代碼)
+   之後查詢、匯入、儲存都是在操作這個資料夾，而不是直接兜 DOM 或表格字串。
+   ========================================================================= */
+
+// 一位員工在某個月份的個人班表卡
+class Employee{
+  constructor(empId, name){
+    this.empId = empId;
+    this.name = name;
+    this.shifts = {}; // { 1:'D1', 2:'OFF', ... }，key 為當月的日期數字
+  }
+}
+
+// 某個類別、某年某月的完整月班表
+class MonthlySchedule{
+  constructor(category, westYear, month){
+    this.category = category;   // 'nurse' | 'assistant'
+    this.westYear = westYear;   // 西元年，例如 2026
+    this.month = month;         // 1~12
+    this.employees = [];        // Employee[]
+  }
+  get rocYear(){ return westToRoc(this.westYear); }
+  get daysInMonth(){ return new Date(this.westYear, this.month, 0).getDate(); }
+  get storageKey(){
+    return `schedule:${this.category}:${this.westYear}-${String(this.month).padStart(2,'0')}`;
+  }
+  // 計算某一天是星期幾（不依賴PDF裡的星期文字，避免解析誤差）
+  weekdayOf(day){
+    return WEEKDAY_LABELS[new Date(this.westYear, this.month - 1, day).getDay()];
+  }
+  toJSON(){
+    return {
+      category: this.category,
+      westYear: this.westYear,
+      month: this.month,
+      employees: this.employees.map(e => ({ empId: e.empId, name: e.name, shifts: e.shifts }))
+    };
+  }
+  static fromPlainObject(obj){
+    const s = new MonthlySchedule(obj.category, obj.westYear, obj.month);
+    s.employees = obj.employees.map(e => {
+      const emp = new Employee(e.empId, e.name);
+      emp.shifts = e.shifts || {};
+      return emp;
+    });
+    return s;
+  }
+}
+
+/* =========================================================================
+   三、儲存層 (Repository)
+   改用 Firebase Firestore 當雲端資料庫，取代原本只存在單一瀏覽器裡的
+   localStorage——這樣不同電腦、不同瀏覽器開這個網頁，看到的都是同一份資料。
+   上面的領域模型完全不用知道底層存的是 Firestore 還是別的東西。
+
+   資料結構：一個 schedules 集合(collection)，每個文件(document)是
+   一份「類別＋年＋月」的月班表，文件ID用 category-westYear-month 組成，
+   例如 nurse-2026-09。
+   ========================================================================= */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCDoaGP0aeW7P1nhFas-4T3krVftiroG34",
+  authDomain: "monthlyschedule-a5dea.firebaseapp.com",
+  projectId: "monthlyschedule-a5dea",
+  storageBucket: "monthlyschedule-a5dea.firebasestorage.app",
+  messagingSenderId: "204422687469",
+  appId: "1:204422687469:web:bfa6d1672fddbd576ffae4"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+const SCHEDULES_COLLECTION = 'schedules';
+
+/* =========================================================================
+   三之一、登入驗證 (Firebase Authentication)
+   在資料真的被讀寫之前，先擋一層登入畫面：只有登入成功的使用者，
+   appRoot(整個班表系統畫面)才會顯示出來；沒登入前，畫面上只有登入表單，
+   不會去呼叫任何 Firestore 的查詢/匯入功能。
+   ========================================================================= */
+
+const loginScreen = document.getElementById('loginScreen');
+const appRoot = document.getElementById('appRoot');
+const loginForm = document.getElementById('loginForm');
+const loginEmailInput = document.getElementById('loginEmail');
+const loginPasswordInput = document.getElementById('loginPassword');
+const loginErrorEl = document.getElementById('loginError');
+const btnLoginEl = document.getElementById('btnLogin');
+const currentUserEmailEl = document.getElementById('currentUserEmail');
+const btnLogoutEl = document.getElementById('btnLogout');
+
+auth.onAuthStateChanged(user => {
+  if(user){
+    loginScreen.style.display = 'none';
+    appRoot.style.display = '';
+    currentUserEmailEl.textContent = user.email || '';
+    loginErrorEl.textContent = '';
+  }else{
+    loginScreen.style.display = '';
+    appRoot.style.display = 'none';
+  }
+});
+
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = loginEmailInput.value.trim();
+  const password = loginPasswordInput.value;
+  loginErrorEl.textContent = '';
+  btnLoginEl.disabled = true;
+  btnLoginEl.textContent = '登入中...';
+  try{
+    await auth.signInWithEmailAndPassword(email, password);
+    loginPasswordInput.value = '';
+  }catch(err){
+    // 把常見的 Firebase 錯誤代碼轉成看得懂的中文說明
+    const code = err && err.code;
+    const messages = {
+      'auth/invalid-email': '帳號格式不正確',
+      'auth/user-not-found': '查無此帳號',
+      'auth/wrong-password': '密碼錯誤',
+      'auth/invalid-credential': '帳號或密碼錯誤',
+      'auth/too-many-requests': '嘗試登入次數過多，請稍後再試',
+      'auth/network-request-failed': '網路連線失敗，請確認網路狀態'
+    };
+    loginErrorEl.textContent = messages[code] || ('登入失敗：' + (err.message || err));
+  }finally{
+    btnLoginEl.disabled = false;
+    btnLoginEl.textContent = '登入';
+  }
+});
+
+btnLogoutEl.addEventListener('click', () => auth.signOut());
+
+
+const ScheduleRepository = {
+  docIdOf(category, westYear, month){
+    return `${category}-${westYear}-${String(month).padStart(2, '0')}`;
+  },
+  async load(category, westYear, month){
+    try{
+      const snap = await db.collection(SCHEDULES_COLLECTION).doc(this.docIdOf(category, westYear, month)).get();
+      if(!snap.exists) return null;
+      return MonthlySchedule.fromPlainObject(snap.data());
+    }catch(err){
+      console.error('讀取Firestore失敗:', err);
+      return null; // 找不到這份文件，或連線失敗，都當作尚未有這個月份的資料
+    }
+  },
+  async save(schedule){
+    const docId = this.docIdOf(schedule.category, schedule.westYear, schedule.month);
+    try{
+      await db.collection(SCHEDULES_COLLECTION).doc(docId).set(schedule.toJSON());
+    }catch(err){
+      // 最常見原因：安全性規則不允許寫入、或網路離線
+      throw new Error('雲端資料庫寫入失敗：' + (err.message || err));
+    }
+  },
+  async remove(category, westYear, month){
+    try{ await db.collection(SCHEDULES_COLLECTION).doc(this.docIdOf(category, westYear, month)).delete(); }
+    catch(err){ console.error('刪除Firestore資料失敗:', err); }
+  },
+  // 讀取所有已儲存的月班表（不分類別），供XML匯出使用
+  async loadAll(){
+    try{
+      const snapshot = await db.collection(SCHEDULES_COLLECTION).get();
+      const schedules = [];
+      snapshot.forEach(doc => {
+        try{ schedules.push(MonthlySchedule.fromPlainObject(doc.data())); }
+        catch(err){ /* 略過格式毀損的單筆資料 */ }
+      });
+      return schedules;
+    }catch(err){
+      console.error('讀取全部Firestore資料失敗:', err);
+      return [];
+    }
+  }
+};
+
+/* =========================================================================
+   四、PDF 解析模組
+   實際測試發現：許多班表 PDF（多半是 Excel 匯出）欄位很窄，
+   「員編」「姓名」這種兩字標籤會被拆成兩個字、各佔一行來顯示；
+   員工姓名也常因為欄位塞不下，2個字在第一行、剩下的字擠到下一行，
+   而且「員編」文字本身跟姓名兩行的相對位置，每個人還不一定一樣。
+   因此不能只靠「同一列文字」來抓表格，改用下面的策略：
+     1. 用日期欄的「9/1」「9/2」...文字，建立每天的欄位x座標錨點
+        （這一列通常最完整、最不會被拆行，最適合當基準）
+     2. 找出日期列正下方、由星期文字組成的「星期列」，
+        它的y座標就是「表頭」與「員工資料」的分界線
+     3. 在分界線以下，找出所有符合員編格式（如B2476）的文字，
+        依上下順序切成一個一個「員工區塊」
+     4. 區塊內 x 落在日期欄範圍的文字，視為班別代碼，
+        用「離哪個日期錨點x最近」分配到對應日期
+     5. 姓名欄位容易跨行、且跟員編的相對位置不穩定，因此姓名文字
+        改用「離哪個員工的主要資料列(班別那一列)最近」來重新分配，
+        才不會抓錯行、把姓名兜到隔壁員工身上
+   ========================================================================= */
+
+const PdfTableExtractor = {
+  async extractPages(file){
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({
+      data: buf,
+      cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
+      cMapPacked: true,
+      standardFontDataUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/standard_fonts/'
+    }).promise;
+    const pages = [];
+    for(let p = 1; p <= pdf.numPages; p++){
+      const page = await pdf.getPage(p);
+      const content = await page.getTextContent();
+      const items = content.items
+        .filter(it => it.str && it.str.trim() !== '')
+        .map(it => ({ x: it.transform[4], y: it.transform[5], text: it.str.trim() }));
+      pages.push(items);
+    }
+    return pages;
+  },
+
+  // 從整頁文字中，找出「9/1」「9/2」...這種日期格式最集中的那一個y座標，當作日期表頭列
+  buildDateAnchors(items){
+    const dateItems = items.filter(it => /^\d{1,2}\/\d{1,2}$/.test(it.text));
+    const buckets = new Map();
+    for(const it of dateItems){
+      const key = Math.round(it.y);
+      if(!buckets.has(key)) buckets.set(key, []);
+      buckets.get(key).push(it);
+    }
+    let bestKey = null, bestList = [];
+    for(const [key, list] of buckets){
+      if(list.length > bestList.length){ bestKey = key; bestList = list; }
+    }
+    const anchors = bestList
+      .map(it => {
+        const m = it.text.match(/^(\d{1,2})\/(\d{1,2})$/);
+        return { day: parseInt(m[2], 10), x: it.x };
+      })
+      .sort((a, b) => a.x - b.x);
+    return { anchors, headerY: bestKey };
+  },
+
+  // 找出日期列正下方、由星期文字組成的那一列的y座標，做為表頭與員工資料的分界線
+  findHeaderCutoffY(items, headerY){
+    if(headerY == null) return null;
+    const weekdayChars = new Set(['日', '一', '二', '三', '四', '五', '六']);
+    const belowHeader = items.filter(it => it.y < headerY - 1 && weekdayChars.has(it.text));
+    if(belowHeader.length === 0) return headerY - 1; // 找不到星期列時，至少排除日期列本身
+    return Math.max(...belowHeader.map(it => it.y)) - 1;
+  },
+
+  // 依「員編」文字出現的位置（由上而下），把分界線以下的文字切成一個個員工區塊
+  splitIntoEmployeeBlocks(items, cutoffY){
+    const dataItems = items.filter(it => it.y < cutoffY);
+    const empIdItems = dataItems.filter(it => EMP_ID_PATTERN.test(it.text)).sort((a, b) => b.y - a.y);
+    const blocks = [];
+    for(let i = 0; i < empIdItems.length; i++){
+      const upper = i === 0 ? cutoffY : (empIdItems[i - 1].y + empIdItems[i].y) / 2;
+      const lower = i === empIdItems.length - 1 ? -Infinity : (empIdItems[i].y + empIdItems[i + 1].y) / 2;
+      const blockItems = dataItems.filter(it => it.y < upper && it.y >= lower);
+      blocks.push({ empIdItem: empIdItems[i], items: blockItems });
+    }
+    return blocks;
+  },
+
+  // 找出一組文字項目中，重複最多次的y座標（用來代表某員工「班別那一列」真正的y）
+  findPrimaryRowY(rowItems){
+    const buckets = new Map();
+    for(const it of rowItems){
+      const key = Math.round(it.y);
+      buckets.set(key, (buckets.get(key) || 0) + 1);
+    }
+    let bestKey = null, bestCount = 0;
+    for(const [key, count] of buckets){
+      if(count > bestCount){ bestCount = count; bestKey = key; }
+    }
+    return bestKey;
+  }
+};
+
+// 從PDF全部文字中，偵測年份與月份（同時支援西元 2026/09 與民國 115/09、115年9月 等格式）
+// 注意：文字要「不含空白」串接，否則像「115 年 09 月」這種被拆成多個文字物件的標題會比對不到
+function detectYearMonth(fullText){
+  const m = fullText.match(/(\d{3,4})[\/\-\.年](\d{1,2})\s*月?/);
+  if(!m) return { westYear: null, month: null };
+  let year = parseInt(m[1], 10);
+  const month = parseInt(m[2], 10);
+  if(year < 1000) year += 1911; // 3位數視為民國年，轉換為西元年
+  if(month < 1 || month > 12) return { westYear: null, month: null };
+  return { westYear: year, month };
+}
+
+const EMP_ID_PATTERN = /^[A-Za-z]{1,2}\d{3,6}$/; // 員編格式，例如 B2476
+
+// 主流程：把PDF解析成一份 MonthlySchedule
+async function parsePdfToSchedule(file, category){
+  const pages = await PdfTableExtractor.extractPages(file);
+  const fullText = pages.flat().map(i => i.text).join(''); // 不加空白，避免拆開的標題文字比對不到
+
+  const employees = [];
+  let detected = { westYear: null, month: null };
+
+  for(const items of pages){
+    if(items.length === 0) continue;
+    const { anchors, headerY } = PdfTableExtractor.buildDateAnchors(items);
+    if(anchors.length === 0) continue; // 這一頁找不到日期表頭，可能不是班表內容，略過
+
+    // 年月只在「日期表頭列以上」的文字裡找（也就是標題那一小段），
+    // 避免日期資料本身互相接續(例如 9/9 接 9/10 變成 ...9/9|9/10...)巧合湊出看似合法的年月而誤判
+    if(detected.westYear == null && headerY != null){
+      const titleText = items.filter(it => it.y > headerY + 1).map(it => it.text).join('');
+      detected = detectYearMonth(titleText);
+    }
+
+    const firstDateX = anchors[0].x - 8; // 日期欄最左側再留一點緩衝，做為姓名欄與日期欄的分界
+    const cutoffY = PdfTableExtractor.findHeaderCutoffY(items, headerY);
+    const blocks = PdfTableExtractor.splitIntoEmployeeBlocks(items, cutoffY);
+
+    // 先算出每個區塊的班別資料，以及該區塊「主要資料列」的y座標
+    for(const block of blocks){
+      block.shiftItems = block.items.filter(it => it.x >= firstDateX).sort((a, b) => a.x - b.x);
+      block.primaryRowY = PdfTableExtractor.findPrimaryRowY(block.shiftItems);
+      block.nameFragments = [];
+    }
+
+    // 姓名候選字：因為員編跟姓名的相對位置每個人不太一樣，改成整頁蒐集後，
+    // 依「離哪個員工的主要資料列最近」重新分配，而不是依員編位置切出的區塊分配
+    const nameCandidates = items.filter(it => it.y < cutoffY && it.x < firstDateX && !EMP_ID_PATTERN.test(it.text));
+    for(const cand of nameCandidates){
+      let best = null, bestDist = Infinity;
+      for(const block of blocks){
+        if(block.primaryRowY == null) continue;
+        const diff = block.primaryRowY - cand.y; // 正值代表候選字在主要列下方
+        if(diff < -5 || diff > 25) continue; // 只接受主要列上方一點點、或下方最多約一行高度的範圍
+        if(diff < bestDist){ bestDist = diff; best = block; }
+      }
+      if(best) best.nameFragments.push(cand);
+    }
+
+    for(const block of blocks){
+      const empId = block.empIdItem.text.trim();
+      block.nameFragments.sort((a, b) => (b.y - a.y) || (a.x - b.x)); // 由上而下、同一行由左而右
+      const name = block.nameFragments.map(it => it.text).join('').trim();
+
+      const shifts = {};
+      for(const it of block.shiftItems){
+        let best = null, bestDist = Infinity;
+        for(const a of anchors){
+          const dist = Math.abs(it.x - a.x);
+          if(dist < bestDist){ bestDist = dist; best = a; }
+        }
+        if(!best) continue;
+        shifts[best.day] = (shifts[best.day] || '') + it.text;
+      }
+
+      const emp = new Employee(empId, name);
+      emp.shifts = shifts;
+      employees.push(emp);
+    }
+  }
+
+  // 同一員編若跨頁出現（例如分頁延續），合併其班別資料
+  const merged = new Map();
+  for(const e of employees){
+    if(merged.has(e.empId)) Object.assign(merged.get(e.empId).shifts, e.shifts);
+    else merged.set(e.empId, e);
+  }
+
+  const schedule = new MonthlySchedule(category, detected.westYear, detected.month);
+  schedule.employees = Array.from(merged.values());
+
+  const oppositeKeyword = category === 'nurse' ? '病房助理' : '護理師';
+  const categoryMismatch = fullText.includes(oppositeKeyword) && !fullText.includes(CATEGORY_LABEL[category]);
+
+  return { schedule, categoryMismatch, rowsFound: employees.length };
+}
+
+/* =========================================================================
+   四之二、Excel (.xlsx) 解析模組
+   有些醫院的班表PDF其實是「掃描圖檔」，沒有可抽取的文字層，
+   pdf.js 抓不到任何文字、上面的PDF解析流程會直接失敗。
+   這種情況建議先用外部工具（例如華為雲「通用表格識別」OCR服務、
+   或你參考的 pdf2excel 專案）把PDF轉成 Excel，再把 Excel 匯入這裡。
+   Excel本身就有規整的儲存格結構，不需要像PDF那樣用座標去猜欄位，
+   直接讀「列、欄」即可；邏輯比PDF解析單純很多。
+   ========================================================================= */
+
+async function parseExcelToSchedule(file, category){
+  const buf = await file.arrayBuffer();
+  const workbook = XLSX.read(buf, { type: 'array' });
+
+  // 有些轉檔結果會把PDF每一頁存成獨立的工作表(sheet)，所以要逐一掃描所有分頁
+  const allSheetRows = workbook.SheetNames.map(name =>
+    XLSX.utils.sheet_to_json(workbook.Sheets[name], { header: 1, raw: false, defval: '' })
+  );
+
+  const fullText = allSheetRows.flat(2).join('');
+  const detected = detectYearMonth(fullText);
+
+  const employees = [];
+
+  for(const rows of allSheetRows){
+    // 找出同時含有「員編」與「姓名」的表頭列
+    const headerIdx = rows.findIndex(row => {
+      const text = row.join('');
+      return text.includes('員編') && text.includes('姓名');
+    });
+    if(headerIdx === -1) continue;
+    const header = rows[headerIdx];
+
+    // 建立欄位對照：欄位索引 -> 'empId' | 'name' | 日期數字
+    const colMap = {};
+    header.forEach((cellText, colIdx) => {
+      const text = String(cellText || '').trim();
+      const m = text.match(/^(\d{1,2})\/(\d{1,2})$/);
+      if(m) colMap[colIdx] = parseInt(m[2], 10);
+      else if(text.includes('員編')) colMap[colIdx] = 'empId';
+      else if(text.includes('姓名')) colMap[colIdx] = 'name';
+    });
+
+    for(let r = headerIdx + 1; r < rows.length; r++){
+      const row = rows[r];
+      const empIdCol = Object.keys(colMap).find(c => colMap[c] === 'empId');
+      const nameCol = Object.keys(colMap).find(c => colMap[c] === 'name');
+      const empId = empIdCol !== undefined ? String(row[empIdCol] || '').trim() : '';
+      if(!EMP_ID_PATTERN.test(empId)) continue;
+
+      const emp = new Employee(empId, nameCol !== undefined ? String(row[nameCol] || '').trim() : '');
+      for(const colIdx of Object.keys(colMap)){
+        const key = colMap[colIdx];
+        if(key === 'empId' || key === 'name') continue;
+        const val = String(row[colIdx] || '').trim();
+        if(val) emp.shifts[key] = val;
+      }
+      employees.push(emp);
+    }
+  }
+
+  const merged = new Map();
+  for(const e of employees){
+    if(merged.has(e.empId)) Object.assign(merged.get(e.empId).shifts, e.shifts);
+    else merged.set(e.empId, e);
+  }
+
+  const schedule = new MonthlySchedule(category, detected.westYear, detected.month);
+  schedule.employees = Array.from(merged.values());
+
+  const oppositeKeyword = category === 'nurse' ? '病房助理' : '護理師';
+  const categoryMismatch = fullText.includes(oppositeKeyword) && !fullText.includes(CATEGORY_LABEL[category]);
+
+  return { schedule, categoryMismatch, rowsFound: employees.length };
+}
+
+/* =========================================================================
+   四之一、XML 備份 / 還原
+   格式參考既有系統的做法（屬性式 XML、逐一逸出特殊字元），
+   並依本系統的資料結構調整：每份 <schedule> 多帶一個 category 屬性，
+   員工與班別以巢狀方式表示，對應 MonthlySchedule -> Employee -> shifts 的結構。
+
+   <scheduleSystem>
+     <schedules>
+       <schedule category="nurse" year="2026" month="9">
+         <employee empId="B2476" name="夏盈珍">
+           <entry day="1" shift="D1"/>
+           ...
+         </employee>
+       </schedule>
+     </schedules>
+   </scheduleSystem>
+   ========================================================================= */
+
+function xmlEscape(s){
+  return String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+// 將多份 MonthlySchedule 序列化為 XML 字串
+function serializeSchedulesToXml(schedules){
+  const lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<scheduleSystem>', '  <schedules>'];
+  for(const s of schedules){
+    lines.push(`    <schedule category="${xmlEscape(s.category)}" year="${s.westYear}" month="${s.month}">`);
+    for(const emp of s.employees){
+      lines.push(`      <employee empId="${xmlEscape(emp.empId)}" name="${xmlEscape(emp.name)}">`);
+      for(const day of Object.keys(emp.shifts)){
+        const shift = emp.shifts[day];
+        if(shift) lines.push(`        <entry day="${day}" shift="${xmlEscape(shift)}"/>`);
+      }
+      lines.push('      </employee>');
+    }
+    lines.push('    </schedule>');
+  }
+  lines.push('  </schedules>', '</scheduleSystem>');
+  return lines.join('\n');
+}
+
+// 從 XML 字串解析出多份 MonthlySchedule
+function parseXmlToSchedules(xmlStr){
+  const doc = new DOMParser().parseFromString(xmlStr, 'text/xml');
+  if(doc.querySelector('parsererror')) throw new Error('XML格式錯誤，請確認檔案內容');
+
+  const schedules = [];
+  doc.querySelectorAll('schedule').forEach(schEl => {
+    const category = schEl.getAttribute('category');
+    const westYear = parseInt(schEl.getAttribute('year'), 10);
+    const month = parseInt(schEl.getAttribute('month'), 10);
+    if((category !== 'nurse' && category !== 'assistant') || !westYear || !month) return;
+
+    const schedule = new MonthlySchedule(category, westYear, month);
+    schEl.querySelectorAll('employee').forEach(empEl => {
+      const emp = new Employee(empEl.getAttribute('empId') || '', empEl.getAttribute('name') || '');
+      empEl.querySelectorAll('entry').forEach(enEl => {
+        const day = enEl.getAttribute('day');
+        const shift = enEl.getAttribute('shift');
+        if(day && shift) emp.shifts[day] = shift;
+      });
+      schedule.employees.push(emp);
+    });
+    schedules.push(schedule);
+  });
+  return schedules;
+}
+
+// 匯出：把儲存空間內所有月班表打包成一份 XML 檔案並下載
+async function exportXmlBackup(){
+  const schedules = await ScheduleRepository.loadAll();
+  if(schedules.length === 0){ showToast('目前沒有任何班表資料可以匯出', true); return; }
+
+  const xml = serializeSchedulesToXml(schedules);
+  const blob = new Blob([xml], { type: 'application/xml;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const d = new Date();
+  a.href = url;
+  a.download = `月班表備份_${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}.xml`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  showToast(`已匯出 ${schedules.length} 個月份的班表資料`);
+}
+
+// 匯入：讀取XML檔案，若有月份已存在資料先詢問是否覆蓋，再逐筆寫入儲存空間
+async function importXmlBackup(file){
+  let schedules;
+  try{
+    const text = await file.text();
+    schedules = parseXmlToSchedules(text);
+  }catch(err){
+    showToast('XML檔案格式錯誤：' + (err.message || err), true);
+    return;
+  }
+  if(schedules.length === 0){ showToast('這份XML檔案內沒有可用的班表資料', true); return; }
+
+  const existing = await ScheduleRepository.loadAll();
+  const existingKeys = new Set(existing.map(s => s.storageKey));
+  const conflictCount = schedules.filter(s => existingKeys.has(s.storageKey)).length;
+  if(conflictCount > 0){
+    const ok = confirm(`匯入的資料中有 ${conflictCount} 個月份已經有資料，匯入後將會覆蓋，確定要繼續嗎？`);
+    if(!ok) return;
+  }
+
+  for(const s of schedules) await ScheduleRepository.save(s);
+  showToast(`已匯入 ${schedules.length} 個月份的班表資料`);
+
+  // 若目前已開啟的類別工作區正好顯示同一頁面，重新查詢一次以更新畫面
+  Object.keys(workspacesBuilt).forEach(cat => {
+    if(!workspacesBuilt[cat]) return;
+    const root = document.getElementById(`workspace-${cat}`);
+    const queryBtn = root && root.querySelector('.btn-query');
+    if(queryBtn) queryBtn.click();
+  });
+}
+
+/* =========================================================================
+   五、畫面渲染
+   ========================================================================= */
+
+function shiftClass(code){
+  if(!code) return 'shift-empty';
+  if(code.startsWith('OFF')) return 'shift-off';
+  if(code.startsWith('D')) return 'shift-d';
+  if(code.startsWith('E')) return 'shift-e';
+  if(code.startsWith('N')) return 'shift-n';
+  return 'shift-other';
+}
+
+function renderScheduleTable(schedule){
+  const days = Array.from({ length: schedule.daysInMonth }, (_, i) => i + 1);
+
+  const dateHeaderCells = days.map(d => `<th>${schedule.month}/${d}</th>`).join('');
+  const weekHeaderCells = days.map(d => {
+    const wd = schedule.weekdayOf(d);
+    const isWeekend = (wd === '六' || wd === '日');
+    return `<th class="${isWeekend ? 'weekend' : ''}">${wd}</th>`;
+  }).join('');
+
+  const bodyRows = schedule.employees.map(emp => {
+    const cells = days.map(d => {
+      const code = emp.shifts[d] || '';
+      return `<td class="shift ${shiftClass(code)}">${escapeHtml(code)}</td>`;
+    }).join('');
+    return `<tr><td class="col-id">${escapeHtml(emp.empId)}</td><td class="col-name clickable-name" data-empid="${escapeHtml(emp.empId)}" title="點擊查看個人月班表">${escapeHtml(emp.name)}</td>${cells}</tr>`;
+  }).join('');
+
+  return `
+    <table class="schedule-table">
+      <thead>
+        <tr><th class="col-id">員編</th><th class="col-name">姓名</th>${dateHeaderCells}</tr>
+        <tr><th class="col-id"></th><th class="col-name"></th>${weekHeaderCells}</tr>
+      </thead>
+      <tbody>${bodyRows}</tbody>
+    </table>`;
+}
+
+// 個人月班表：以「星期幾」排成一格一格的月曆樣式，可依 weekStartIndex(0=日~6=六) 調整每週從哪天開始
+function renderPersonalCalendarTable(schedule, emp, weekStartIndex){
+  const daysInMonth = schedule.daysInMonth;
+
+  // 依起始星期重新排序表頭：例如起始選「星期一」，表頭就會是 一二三四五六日
+  const orderedWeekdayIdx = Array.from({ length: 7 }, (_, i) => (weekStartIndex + i) % 7);
+  const headerCells = orderedWeekdayIdx.map(idx => {
+    const isWeekend = (idx === 0 || idx === 6); // 原始的日(0)、六(6)，不受排序影響，仍視為週末
+    return `<th class="${isWeekend ? 'weekend' : ''}">${WEEKDAY_LABELS[idx]}</th>`;
+  }).join('');
+
+  // 把每一天依「離起始星期幾天」算出它落在這一週的第幾欄，湊成一列一列的月曆
+  const rows = [];
+  let currentRow = new Array(7).fill(null);
+  for(let d = 1; d <= daysInMonth; d++){
+    const weekdayIdx = new Date(schedule.westYear, schedule.month - 1, d).getDay();
+    const col = (weekdayIdx - weekStartIndex + 7) % 7;
+    currentRow[col] = d;
+    if(col === 6){
+      rows.push(currentRow);
+      currentRow = new Array(7).fill(null);
+    }
+  }
+  if(currentRow.some(v => v !== null)) rows.push(currentRow);
+
+  const bodyRows = rows.map(row => {
+    const cells = row.map(day => {
+      if(day == null) return `<td class="cal-empty"></td>`;
+      const code = emp.shifts[day] || '';
+      return `<td class="cal-day ${shiftClass(code)}">
+        <div class="cal-day-num">${day}</div>
+        <div class="cal-day-shift">${escapeHtml(code)}</div>
+      </td>`;
+    }).join('');
+    return `<tr>${cells}</tr>`;
+  }).join('');
+
+  return `<table class="calendar-table"><thead><tr>${headerCells}</tr></thead><tbody>${bodyRows}</tbody></table>`;
+}
+
+const LEGEND_HTML = `
+  <div class="legend">
+    <span><span class="swatch" style="background:var(--shift-d-bg);border:1px solid var(--shift-d)"></span>白班 (D)</span>
+    <span><span class="swatch" style="background:var(--shift-e-bg);border:1px solid var(--shift-e)"></span>小夜 (E)</span>
+    <span><span class="swatch" style="background:var(--shift-n-bg);border:1px solid var(--shift-n)"></span>大夜 (N)</span>
+    <span><span class="swatch" style="background:var(--shift-off-bg);border:1px solid var(--shift-off)"></span>休假 (OFF)</span>
+    <span><span class="swatch" style="background:var(--shift-other-bg);border:1px solid var(--shift-other)"></span>其他代碼</span>
+  </div>`;
+
+/* =========================================================================
+   六、頁面組裝 —— 每個類別各建立一份查詢區 + 匯入區
+   ========================================================================= */
+
+function buildWorkspaceMarkup(category){
+  const now = new Date();
+  const defaultRocYear = westToRoc(now.getFullYear());
+  const defaultMonth = now.getMonth() + 1;
+  const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1)
+    .map(m => `<option value="${m}" ${m === defaultMonth ? 'selected' : ''}>${m}月</option>`).join('');
+
+  return `
+    <div class="panel">
+      <h2>查詢 ${CATEGORY_LABEL[category]} 月班表</h2>
+      <div class="field-row">
+        <div class="field">
+          <label>民國年</label>
+          <input type="number" class="roc-year-input" value="${defaultRocYear}" min="100" max="200">
+        </div>
+        <div class="field">
+          <label>月份</label>
+          <select class="month-select">${monthOptions}</select>
+        </div>
+        <button type="button" class="btn btn-primary btn-query">查詢班表</button>
+        <button type="button" class="btn btn-danger btn-clear">清除本月資料</button>
+      </div>
+      <div class="result-area" style="margin-top:16px;"></div>
+    </div>
+
+    <div class="panel personal-panel" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--line);">
+        <h2 class="personal-title" style="border:none; padding:0; margin:0;"></h2>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <label style="font-size:15.6px; color:var(--ink-muted);">每週起始週：</label>
+          <select class="week-start-select">
+            <option value="0">星期日</option>
+            <option value="1">星期一</option>
+            <option value="2">星期二</option>
+            <option value="3">星期三</option>
+            <option value="4">星期四</option>
+            <option value="5">星期五</option>
+            <option value="6">星期六</option>
+          </select>
+        </div>
+      </div>
+      <div class="personal-calendar-area"></div>
+    </div>
+
+    <div class="panel">
+      <h2>匯入 ${CATEGORY_LABEL[category]} PDF 班表</h2>
+      <input type="file" class="pdf-input" accept="application/pdf">
+      <p class="upload-note">
+        上傳${CATEGORY_LABEL[category]}的月班表 PDF 後，系統會自動讀取表格內容，
+        並嘗試辨識年份與月份（西元、民國格式皆可）。確認無誤後按下「確認匯入」才會寫入儲存格。
+      </p>
+      <p class="upload-note" style="margin-top:8px;">
+        ※ 若您的 PDF 是「掃描圖檔」而非文字版（常見於印表機掃描的班表），本功能會抓不到任何文字而失敗。
+        這種情況請改用下方的 Excel 匯入：先用 OCR 工具（例如華為雲「通用表格識別」服務，或您參考的 pdf2excel 專案）
+        把 PDF 轉成 .xlsx 檔，再上傳到這裡。
+      </p>
+      <div style="margin-top:14px; padding-top:14px; border-top:1px dashed var(--line);">
+        <label style="font-size:15.6px; color:var(--ink-muted); display:block; margin-bottom:6px;">改上傳已轉換好的 Excel 檔 (.xlsx)</label>
+        <input type="file" class="excel-input" accept=".xlsx">
+      </div>
+      <div class="import-preview">
+        <div class="import-warning-slot"></div>
+        <div class="overwrite-warning-slot"></div>
+        <div class="field-row">
+          <div class="field">
+            <label>民國年（可修改）</label>
+            <input type="number" class="import-roc-year" min="100" max="200">
+          </div>
+          <div class="field">
+            <label>月份（可修改）</label>
+            <select class="import-month">${Array.from({length:12},(_,i)=>i+1).map(m=>`<option value="${m}">${m}月</option>`).join('')}</select>
+          </div>
+        </div>
+        <div class="preview-summary" style="margin-top:10px;font-size:16.2px;color:var(--ink-muted);"></div>
+        <div class="preview-table-area table-scroll" style="margin-top:10px;"></div>
+        <div class="import-actions">
+          <button type="button" class="btn btn-primary btn-confirm-import">確認匯入</button>
+          <button type="button" class="btn btn-ghost btn-cancel-import">取消</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function initWorkspace(category){
+  const root = document.getElementById(`workspace-${category}`);
+  root.innerHTML = buildWorkspaceMarkup(category);
+
+  const rocYearInput = root.querySelector('.roc-year-input');
+  const monthSelect = root.querySelector('.month-select');
+  const resultArea = root.querySelector('.result-area');
+  const pdfInput = root.querySelector('.pdf-input');
+  const excelInput = root.querySelector('.excel-input');
+  const importPreview = root.querySelector('.import-preview');
+  const importWarningSlot = root.querySelector('.import-warning-slot');
+  const importRocYear = root.querySelector('.import-roc-year');
+  const importMonth = root.querySelector('.import-month');
+  const previewSummary = root.querySelector('.preview-summary');
+  const previewTableArea = root.querySelector('.preview-table-area');
+  const overwriteWarningSlot = root.querySelector('.overwrite-warning-slot');
+  const personalPanel = root.querySelector('.personal-panel');
+  const personalTitle = root.querySelector('.personal-title');
+  const weekStartSelect = root.querySelector('.week-start-select');
+  const personalCalendarArea = root.querySelector('.personal-calendar-area');
+
+  let pendingSchedule = null; // 使用者確認前，暫存解析出來的班表
+  let currentSchedule = null; // 目前查詢區顯示中的月班表，供點選姓名查看個人班表使用
+  let currentEmpId = null;    // 目前個人班表面板顯示的是哪一位員工
+  let currentWeekStart = 0;   // 每週起始星期(0=日,1=一,...6=六)，切換類別/查詢時不重置，維持使用者上次的選擇
+
+  function hidePersonalPanel(){
+    personalPanel.style.display = 'none';
+    currentEmpId = null;
+  }
+
+  function renderPersonalPanel(){
+    if(!currentSchedule || !currentEmpId) return;
+    const emp = currentSchedule.employees.find(e => e.empId === currentEmpId);
+    if(!emp){ hidePersonalPanel(); return; }
+    personalTitle.textContent = `${currentSchedule.westYear}年${currentSchedule.month}月${emp.name}月班表`;
+    personalCalendarArea.innerHTML = `<div class="calendar-scroll">${renderPersonalCalendarTable(currentSchedule, emp, currentWeekStart)}</div>`;
+  }
+
+  weekStartSelect.addEventListener('change', () => {
+    currentWeekStart = parseInt(weekStartSelect.value, 10);
+    renderPersonalPanel();
+  });
+
+  async function runQuery(){
+    const rocYear = parseInt(rocYearInput.value, 10);
+    const month = parseInt(monthSelect.value, 10);
+    if(!rocYear || !month){ showToast('請輸入正確的年份與月份', true); return; }
+    const westYear = rocToWest(rocYear);
+    const schedule = await ScheduleRepository.load(category, westYear, month);
+    currentSchedule = schedule;
+    hidePersonalPanel(); // 換了查詢的年月，先收起個人班表面板，避免顯示到舊資料
+    if(!schedule || schedule.employees.length === 0){
+      resultArea.innerHTML = `<div class="empty-hint">尚無 民國${rocYear}年${month}月 的${CATEGORY_LABEL[category]}班表，請於下方上傳PDF匯入</div>`;
+    }else{
+      resultArea.innerHTML = `<div class="table-scroll">${renderScheduleTable(schedule)}</div>${LEGEND_HTML}`;
+    }
+  }
+
+  root.querySelector('.btn-query').addEventListener('click', runQuery);
+
+  // 點擊表格裡的姓名，開啟該員工的個人月班表(月曆樣式)
+  resultArea.addEventListener('click', (e) => {
+    const cell = e.target.closest('td.clickable-name');
+    if(!cell || !currentSchedule) return;
+    const empId = cell.dataset.empid;
+    const emp = currentSchedule.employees.find(x => x.empId === empId);
+    if(!emp) return;
+    currentEmpId = empId;
+    weekStartSelect.value = String(currentWeekStart);
+    personalPanel.style.display = '';
+    renderPersonalPanel();
+  });
+
+  root.querySelector('.btn-clear').addEventListener('click', async () => {
+    const rocYear = parseInt(rocYearInput.value, 10);
+    const month = parseInt(monthSelect.value, 10);
+    if(!rocYear || !month) return;
+    if(!confirm(`確定要清除 民國${rocYear}年${month}月 的${CATEGORY_LABEL[category]}班表嗎？`)) return;
+    await ScheduleRepository.remove(category, rocToWest(rocYear), month);
+    showToast('已清除該月份資料');
+    runQuery();
+  });
+
+  // PDF 與 Excel 匯入共用同一套「解析結果 -> 預覽畫面」的處理邏輯
+  async function presentParseResult(parsePromise, fileLabel){
+    previewSummary.textContent = `正在解析${fileLabel}，請稍候...`;
+    importPreview.classList.add('show');
+    previewTableArea.innerHTML = '';
+    importWarningSlot.innerHTML = '';
+    overwriteWarningSlot.innerHTML = '';
+    pendingSchedule = null;
+
+    try{
+      const { schedule, categoryMismatch, rowsFound } = await parsePromise;
+      pendingSchedule = schedule;
+
+      if(rowsFound === 0){
+        previewSummary.innerHTML = `<span style="color:var(--shift-e)">未能從此檔案辨識出任何員工資料，請確認內容是否為班表表格，或改用其他檔案。</span>`;
+        importRocYear.value = '';
+        previewTableArea.innerHTML = '';
+        return;
+      }
+
+      if(categoryMismatch){
+        importWarningSlot.innerHTML = `<div class="import-warning">這份檔案內容看起來像是「${category === 'nurse' ? '病房助理' : '護理師'}」班表，但目前選擇的類別是「${CATEGORY_LABEL[category]}」，請確認是否選錯類別。</div>`;
+      }
+
+      const rocYear = schedule.westYear ? westToRoc(schedule.westYear) : '';
+      importRocYear.value = rocYear;
+      if(schedule.month) importMonth.value = schedule.month;
+
+      previewSummary.textContent = `辨識到 ${schedule.employees.length} 位員工的班表資料，請確認年份/月份後匯入。`;
+      previewTableArea.innerHTML = schedule.month
+        ? renderScheduleTable(schedule)
+        : '<div class="empty-hint">無法自動辨識年份/月份，請於上方手動輸入</div>';
+
+      await refreshOverwriteWarning();
+    }catch(err){
+      console.error(err);
+      previewSummary.innerHTML = `<span style="color:var(--shift-e)">檔案解析失敗：${escapeHtml(err.message || err)}</span>`;
+    }
+  }
+
+  // 規則：匯入前若該「類別＋年＋月」已有資料，需明確提示——匯入會完全取代舊資料，而不是疊加
+  async function refreshOverwriteWarning(){
+    const rocYear = parseInt(importRocYear.value, 10);
+    const month = parseInt(importMonth.value, 10);
+    if(!rocYear || !month){ overwriteWarningSlot.innerHTML = ''; return; }
+    const existing = await ScheduleRepository.load(category, rocToWest(rocYear), month);
+    if(existing && existing.employees.length > 0){
+      overwriteWarningSlot.innerHTML = `<div class="import-warning">
+        民國${rocYear}年${month}月 已經有 ${CATEGORY_LABEL[category]}的班表資料（${existing.employees.length} 位員工）。
+        依規則：匯入時會先刪除該年月${CATEGORY_LABEL[category]}的舊資料，再整批寫入這次的新資料，請確認無誤。
+      </div>`;
+    }else{
+      overwriteWarningSlot.innerHTML = '';
+    }
+  }
+  importRocYear.addEventListener('change', refreshOverwriteWarning);
+  importMonth.addEventListener('change', refreshOverwriteWarning);
+
+  pdfInput.addEventListener('change', () => {
+    const file = pdfInput.files[0];
+    if(!file) return;
+    excelInput.value = '';
+    presentParseResult(parsePdfToSchedule(file, category), 'PDF');
+  });
+
+  excelInput.addEventListener('change', () => {
+    const file = excelInput.files[0];
+    if(!file) return;
+    pdfInput.value = '';
+    presentParseResult(parseExcelToSchedule(file, category), 'Excel');
+  });
+
+  root.querySelector('.btn-confirm-import').addEventListener('click', async () => {
+    if(!pendingSchedule){ showToast('尚未解析任何檔案', true); return; }
+    const rocYear = parseInt(importRocYear.value, 10);
+    const month = parseInt(importMonth.value, 10);
+    if(!rocYear || !month){ showToast('請輸入正確的民國年與月份', true); return; }
+    const westYear = rocToWest(rocYear);
+
+    // 規則：同一「類別＋年＋月」的舊資料，匯入前必須先清除，再整批寫入新資料（而非疊加合併）
+    const existing = await ScheduleRepository.load(category, westYear, month);
+    if(existing && existing.employees.length > 0){
+      const ok = confirm(`民國${rocYear}年${month}月 已有 ${CATEGORY_LABEL[category]}班表資料，匯入後會先刪除舊資料再寫入新資料，確定要繼續嗎？`);
+      if(!ok) return;
+      await ScheduleRepository.remove(category, westYear, month);
+    }
+
+    pendingSchedule.category = category;
+    pendingSchedule.westYear = westYear;
+    pendingSchedule.month = month;
+
+    try{
+      await ScheduleRepository.save(pendingSchedule);
+      showToast(`已匯入 民國${rocYear}年${month}月 ${CATEGORY_LABEL[category]}班表`);
+      importPreview.classList.remove('show');
+      pdfInput.value = '';
+      excelInput.value = '';
+      pendingSchedule = null;
+
+      // 若目前查詢區正好顯示同一個月份，順便刷新畫面
+      if(parseInt(rocYearInput.value, 10) === rocYear && parseInt(monthSelect.value, 10) === month){
+        runQuery();
+      }
+    }catch(err){
+      showToast('儲存失敗：' + (err.message || err), true);
+    }
+  });
+
+  root.querySelector('.btn-cancel-import').addEventListener('click', () => {
+    importPreview.classList.remove('show');
+    pdfInput.value = '';
+    excelInput.value = '';
+    pendingSchedule = null;
+  });
+
+  runQuery(); // 進入畫面即先查詢一次當月資料
+}
+
+/* =========================================================================
+   七、類別切換控制
+   ========================================================================= */
+
+let workspacesBuilt = { nurse: false, assistant: false };
+
+function selectCategory(category){
+  document.getElementById('emptyHint').style.display = 'none';
+  document.querySelectorAll('.category-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.cat === category);
+  });
+  document.querySelectorAll('.workspace').forEach(w => {
+    w.classList.toggle('active', w.dataset.cat === category);
+  });
+  if(!workspacesBuilt[category]){
+    initWorkspace(category);
+    workspacesBuilt[category] = true;
+  }
+}
+
+document.querySelectorAll('.category-btn').forEach(btn => {
+  btn.addEventListener('click', () => selectCategory(btn.dataset.cat));
+});
+
+document.getElementById('btnExportXml').addEventListener('click', exportXmlBackup);
+document.getElementById('importXmlInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  await importXmlBackup(file);
+  e.target.value = ''; // 清空選取，讓同一個檔案可以再次觸發change事件
+});
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+</script>
+</body>
+</html>
