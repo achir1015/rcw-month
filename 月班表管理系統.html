@@ -248,6 +248,38 @@
   /* 表頭左上角那兩格，同時吃到「上」跟「左」兩種凍結，層級要最高才不會被別的格子蓋住 */
   table.schedule-table thead .col-id, table.schedule-table thead .col-name{ background:#F0F3F2; z-index:4; }
 
+  /* ---- 統計列 ---- */
+  /* 統計區塊放進 tfoot，並整塊固定在捲動容器的最下方，垂直捲動時隨時看得到 */
+  table.schedule-table tfoot{
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+  }
+  tr.stat-row td{ font-weight: 700; background: #F7F5EE; }
+  tr.stat-row td.col-id, tr.stat-row td.col-name{ background: #F7F5EE; }
+  tr.stat-row.stat-divider td{ border-top: 2px solid var(--line-strong); }
+  tr.stat-row .stat-row-label{ color: var(--ink); }
+  td.stat-count{ text-align: center; color: var(--ink); }
+  /* 統計區塊左上角(左邊標籤欄位)，同時吃到「下」跟「左」兩種凍結，層級要最高 */
+  table.schedule-table tfoot .col-id, table.schedule-table tfoot .col-name{ z-index: 4; }
+  /* 合計列：粗體、黑色、字級比其他統計列再放大15% (15.6px * 1.15 ≈ 17.9px) */
+  tr.stat-row.stat-total td{ font-weight: 700; color: #000; font-size: 17.9px; background: #F1EEE2; }
+  tr.stat-row.stat-total td.col-id, tr.stat-row.stat-total td.col-name{ background: #F1EEE2; }
+
+  table.personal-stat-table{
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 14px;
+  }
+  table.personal-stat-table th, table.personal-stat-table td{
+    border: 1px solid var(--line);
+    padding: 8px 6px;
+    text-align: center;
+  }
+  table.personal-stat-table thead th{ background:#F0F3F2; color: var(--ink-muted); font-weight:600; }
+  table.personal-stat-table .stat-row-label{ font-weight:700; background:#F7F5EE; text-align:left; padding-left:12px; }
+  table.personal-stat-table td.stat-count{ font-weight:700; font-size:18.8px; }
+
   td.shift-d{ color: var(--shift-d); background: var(--shift-d-bg); }
   td.shift-e{ color: var(--shift-e); background: var(--shift-e-bg); }
   td.shift-n{ color: var(--shift-n); background: var(--shift-n-bg); }
@@ -1057,10 +1089,41 @@ async function importXmlBackup(file){
 function shiftClass(code){
   if(!code) return 'shift-empty';
   if(code.startsWith('OFF')) return 'shift-off';
-  if(code.startsWith('D')) return 'shift-d';
+  if(code.startsWith('D') || code.includes('白值')) return 'shift-d';
   if(code.startsWith('E')) return 'shift-e';
-  if(code.startsWith('N')) return 'shift-n';
+  if(code.startsWith('N') || code.includes('夜8')) return 'shift-n';
   return 'shift-other';
+}
+
+/* =========================================================================
+   統計規則（依需求文件定義）：看代碼「內容中是否含有」對應字元/字串，
+   不要求完全相等，例如 D/W、D/學 都算 D白班，OFF、國、休 都算 OFF休假。
+   ========================================================================= */
+function isDayShiftCode(code){ return !!code && (code.includes('D') || code.includes('白值')); }
+function isEveningShiftCode(code){ return !!code && code.includes('E'); }
+function isNightShiftCode(code){ return !!code && (code.includes('N') || code.includes('夜8')); }
+function isOffShiftCode(code){
+  if(!code) return false;
+  return code.toLowerCase().includes('off') || code.includes('國') || code.includes('休');
+}
+
+// 全員班表下方的「統計」列：逐日計算 D白班/E小夜/N大夜 各有幾位員工是該班別，
+// 並在最下面加一列「合計」= 當天 D+E+N 三種班別人數的總和，等於當天總共有多少人上班
+function buildGroupStatRows(schedule, days){
+  const countOf = (predicate) => days.map(d => schedule.employees.filter(e => predicate(e.shifts[d])).length);
+  const dCounts = countOf(isDayShiftCode);
+  const eCounts = countOf(isEveningShiftCode);
+  const nCounts = countOf(isNightShiftCode);
+  const totalCounts = days.map((_, i) => dCounts[i] + eCounts[i] + nCounts[i]);
+
+  const rowCells = (counts, extraClass = '') => counts.map(c => `<td class="stat-count ${extraClass}">${c}</td>`).join('');
+
+  const dividerRow = `<tr class="stat-row stat-divider"><td class="col-id stat-row-label">統計</td><td class="col-name"></td>${days.map(() => '<td></td>').join('')}</tr>`;
+  const dRow = `<tr class="stat-row"><td class="col-id"></td><td class="col-name stat-row-label">D白班</td>${rowCells(dCounts)}</tr>`;
+  const eRow = `<tr class="stat-row"><td class="col-id"></td><td class="col-name stat-row-label">E小夜</td>${rowCells(eCounts)}</tr>`;
+  const nRow = `<tr class="stat-row"><td class="col-id"></td><td class="col-name stat-row-label">N大夜</td>${rowCells(nCounts)}</tr>`;
+  const totalRow = `<tr class="stat-row stat-total"><td class="col-id"></td><td class="col-name stat-row-label">合計</td>${rowCells(totalCounts, 'stat-total-count')}</tr>`;
+  return dividerRow + dRow + eRow + nRow + totalRow;
 }
 
 function renderScheduleTable(schedule){
@@ -1081,6 +1144,8 @@ function renderScheduleTable(schedule){
     return `<tr><td class="col-id">${escapeHtml(emp.empId)}</td><td class="col-name clickable-name" data-empid="${escapeHtml(emp.empId)}" title="點擊查看個人月班表">${escapeHtml(emp.name)}</td>${cells}</tr>`;
   }).join('');
 
+  const statRows = buildGroupStatRows(schedule, days);
+
   return `
     <table class="schedule-table">
       <thead>
@@ -1088,6 +1153,22 @@ function renderScheduleTable(schedule){
         <tr><th class="col-id"></th><th class="col-name"></th>${weekHeaderCells}</tr>
       </thead>
       <tbody>${bodyRows}</tbody>
+      <tfoot>${statRows}</tfoot>
+    </table>`;
+}
+
+// 個人月班表下方的小計表：統計這個人整個月 D白班/E小夜/N大夜/OFF休假 各出現幾天
+function renderPersonalStatTable(emp, daysInMonth){
+  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+  const countD = days.filter(d => isDayShiftCode(emp.shifts[d])).length;
+  const countE = days.filter(d => isEveningShiftCode(emp.shifts[d])).length;
+  const countN = days.filter(d => isNightShiftCode(emp.shifts[d])).length;
+  const countOff = days.filter(d => isOffShiftCode(emp.shifts[d])).length;
+
+  return `
+    <table class="personal-stat-table">
+      <thead><tr><th></th><th>D白班</th><th>E小夜</th><th>N大夜</th><th>OFF休假</th></tr></thead>
+      <tbody><tr><td class="stat-row-label">統計</td><td class="stat-count">${countD}</td><td class="stat-count">${countE}</td><td class="stat-count">${countN}</td><td class="stat-count">${countOff}</td></tr></tbody>
     </table>`;
 }
 
@@ -1171,7 +1252,11 @@ function buildWorkspaceMarkup(category){
 
     <div class="panel personal-panel" style="display:none;">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--line);">
-        <h2 class="personal-title" style="border:none; padding:0; margin:0;"></h2>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-ghost btn-prev-emp" title="上一筆">◀ 上一筆</button>
+          <h2 class="personal-title" style="border:none; padding:0; margin:0;"></h2>
+          <button type="button" class="btn btn-ghost btn-next-emp" title="下一筆">下一筆 ▶</button>
+        </div>
         <div style="display:flex; align-items:center; gap:8px;">
           <label style="font-size:15.6px; color:var(--ink-muted);">每週起始週：</label>
           <select class="week-start-select">
@@ -1247,6 +1332,8 @@ function initWorkspace(category){
   const personalTitle = root.querySelector('.personal-title');
   const weekStartSelect = root.querySelector('.week-start-select');
   const personalCalendarArea = root.querySelector('.personal-calendar-area');
+  const btnPrevEmp = root.querySelector('.btn-prev-emp');
+  const btnNextEmp = root.querySelector('.btn-next-emp');
 
   let pendingSchedule = null; // 使用者確認前，暫存解析出來的班表
   let currentSchedule = null; // 目前查詢區顯示中的月班表，供點選姓名查看個人班表使用
@@ -1260,11 +1347,34 @@ function initWorkspace(category){
 
   function renderPersonalPanel(){
     if(!currentSchedule || !currentEmpId) return;
-    const emp = currentSchedule.employees.find(e => e.empId === currentEmpId);
+    const employees = currentSchedule.employees;
+    const index = employees.findIndex(e => e.empId === currentEmpId);
+    const emp = employees[index];
     if(!emp){ hidePersonalPanel(); return; }
     personalTitle.textContent = `${currentSchedule.westYear}年${currentSchedule.month}月${emp.name}月班表`;
-    personalCalendarArea.innerHTML = `<div class="calendar-scroll">${renderPersonalCalendarTable(currentSchedule, emp, currentWeekStart)}</div>`;
+    personalCalendarArea.innerHTML = `<div class="calendar-scroll">${renderPersonalCalendarTable(currentSchedule, emp, currentWeekStart)}</div>${renderPersonalStatTable(emp, currentSchedule.daysInMonth)}`;
+    // 頭尾各自停用上一筆/下一筆按鈕，不循環跳到另一端，避免使用者搞不清楚目前在哪一位
+    btnPrevEmp.disabled = (index <= 0);
+    btnNextEmp.disabled = (index === -1 || index >= employees.length - 1);
   }
+
+  btnPrevEmp.addEventListener('click', () => {
+    if(!currentSchedule) return;
+    const index = currentSchedule.employees.findIndex(e => e.empId === currentEmpId);
+    if(index > 0){
+      currentEmpId = currentSchedule.employees[index - 1].empId;
+      renderPersonalPanel();
+    }
+  });
+
+  btnNextEmp.addEventListener('click', () => {
+    if(!currentSchedule) return;
+    const index = currentSchedule.employees.findIndex(e => e.empId === currentEmpId);
+    if(index !== -1 && index < currentSchedule.employees.length - 1){
+      currentEmpId = currentSchedule.employees[index + 1].empId;
+      renderPersonalPanel();
+    }
+  });
 
   weekStartSelect.addEventListener('change', () => {
     currentWeekStart = parseInt(weekStartSelect.value, 10);
