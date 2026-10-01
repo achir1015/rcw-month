@@ -1262,8 +1262,26 @@ function buildGroupStatRows(schedule, days){
   return dividerRow + dRow + eRow + nRow + totalRow;
 }
 
+// 收集這份班表目前用過的所有班別代碼，加上幾個常見代碼，做成編輯時可下拉選擇的清單
+// 用 <datalist> 而不是 <select>：既可以下拉點選，也還是能直接輸入清單以外的自訂代碼
+function buildShiftCodeDatalist(schedule, datalistId){
+  const codes = new Set(['D', 'D1', 'E', 'N', 'OFF', '例', '國']);
+  for(const emp of schedule.employees){
+    for(const day in emp.shifts){
+      const code = (emp.shifts[day] || '').trim();
+      if(code) codes.add(code);
+    }
+  }
+  const options = Array.from(codes)
+    .sort((a, b) => a.localeCompare(b, 'zh-Hant'))
+    .map(c => `<option value="${escapeHtml(c)}"></option>`)
+    .join('');
+  return `<datalist id="${datalistId}">${options}</datalist>`;
+}
+
 function renderScheduleTable(schedule){
   const days = Array.from({ length: schedule.daysInMonth }, (_, i) => i + 1);
+  const shiftCodeListId = `shiftcodes-${schedule.category}`;
 
   const dateHeaderCells = days.map(d => `<th>${schedule.month}/${d}</th>`).join('');
   const weekHeaderCells = days.map(d => {
@@ -1290,7 +1308,8 @@ function renderScheduleTable(schedule){
       </thead>
       <tbody>${bodyRows}</tbody>
       <tfoot>${statRows}</tfoot>
-    </table>`;
+    </table>
+    ${buildShiftCodeDatalist(schedule, shiftCodeListId)}`;
 }
 
 // 個人月班表下方的小計表：統計這個人整個月 D白班/E小夜/N大夜/OFF休假 各出現幾天
@@ -1564,7 +1583,8 @@ function initWorkspace(category){
     const oldCode = emp.shifts[day] || '';
 
     cell.classList.add('editing');
-    cell.innerHTML = `<input type="text" class="shift-edit-input" value="${escapeHtml(oldCode)}">`;
+    const shiftCodeListId = `shiftcodes-${category}`;
+    cell.innerHTML = `<input type="text" class="shift-edit-input" value="${escapeHtml(oldCode)}" list="${shiftCodeListId}" autocomplete="off">`;
     const input = cell.querySelector('input');
     input.focus();
     input.select();
