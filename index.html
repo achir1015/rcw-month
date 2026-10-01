@@ -293,6 +293,24 @@
   .clickable-name{ cursor:pointer; text-decoration: underline dotted; text-underline-offset: 2px; }
   .clickable-name:hover{ background: rgba(31,111,99,0.08); }
 
+  /* 班別代碼可點擊編輯：滑鼠移上去提示可以點，編輯中則顯示一個小輸入框 */
+  td.shift.editable-shift{ cursor:pointer; }
+  td.shift.editable-shift:hover{ outline: 2px dashed var(--nurse); outline-offset: -2px; }
+  td.shift.editing{ padding: 2px; }
+  td.shift input.shift-edit-input{
+    width: 100%;
+    min-width: 44px;
+    box-sizing: border-box;
+    text-align: center;
+    font: inherit;
+    font-weight: 700;
+    border: 2px solid var(--nurse);
+    border-radius: 4px;
+    padding: 4px 2px;
+    background: #FFFFFF;
+    color: var(--ink);
+  }
+
   /* ---- 個人月班表(月曆樣式) ---- */
   /* 同樣限制高度，讓「星期」表頭在垂直捲動時固定在上方；欄位有最小寬度，
      手機螢幕太窄時會出現水平捲動，此時表頭仍會固定在上面 */
@@ -783,6 +801,94 @@ const PdfTableExtractor = {
       if(count > bestCount){ bestCount = count; bestKey = key; }
     }
     return bestKey;
+  },
+
+  /* -----------------------------------------------------------------------
+     「直式／轉置版面」解析：
+     有些醫院匯出的PDF，日期是由上而下排成一欄（而不是橫向表頭），
+     員編／姓名則橫向排成表頭列，整張表等於是把原本的表格「轉90度」。
+     這種版面无法用上面「日期橫向表頭」的邏輯找到日期錨點，
+     因此改用「星期文字（日一二三四五六）由上而下連續出現一整個月」
+     來偵測並定位每一天的資料列。
+     ----------------------------------------------------------------------- */
+
+  // 偵測垂直日期欄：星期文字(日一二三四五六)最集中的那個x座標，由上而下依序視為第1天、第2天...
+  buildVerticalDateRows(items){
+    const weekdayChars = new Set(['日', '一', '二', '三', '四', '五', '六']);
+    const weekdayItems = items.filter(it => weekdayChars.has(it.text));
+    if(weekdayItems.length < 20) return { rows: [], minDateY: null }; // 數量太少，不像一整個月的星期欄
+    const buckets = new Map();
+    for(const it of weekdayItems){
+      const key = Math.round(it.x);
+      if(!buckets.has(key)) buckets.set(key, []);
+      buckets.get(key).push(it);
+    }
+    let bestList = [];
+    for(const [, list] of buckets){
+      if(list.length > bestList.length) bestList = list;
+    }
+    const rows = bestList
+      .slice()
+      .sort((a, b) => a.y - b.y)
+      .map((it, idx) => ({ day: idx + 1, y: it.y }));
+    const minDateY = rows.length ? Math.min(...rows.map(r => r.y)) : null;
+    return { rows, minDateY };
+  },
+
+  // 偵測橫向的員編／姓名表頭欄位（在日期欄最上方那一段文字裡）
+  buildVerticalColumns(items, minDateY){
+    const headerItems = items.filter(it => it.y < minDateY - 5);
+    const groups = [];
+    for(const it of headerItems){
+      let g = groups.find(g => Math.abs(g.y - it.y) < 4);
+      if(!g){ g = { y: it.y, items: [] }; groups.push(g); }
+      g.items.push(it);
+    }
+    const idRow = groups.find(g => g.items.some(it => EMP_ID_PATTERN.test(it.text)));
+    if(!idRow) return [];
+    const idCols = idRow.items.filter(it => EMP_ID_PATTERN.test(it.text)).sort((a, b) => a.x - b.x);
+    const columns = idCols.map(idIt => ({ empId: idIt.text.trim(), x: idIt.x, nameParts: [] }));
+
+    // 其餘表頭文字（扣掉「員編」「姓名」等標籤）視為姓名候選，依x座標分配給最近的欄位
+    for(const g of groups){
+      if(g === idRow) continue;
+      for(const it of g.items){
+        if(it.text === '員編' || it.text === '姓名') continue;
+        let best = null, bestDist = Infinity;
+        for(const col of columns){
+          const dist = Math.abs(col.x - it.x);
+          if(dist < bestDist){ bestDist = dist; best = col; }
+        }
+        if(best) best.nameParts.push(it);
+      }
+    }
+    for(const col of columns){
+      col.nameParts.sort((a, b) => a.x - b.x);
+      col.name = col.nameParts.map(it => it.text).join('').trim();
+    }
+    return columns;
+  },
+
+  // 把每一列（每一天）落在欄位x座標附近的文字，分配為該員工當天的班別代碼
+  assignVerticalShifts(items, rows, columns){
+    if(columns.length === 0) return;
+    const weekdayChars = new Set(['日', '一', '二', '三', '四', '五', '六']);
+    const minColX = Math.min(...columns.map(c => c.x)) - 6; // 排除日期欄與星期欄本身
+    const valueItems = items.filter(it =>
+      it.x >= minColX && !/^\d{1,2}\/\d{1,2}/.test(it.text) && !weekdayChars.has(it.text)
+    );
+    for(const row of rows){
+      // 容許上下約7個單位的誤差（同一天的班別代碼有時會因字型高度被拆成上下兩小段）
+      const rowItems = valueItems.filter(it => it.y >= row.y - 7 && it.y <= row.y + 7);
+      for(const it of rowItems){
+        let best = null, bestDist = Infinity;
+        for(const col of columns){
+          const dist = Math.abs(it.x - col.x);
+          if(dist < bestDist){ bestDist = dist; best = col; }
+        }
+        if(best) best.shifts[row.day] = (best.shifts[row.day] || '') + it.text;
+      }
+    }
   }
 };
 
@@ -811,60 +917,88 @@ async function parsePdfToSchedule(file, category){
   for(const items of pages){
     if(items.length === 0) continue;
     const { anchors, headerY } = PdfTableExtractor.buildDateAnchors(items);
-    if(anchors.length === 0) continue; // 這一頁找不到日期表頭，可能不是班表內容，略過
 
-    // 年月只在「日期表頭列以上」的文字裡找（也就是標題那一小段），
-    // 避免日期資料本身互相接續(例如 9/9 接 9/10 變成 ...9/9|9/10...)巧合湊出看似合法的年月而誤判
-    if(detected.westYear == null && headerY != null){
-      const titleText = items.filter(it => it.y > headerY + 1).map(it => it.text).join('');
-      detected = detectYearMonth(titleText);
-    }
+    // 門檻設為5：避免日期直向排列的版面中，剛好有1～少數幾個日期巧合落在同一個y座標，
+    // 被誤判成「只有1～少數幾欄」的橫向日期表頭，導致誤用版面一的邏輯去解析版面二的PDF
+    if(anchors.length >= 5){
+      // ---- 版面一：日期橫向排成表頭列，員工由上而下排列 ----
 
-    const firstDateX = anchors[0].x - 8; // 日期欄最左側再留一點緩衝，做為姓名欄與日期欄的分界
-    const cutoffY = PdfTableExtractor.findHeaderCutoffY(items, headerY);
-    const blocks = PdfTableExtractor.splitIntoEmployeeBlocks(items, cutoffY);
+      // 年月只在「日期表頭列以上」的文字裡找（也就是標題那一小段），
+      // 避免日期資料本身互相接續(例如 9/9 接 9/10 變成 ...9/9|9/10...)巧合湊出看似合法的年月而誤判
+      if(detected.westYear == null && headerY != null){
+        const titleText = items.filter(it => it.y > headerY + 1).map(it => it.text).join('');
+        detected = detectYearMonth(titleText);
+      }
 
-    // 先算出每個區塊的班別資料，以及該區塊「主要資料列」的y座標
-    for(const block of blocks){
-      block.shiftItems = block.items.filter(it => it.x >= firstDateX).sort((a, b) => a.x - b.x);
-      block.primaryRowY = PdfTableExtractor.findPrimaryRowY(block.shiftItems);
-      block.nameFragments = [];
-    }
+      const firstDateX = anchors[0].x - 8; // 日期欄最左側再留一點緩衝，做為姓名欄與日期欄的分界
+      const cutoffY = PdfTableExtractor.findHeaderCutoffY(items, headerY);
+      const blocks = PdfTableExtractor.splitIntoEmployeeBlocks(items, cutoffY);
 
-    // 姓名候選字：因為員編跟姓名的相對位置每個人不太一樣，改成整頁蒐集後，
-    // 依「離哪個員工的主要資料列最近」重新分配，而不是依員編位置切出的區塊分配
-    const nameCandidates = items.filter(it => it.y < cutoffY && it.x < firstDateX && !EMP_ID_PATTERN.test(it.text));
-    for(const cand of nameCandidates){
-      let best = null, bestDist = Infinity;
+      // 先算出每個區塊的班別資料，以及該區塊「主要資料列」的y座標
       for(const block of blocks){
-        if(block.primaryRowY == null) continue;
-        const diff = block.primaryRowY - cand.y; // 正值代表候選字在主要列下方
-        if(diff < -5 || diff > 25) continue; // 只接受主要列上方一點點、或下方最多約一行高度的範圍
-        if(diff < bestDist){ bestDist = diff; best = block; }
+        block.shiftItems = block.items.filter(it => it.x >= firstDateX).sort((a, b) => a.x - b.x);
+        block.primaryRowY = PdfTableExtractor.findPrimaryRowY(block.shiftItems);
+        block.nameFragments = [];
       }
-      if(best) best.nameFragments.push(cand);
+
+      // 姓名候選字：因為員編跟姓名的相對位置每個人不太一樣，改成整頁蒐集後，
+      // 依「離哪個員工的主要資料列最近」重新分配，而不是依員編位置切出的區塊分配
+      const nameCandidates = items.filter(it => it.y < cutoffY && it.x < firstDateX && !EMP_ID_PATTERN.test(it.text));
+      for(const cand of nameCandidates){
+        let best = null, bestDist = Infinity;
+        for(const block of blocks){
+          if(block.primaryRowY == null) continue;
+          const diff = block.primaryRowY - cand.y; // 正值代表候選字在主要列下方
+          if(diff < -5 || diff > 25) continue; // 只接受主要列上方一點點、或下方最多約一行高度的範圍
+          if(diff < bestDist){ bestDist = diff; best = block; }
+        }
+        if(best) best.nameFragments.push(cand);
+      }
+
+      for(const block of blocks){
+        const empId = block.empIdItem.text.trim();
+        block.nameFragments.sort((a, b) => (b.y - a.y) || (a.x - b.x)); // 由上而下、同一行由左而右
+        const name = block.nameFragments.map(it => it.text).join('').trim();
+
+        const shifts = {};
+        for(const it of block.shiftItems){
+          let best = null, bestDist = Infinity;
+          for(const a of anchors){
+            const dist = Math.abs(it.x - a.x);
+            if(dist < bestDist){ bestDist = dist; best = a; }
+          }
+          if(!best) continue;
+          shifts[best.day] = (shifts[best.day] || '') + it.text;
+        }
+
+        const emp = new Employee(empId, name);
+        emp.shifts = shifts;
+        employees.push(emp);
+      }
+      continue;
     }
 
-    for(const block of blocks){
-      const empId = block.empIdItem.text.trim();
-      block.nameFragments.sort((a, b) => (b.y - a.y) || (a.x - b.x)); // 由上而下、同一行由左而右
-      const name = block.nameFragments.map(it => it.text).join('').trim();
+    // ---- 版面二：日期直向排成一欄，員編／姓名橫向排成表頭（整張表等於轉90度） ----
+    const { rows, minDateY } = PdfTableExtractor.buildVerticalDateRows(items);
+    if(rows.length === 0) continue; // 兩種版面都偵測不到，可能不是班表內容，略過
 
-      const shifts = {};
-      for(const it of block.shiftItems){
-        let best = null, bestDist = Infinity;
-        for(const a of anchors){
-          const dist = Math.abs(it.x - a.x);
-          if(dist < bestDist){ bestDist = dist; best = a; }
-        }
-        if(!best) continue;
-        shifts[best.day] = (shifts[best.day] || '') + it.text;
-      }
+    const columns = PdfTableExtractor.buildVerticalColumns(items, minDateY);
+    if(columns.length === 0) continue;
 
-      const emp = new Employee(empId, name);
-      emp.shifts = shifts;
+    for(const col of columns) col.shifts = {};
+    PdfTableExtractor.assignVerticalShifts(items, rows, columns);
+
+    for(const col of columns){
+      const emp = new Employee(col.empId, col.name);
+      emp.shifts = col.shifts;
       employees.push(emp);
     }
+  }
+
+  // 這種版面的PDF內文常常沒有年月標題文字，退而求其次改從檔名辨識
+  // （例如「RCW-115年10月護理師班表.pdf」）
+  if(detected.westYear == null){
+    detected = detectYearMonth(file.name || '');
   }
 
   // 同一員編若跨頁出現（例如分頁延續），合併其班別資料
@@ -877,8 +1011,10 @@ async function parsePdfToSchedule(file, category){
   const schedule = new MonthlySchedule(category, detected.westYear, detected.month);
   schedule.employees = Array.from(merged.values());
 
+  // 類別比對同樣可能因內文沒有文字而找不到，所以也把檔名一併納入判斷
+  const combinedText = fullText + (file.name || '');
   const oppositeKeyword = category === 'nurse' ? '病房助理' : '護理師';
-  const categoryMismatch = fullText.includes(oppositeKeyword) && !fullText.includes(CATEGORY_LABEL[category]);
+  const categoryMismatch = combinedText.includes(oppositeKeyword) && !combinedText.includes(CATEGORY_LABEL[category]);
 
   return { schedule, categoryMismatch, rowsFound: employees.length };
 }
@@ -1139,7 +1275,7 @@ function renderScheduleTable(schedule){
   const bodyRows = schedule.employees.map(emp => {
     const cells = days.map(d => {
       const code = emp.shifts[d] || '';
-      return `<td class="shift ${shiftClass(code)}">${escapeHtml(code)}</td>`;
+      return `<td class="shift editable-shift ${shiftClass(code)}" data-empid="${escapeHtml(emp.empId)}" data-day="${d}" title="點擊修改班別代碼">${escapeHtml(code)}</td>`;
     }).join('');
     return `<tr><td class="col-id">${escapeHtml(emp.empId)}</td><td class="col-name clickable-name" data-empid="${escapeHtml(emp.empId)}" title="點擊查看個人月班表">${escapeHtml(emp.name)}</td>${cells}</tr>`;
   }).join('');
@@ -1410,6 +1546,74 @@ function initWorkspace(category){
     personalPanel.style.display = '';
     renderPersonalPanel();
   });
+
+  // 點擊表格裡的班別代碼儲存格，就地修改該員工該天的班別代碼；
+  // Enter 或點擊別處＝確定修改（存檔＋重新整理統計），Esc＝取消不存檔
+  resultArea.addEventListener('click', (e) => {
+    const cell = e.target.closest('td.editable-shift');
+    if(!cell || !currentSchedule) return;
+    if(cell.classList.contains('editing')) return; // 編輯中點輸入框本身，不要重新進入編輯
+    startEditShiftCell(cell);
+  });
+
+  function startEditShiftCell(cell){
+    const empId = cell.dataset.empid;
+    const day = parseInt(cell.dataset.day, 10);
+    const emp = currentSchedule.employees.find(x => x.empId === empId);
+    if(!emp) return;
+    const oldCode = emp.shifts[day] || '';
+
+    cell.classList.add('editing');
+    cell.innerHTML = `<input type="text" class="shift-edit-input" value="${escapeHtml(oldCode)}">`;
+    const input = cell.querySelector('input');
+    input.focus();
+    input.select();
+
+    const restoreCellDisplay = (code) => {
+      cell.classList.remove('editing');
+      cell.className = `shift editable-shift ${shiftClass(code)}`;
+      cell.textContent = code;
+    };
+
+    let settled = false;
+    const commit = async () => {
+      if(settled) return;
+      settled = true;
+      const newCode = input.value.trim();
+
+      if(newCode === oldCode){
+        restoreCellDisplay(oldCode); // 沒有變更，還原顯示即可，不用存檔
+        return;
+      }
+
+      if(newCode) emp.shifts[day] = newCode;
+      else delete emp.shifts[day]; // 清空代表這天沒有班別代碼
+
+      try{
+        await ScheduleRepository.save(currentSchedule);
+        showToast(`已更新 ${emp.name} ${currentSchedule.month}/${day} 的班別為「${newCode || '(空白)'}」`);
+        // 整張表重新渲染，統計列(D白班/E小夜/N大夜/合計)會依最新資料重新計算
+        resultArea.innerHTML = `<div class="table-scroll">${renderScheduleTable(currentSchedule)}</div>${LEGEND_HTML}`;
+      }catch(err){
+        console.error(err);
+        showToast('儲存失敗，請再試一次', true);
+        if(oldCode) emp.shifts[day] = oldCode; else delete emp.shifts[day]; // 存檔失敗就還原回原本的資料
+        restoreCellDisplay(oldCode);
+      }
+    };
+
+    const cancel = () => {
+      if(settled) return;
+      settled = true;
+      restoreCellDisplay(oldCode);
+    };
+
+    input.addEventListener('keydown', (ev) => {
+      if(ev.key === 'Enter'){ ev.preventDefault(); commit(); }
+      else if(ev.key === 'Escape'){ ev.preventDefault(); cancel(); }
+    });
+    input.addEventListener('blur', () => commit());
+  }
 
   root.querySelector('.btn-clear').addEventListener('click', async () => {
     const rocYear = parseInt(rocYearInput.value, 10);
