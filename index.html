@@ -310,6 +310,20 @@
     background: #FFFFFF;
     color: var(--ink);
   }
+  td.shift select.shift-edit-select{
+    width: 100%;
+    min-width: 56px;
+    box-sizing: border-box;
+    text-align: center;
+    text-align-last: center;
+    font: inherit;
+    font-weight: 700;
+    border: 2px solid var(--nurse);
+    border-radius: 4px;
+    padding: 4px 2px;
+    background: #FFFFFF;
+    color: var(--ink);
+  }
 
   /* ---- 個人月班表(月曆樣式) ---- */
   /* 同樣限制高度，讓「星期」表頭在垂直捲動時固定在上方；欄位有最小寬度，
@@ -1262,26 +1276,8 @@ function buildGroupStatRows(schedule, days){
   return dividerRow + dRow + eRow + nRow + totalRow;
 }
 
-// 收集這份班表目前用過的所有班別代碼，加上幾個常見代碼，做成編輯時可下拉選擇的清單
-// 用 <datalist> 而不是 <select>：既可以下拉點選，也還是能直接輸入清單以外的自訂代碼
-function buildShiftCodeDatalist(schedule, datalistId){
-  const codes = new Set(['D', 'D1', 'E', 'N', 'OFF', '例', '國']);
-  for(const emp of schedule.employees){
-    for(const day in emp.shifts){
-      const code = (emp.shifts[day] || '').trim();
-      if(code) codes.add(code);
-    }
-  }
-  const options = Array.from(codes)
-    .sort((a, b) => a.localeCompare(b, 'zh-Hant'))
-    .map(c => `<option value="${escapeHtml(c)}"></option>`)
-    .join('');
-  return `<datalist id="${datalistId}">${options}</datalist>`;
-}
-
 function renderScheduleTable(schedule){
   const days = Array.from({ length: schedule.daysInMonth }, (_, i) => i + 1);
-  const shiftCodeListId = `shiftcodes-${schedule.category}`;
 
   const dateHeaderCells = days.map(d => `<th>${schedule.month}/${d}</th>`).join('');
   const weekHeaderCells = days.map(d => {
@@ -1308,8 +1304,7 @@ function renderScheduleTable(schedule){
       </thead>
       <tbody>${bodyRows}</tbody>
       <tfoot>${statRows}</tfoot>
-    </table>
-    ${buildShiftCodeDatalist(schedule, shiftCodeListId)}`;
+    </table>`;
 }
 
 // 個人月班表下方的小計表：統計這個人整個月 D白班/E小夜/N大夜/OFF休假 各出現幾天
@@ -1583,11 +1578,6 @@ function initWorkspace(category){
     const oldCode = emp.shifts[day] || '';
 
     cell.classList.add('editing');
-    const shiftCodeListId = `shiftcodes-${category}`;
-    cell.innerHTML = `<input type="text" class="shift-edit-input" value="${escapeHtml(oldCode)}" list="${shiftCodeListId}" autocomplete="off">`;
-    const input = cell.querySelector('input');
-    input.focus();
-    input.select();
 
     const restoreCellDisplay = (code) => {
       cell.classList.remove('editing');
@@ -1596,10 +1586,9 @@ function initWorkspace(category){
     };
 
     let settled = false;
-    const commit = async () => {
+    const commitValue = async (newCode) => {
       if(settled) return;
       settled = true;
-      const newCode = input.value.trim();
 
       if(newCode === oldCode){
         restoreCellDisplay(oldCode); // 沒有變更，還原顯示即可，不用存檔
@@ -1622,17 +1611,55 @@ function initWorkspace(category){
       }
     };
 
-    const cancel = () => {
-      if(settled) return;
-      settled = true;
-      restoreCellDisplay(oldCode);
+    // 收集這份班表目前用過的所有班別代碼（加上幾個常見代碼），做成下拉選單選項，
+    // 選單一定會把「目前的代碼」排進去，就算它不在常見清單裡
+    const codeSet = new Set(['D', 'D1', 'E', 'N', 'OFF', '例', '國']);
+    for(const e2 of currentSchedule.employees){
+      for(const d2 in e2.shifts){
+        const c = (e2.shifts[d2] || '').trim();
+        if(c) codeSet.add(c);
+      }
+    }
+    if(oldCode) codeSet.add(oldCode);
+    const codes = Array.from(codeSet).sort((a, b) => a.localeCompare(b, 'zh-Hant'));
+
+    const CUSTOM_VALUE = '__custom__';
+    const optionsHtml = [
+      `<option value="">(清空)</option>`,
+      ...codes.map(c => `<option value="${escapeHtml(c)}" ${c === oldCode ? 'selected' : ''}>${escapeHtml(c)}</option>`),
+      `<option value="${CUSTOM_VALUE}">✏ 自訂輸入...</option>`
+    ].join('');
+
+    cell.innerHTML = `<select class="shift-edit-select">${optionsHtml}</select>`;
+    const select = cell.querySelector('select');
+    select.focus();
+
+    // 切換成文字輸入框，給清單裡沒有的全新代碼使用
+    const switchToCustomInput = () => {
+      cell.innerHTML = `<input type="text" class="shift-edit-input" value="${escapeHtml(oldCode)}" autocomplete="off">`;
+      const input = cell.querySelector('input');
+      input.focus();
+      input.select();
+      input.addEventListener('keydown', (ev) => {
+        if(ev.key === 'Enter'){ ev.preventDefault(); commitValue(input.value.trim()); }
+        else if(ev.key === 'Escape'){ ev.preventDefault(); settled = true; restoreCellDisplay(oldCode); }
+      });
+      input.addEventListener('blur', () => commitValue(input.value.trim()));
     };
 
-    input.addEventListener('keydown', (ev) => {
-      if(ev.key === 'Enter'){ ev.preventDefault(); commit(); }
-      else if(ev.key === 'Escape'){ ev.preventDefault(); cancel(); }
+    // 下拉選單：選了就直接算「確定」，馬上存檔並更新統計
+    select.addEventListener('change', () => {
+      if(select.value === CUSTOM_VALUE){ switchToCustomInput(); return; }
+      commitValue(select.value);
     });
-    input.addEventListener('blur', () => commit());
+    select.addEventListener('blur', () => {
+      // 延遲一下再檢查：如果已經切換成自訂輸入框（select已經不在這個儲存格裡了），就不要再處理
+      setTimeout(() => {
+        if(settled || select.parentNode !== cell) return;
+        settled = true;
+        restoreCellDisplay(oldCode);
+      }, 150);
+    });
   }
 
   root.querySelector('.btn-clear').addEventListener('click', async () => {
