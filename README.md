@@ -1,5 +1,7 @@
 # rcw-month 月班表管理系統 https://achir1015.github.io/rcw-month/
+<img width="1741" height="735" alt="image" src="https://github.com/user-attachments/assets/7279eb09-f5eb-44d2-9193-2b539aebc4f9" />
 <img width="1452" height="728" alt="image" src="https://github.com/user-attachments/assets/7b5f6dd9-7df1-46a3-aa84-90ab1ff52ae4" />
+<img width="1652" height="758" alt="image" src="https://github.com/user-attachments/assets/c469bd70-d3e8-4a1d-af09-eeeada6165e1" />
 
 ## 月班表管理系統 — 完整功能總結
 
