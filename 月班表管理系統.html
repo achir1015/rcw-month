@@ -310,6 +310,20 @@
     background: #FFFFFF;
     color: var(--ink);
   }
+  td.shift select.shift-edit-select{
+    width: 100%;
+    min-width: 56px;
+    box-sizing: border-box;
+    text-align: center;
+    text-align-last: center;
+    font: inherit;
+    font-weight: 700;
+    border: 2px solid var(--nurse);
+    border-radius: 4px;
+    padding: 4px 2px;
+    background: #FFFFFF;
+    color: var(--ink);
+  }
 
   /* ---- 個人月班表(月曆樣式) ---- */
   /* 同樣限制高度，讓「星期」表頭在垂直捲動時固定在上方；欄位有最小寬度，
@@ -775,32 +789,47 @@ const PdfTableExtractor = {
     return Math.max(...belowHeader.map(it => it.y)) - 1;
   },
 
-  // 依「員編」文字出現的位置（由上而下），把分界線以下的文字切成一個個員工區塊
-  splitIntoEmployeeBlocks(items, cutoffY){
-    const dataItems = items.filter(it => it.y < cutoffY);
-    const empIdItems = dataItems.filter(it => EMP_ID_PATTERN.test(it.text)).sort((a, b) => b.y - a.y);
-    const blocks = [];
-    for(let i = 0; i < empIdItems.length; i++){
-      const upper = i === 0 ? cutoffY : (empIdItems[i - 1].y + empIdItems[i].y) / 2;
-      const lower = i === empIdItems.length - 1 ? -Infinity : (empIdItems[i].y + empIdItems[i + 1].y) / 2;
-      const blockItems = dataItems.filter(it => it.y < upper && it.y >= lower);
-      blocks.push({ empIdItem: empIdItems[i], items: blockItems });
+  // 把日期欄位範圍內的班別代碼文字，依 y 座標聚成一列一列，一列就代表一位員工的資料列。
+  // 不依賴「員編」是否存在——新進人員可能暫時還沒有員編，但只要那一列有排班，班別儲存格就一定存在，
+  // 這樣才不會因為缺員編而整列資料被吃掉、或跟上一位員工的資料混在一起。
+  groupShiftRows(shiftItems){
+    const sorted = shiftItems.slice().sort((a, b) => b.y - a.y); // 由上而下
+    const rows = [];
+    for(const it of sorted){
+      let row = rows.find(r => Math.abs(r.y - it.y) < 3);
+      if(!row){ row = { y: it.y, items: [] }; rows.push(row); }
+      row.items.push(it);
     }
-    return blocks;
+    return rows;
   },
 
-  // 找出一組文字項目中，重複最多次的y座標（用來代表某員工「班別那一列」真正的y）
-  findPrimaryRowY(rowItems){
-    const buckets = new Map();
-    for(const it of rowItems){
-      const key = Math.round(it.y);
-      buckets.set(key, (buckets.get(key) || 0) + 1);
+  // 把員編依「上下順序」配對到資料列：員編在PDF裡本來就跟資料列上下順序一致，
+  // 但員編文字跟它那一列資料的y座標落差，每個人不一定完全固定(量測到有±9左右的誤差)，
+  // 若只看「離哪一列最近」，可能會因為單一列的誤差而配到錯的列。
+  // 改用「整體配對總落差最小」的方式一次算出全部配對(動態規劃)，同時允許某幾列沒有員編
+  // (插在任何位置，不限最後一列——例如某個人從缺員編到有員編，是插在队伍中間)，才不會一個配錯、全部跟著錯位。
+  alignIdsToRows(idsDesc, rowsDesc){
+    const I = idsDesc.length, R = rowsDesc.length;
+    const INF = Infinity;
+    const dp = Array.from({ length: I + 1 }, () => new Array(R + 1).fill(INF));
+    const choice = Array.from({ length: I + 1 }, () => new Array(R + 1).fill(null));
+    for(let j = 0; j <= R; j++) dp[0][j] = 0;
+    for(let i = 1; i <= I; i++){
+      for(let j = i; j <= R; j++){ // j 必須 >= i，前面才塞得下 i 個員編
+        const skip = dp[i][j - 1];
+        const prev = dp[i - 1][j - 1];
+        const matchCost = prev === INF ? INF : prev + Math.abs(idsDesc[i - 1].y - rowsDesc[j - 1].y);
+        if(matchCost <= skip){ dp[i][j] = matchCost; choice[i][j] = 'match'; }
+        else { dp[i][j] = skip; choice[i][j] = 'skip'; }
+      }
     }
-    let bestKey = null, bestCount = 0;
-    for(const [key, count] of buckets){
-      if(count > bestCount){ bestCount = count; bestKey = key; }
+    const rowToId = new Array(R).fill(null);
+    let i = I, j = R;
+    while(i > 0 && j > 0){
+      if(choice[i][j] === 'match'){ rowToId[j - 1] = idsDesc[i - 1]; i--; j--; }
+      else { j--; }
     }
-    return bestKey;
+    return rowToId; // rowToId[k] = 配對到第k列(由上而下，k從0開始)的員編項目，或 null(這一列沒有員編)
   },
 
   /* -----------------------------------------------------------------------
@@ -913,6 +942,7 @@ async function parsePdfToSchedule(file, category){
 
   const employees = [];
   let detected = { westYear: null, month: null };
+  let newEmployeeSeq = 0; // 給還沒有員編的新進人員編暫時代號用(NEW1, NEW2, ...)，整份PDF共用同一組序號
 
   for(const items of pages){
     if(items.length === 0) continue;
@@ -932,36 +962,46 @@ async function parsePdfToSchedule(file, category){
 
       const firstDateX = anchors[0].x - 8; // 日期欄最左側再留一點緩衝，做為姓名欄與日期欄的分界
       const cutoffY = PdfTableExtractor.findHeaderCutoffY(items, headerY);
-      const blocks = PdfTableExtractor.splitIntoEmployeeBlocks(items, cutoffY);
 
-      // 先算出每個區塊的班別資料，以及該區塊「主要資料列」的y座標
-      for(const block of blocks){
-        block.shiftItems = block.items.filter(it => it.x >= firstDateX).sort((a, b) => a.x - b.x);
-        block.primaryRowY = PdfTableExtractor.findPrimaryRowY(block.shiftItems);
-        block.nameFragments = [];
+      // 用班別代碼本身的y座標聚成一列一列，一列＝一位員工（見 groupShiftRows 說明：
+      // 不依賴員編是否存在，所以新進人員就算還沒有員編，也不會被吃掉或跟別人混在一起）
+      const shiftItemsAll = items.filter(it => it.y < cutoffY && it.x >= firstDateX);
+      const rows = PdfTableExtractor.groupShiftRows(shiftItemsAll).sort((a, b) => b.y - a.y); // 由上而下
+
+      // 員編／姓名候選字：都在日期欄左側，員編是固定格式，姓名是其餘文字
+      const empIdCandidates = items.filter(it => it.y < cutoffY && it.x < firstDateX && EMP_ID_PATTERN.test(it.text));
+      const nameCandidates = items.filter(it => it.y < cutoffY && it.x < firstDateX && !EMP_ID_PATTERN.test(it.text));
+
+      // 依「上下順序＋整體落差最小」把員編配對到資料列，而不是單純比對單一列的距離
+      // (見 alignIdsToRows 說明：這樣才不會因為某一列的員編位置有誤差，就整批配錯)
+      const idsDesc = empIdCandidates.slice().sort((a, b) => b.y - a.y);
+      const rowToId = PdfTableExtractor.alignIdsToRows(idsDesc, rows);
+
+      for(let k = 0; k < rows.length; k++){
+        const row = rows[k];
+        row.shiftItems = row.items.sort((a, b) => a.x - b.x);
+        row.nameFragments = [];
+        row.empId = rowToId[k] ? rowToId[k].text.trim() : null; // 配不到員編就代表這一列目前沒有員編(例如剛到職、還沒建檔的新進人員)
       }
 
-      // 姓名候選字：因為員編跟姓名的相對位置每個人不太一樣，改成整頁蒐集後，
-      // 依「離哪個員工的主要資料列最近」重新分配，而不是依員編位置切出的區塊分配
-      const nameCandidates = items.filter(it => it.y < cutoffY && it.x < firstDateX && !EMP_ID_PATTERN.test(it.text));
+      // 姓名候選字：因為員編(或這一列本身)跟姓名的相對位置每個人不太一樣，改成整頁蒐集後，
+      // 依「離哪一列最近」重新分配，而不是依員編位置切出的區塊分配
       for(const cand of nameCandidates){
         let best = null, bestDist = Infinity;
-        for(const block of blocks){
-          if(block.primaryRowY == null) continue;
-          const diff = block.primaryRowY - cand.y; // 正值代表候選字在主要列下方
-          if(diff < -5 || diff > 25) continue; // 只接受主要列上方一點點、或下方最多約一行高度的範圍
-          if(diff < bestDist){ bestDist = diff; best = block; }
+        for(const row of rows){
+          const diff = row.y - cand.y; // 正值代表候選字在這一列下方
+          if(diff < -5 || diff > 25) continue; // 只接受這一列上方一點點、或下方最多約一行高度的範圍
+          if(diff < bestDist){ bestDist = diff; best = row; }
         }
         if(best) best.nameFragments.push(cand);
       }
 
-      for(const block of blocks){
-        const empId = block.empIdItem.text.trim();
-        block.nameFragments.sort((a, b) => (b.y - a.y) || (a.x - b.x)); // 由上而下、同一行由左而右
-        const name = block.nameFragments.map(it => it.text).join('').trim();
+      for(const row of rows){
+        row.nameFragments.sort((a, b) => (b.y - a.y) || (a.x - b.x)); // 由上而下、同一行由左而右
+        const name = row.nameFragments.map(it => it.text).join('').trim();
 
         const shifts = {};
-        for(const it of block.shiftItems){
+        for(const it of row.shiftItems){
           let best = null, bestDist = Infinity;
           for(const a of anchors){
             const dist = Math.abs(it.x - a.x);
@@ -969,6 +1009,14 @@ async function parsePdfToSchedule(file, category){
           }
           if(!best) continue;
           shifts[best.day] = (shifts[best.day] || '') + it.text;
+        }
+
+        // 還沒有員編的人（例如剛到職、還沒建檔的新進人員），先給一個暫時代號，
+        // 之後正式有員編了，可以再用「編輯班別代碼」以外的方式手動補上(或等下次匯入覆蓋)
+        let empId = row.empId;
+        if(!empId){
+          newEmployeeSeq++;
+          empId = `NEW${newEmployeeSeq}`;
         }
 
         const emp = new Employee(empId, name);
@@ -1564,10 +1612,6 @@ function initWorkspace(category){
     const oldCode = emp.shifts[day] || '';
 
     cell.classList.add('editing');
-    cell.innerHTML = `<input type="text" class="shift-edit-input" value="${escapeHtml(oldCode)}">`;
-    const input = cell.querySelector('input');
-    input.focus();
-    input.select();
 
     const restoreCellDisplay = (code) => {
       cell.classList.remove('editing');
@@ -1576,10 +1620,9 @@ function initWorkspace(category){
     };
 
     let settled = false;
-    const commit = async () => {
+    const commitValue = async (newCode) => {
       if(settled) return;
       settled = true;
-      const newCode = input.value.trim();
 
       if(newCode === oldCode){
         restoreCellDisplay(oldCode); // 沒有變更，還原顯示即可，不用存檔
@@ -1602,17 +1645,55 @@ function initWorkspace(category){
       }
     };
 
-    const cancel = () => {
-      if(settled) return;
-      settled = true;
-      restoreCellDisplay(oldCode);
+    // 收集這份班表目前用過的所有班別代碼（加上幾個常見代碼），做成下拉選單選項，
+    // 選單一定會把「目前的代碼」排進去，就算它不在常見清單裡
+    const codeSet = new Set(['D', 'D1', 'E', 'N', 'OFF', '例', '國']);
+    for(const e2 of currentSchedule.employees){
+      for(const d2 in e2.shifts){
+        const c = (e2.shifts[d2] || '').trim();
+        if(c) codeSet.add(c);
+      }
+    }
+    if(oldCode) codeSet.add(oldCode);
+    const codes = Array.from(codeSet).sort((a, b) => a.localeCompare(b, 'zh-Hant'));
+
+    const CUSTOM_VALUE = '__custom__';
+    const optionsHtml = [
+      `<option value="">(清空)</option>`,
+      ...codes.map(c => `<option value="${escapeHtml(c)}" ${c === oldCode ? 'selected' : ''}>${escapeHtml(c)}</option>`),
+      `<option value="${CUSTOM_VALUE}">✏ 自訂輸入...</option>`
+    ].join('');
+
+    cell.innerHTML = `<select class="shift-edit-select">${optionsHtml}</select>`;
+    const select = cell.querySelector('select');
+    select.focus();
+
+    // 切換成文字輸入框，給清單裡沒有的全新代碼使用
+    const switchToCustomInput = () => {
+      cell.innerHTML = `<input type="text" class="shift-edit-input" value="${escapeHtml(oldCode)}" autocomplete="off">`;
+      const input = cell.querySelector('input');
+      input.focus();
+      input.select();
+      input.addEventListener('keydown', (ev) => {
+        if(ev.key === 'Enter'){ ev.preventDefault(); commitValue(input.value.trim()); }
+        else if(ev.key === 'Escape'){ ev.preventDefault(); settled = true; restoreCellDisplay(oldCode); }
+      });
+      input.addEventListener('blur', () => commitValue(input.value.trim()));
     };
 
-    input.addEventListener('keydown', (ev) => {
-      if(ev.key === 'Enter'){ ev.preventDefault(); commit(); }
-      else if(ev.key === 'Escape'){ ev.preventDefault(); cancel(); }
+    // 下拉選單：選了就直接算「確定」，馬上存檔並更新統計
+    select.addEventListener('change', () => {
+      if(select.value === CUSTOM_VALUE){ switchToCustomInput(); return; }
+      commitValue(select.value);
     });
-    input.addEventListener('blur', () => commit());
+    select.addEventListener('blur', () => {
+      // 延遲一下再檢查：如果已經切換成自訂輸入框（select已經不在這個儲存格裡了），就不要再處理
+      setTimeout(() => {
+        if(settled || select.parentNode !== cell) return;
+        settled = true;
+        restoreCellDisplay(oldCode);
+      }, 150);
+    });
   }
 
   root.querySelector('.btn-clear').addEventListener('click', async () => {
