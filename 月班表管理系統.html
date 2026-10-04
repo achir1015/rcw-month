@@ -1,1862 +1,2889 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>月班表管理系統</title>
-<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADCklEQVR4nM2Xa0iTURzGf1tumhd0mWlKuSw1lNLMopsQXagILbpBQXcziKhlF8oSo6APYYYRSJJEUNaHzKJYFBJJVFZqSZkhaq7U7gamW27a+mDvyzb3qtty9nw6PP9zzvO853/O/z1Hhh2E795qtse7Cl1ugcyWsyIGS7gvI3J3i9tqyd0tbmtC3l/HwYZsKL7eEh5Sgenjo0hfssxubMeFPFo72okPj+DGngwACh+XEjEqRFJIGDNgA4G+fsyYEG03pvRQ9OKGKz0l+0uNgf9gD0iuwJ2qCtSaVDJSVpM2bxEAy0+f4KWuAehZIUvUfmxGrUkFoGDbLubHTgYg+dRxXn3QOW5ACnOiYjiQvIIgP380l847Otx1A8M9lUweowZg/ey5LhtweA+UvK6i4csnAJbGJw6egVDVCAq27WJxXILIHVm+ho1J8zh3/y4AMlmvf4vDkEyBr6eXuJEEJI6bQN3njxwtusKhlFUEePtYxety8vGQW3/Trb2ZtHa0k3BYY1fHqWP4y2SkuLyMNoNe5AwmozNTSRuo/dSCWpNK/t/lhp5jePDqRQBytDfENoC+s5OHb6sprXlNa/tPka9srOdxbY2kAYdPgYCfvwyoLGqB3tjJ5vxcwLoOZBUV9lkHXKqE0aPDxPb7b1+dmsNhAyN8fMV2UnQMAKbuLmpampwy0GcKvBRKVBaCF7drMHV3kZiZzszIiYwLCgbgTXMTpu6uf2vg5NpNrJw2i2EWx8rf2xuz2YyXQsmxletE/tqzR06J92mgzaC3Egfo/v2b5h/fubpzH5EhoQA0t35H9+0L2v1ZYr+xgSPF9pkNaRiMRs7eu422qmLgBmpammgz6Hmpe0dlYz3lDXW80NWTvW4LS+Kmiv2ytcV4KhTEhI2xO4+QpgCLVA7IwM2Kp1x//gSz2frGllVUyBR1BCH+KvJK7lBcXsbCSfFS0/QLp+6EC2LjCA5QcfnRA6eFBThViEqqq1wWFiC391xyF3S5BbIhvxPKBSfuFhY05baEO8XB5nUswJ3P8z8Nl/32YmFbXwAAAABJRU5ErkJggg==">
-<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAALRElEQVR4nO3deVAU2R0H8CcMg1wqqBEEBF2UQ0RA1wN0UbfMrkehJpq1UKOJrtFNPBYt140pa4tNrN2tbGLtmnggui7EY9V4xMrC4iJRPBAYPCJyzgyCnHIMMDPMMEf+IEVRDr+hG6Z76Ne/z18y/eb1D+rre90z3a+HBezaTBDqi4O9C0BDF4YDgTAcCIThQCAMBwJhOBAIw4FAGA4EwnAgEIYDgTAcCIThQCAMBwJhOBAIw4FAGA4EwnAgEIYDgTAcCIThQCAMBwJhOBAIw4FAGA4EwnAgEIYDgTAcCIThQCAMBwJhOBAIw4FAGA4EwnAgEIYDgST2LsD+fjlvYdLqdQwbv59yJPPpIy7LGUJw5EAgDAcCYTgQCMOBQBgOBOL1bGXJ9BlHf7Wdhx0ZTKagxK3c9Z/2QeK8KWHc9Q/56WcHS+tqeNsdjhwIhOFAIAwHAmE4EAjDgUAYDgTCcCAQhgOBMBwIhOFAIAwHAmE4EAjDgUAYDgTi9Sv7m/99HHVgN7Q1ccmKDfMWMuzqX7KHBy+ftU1Z7G07ddTJ0bHfZkHjfC7u/Ih5t3eKn+1MTbbSoE2rYd7b4PEaji6joUXdAW3V6vXMu9IZuqx0xbWOTi2TZiqNmlW3eqPRjr+UJZxWEAjDgUBiCYfHcJeN8xddSzww2t3D3rUIBv13vEX4B66LjYuPnu0ilRJCdr0bf/DSP+xdlDBQGw5XqXN89Kz18xaE+wX0fj1h7lunsjOVrxrsVZiAUBiOEB+/hNi4n82c4z7cxXKrxNFx77JVvztznP/CBIeecEglkmWRM9fFLpg5Mch6y+VRbybfynj8QslLXQJGzwGpi1T66ep1/Saj28fxa7iuhwL0hEOl0Zy+/SPDxnOCguNCwzmthwL0hIMQkpKdqdZ1Mmy8Z+lKLmuhAVXhaNWov2E8eET4By4Oj+SyHMGjKhyEkJPZmWqdjmHjxCUrhg0bxmk9gkZbOFrUHd/eyWLYONTXf+n0GZzWI2i0hYMQknwrQ6NnOnh8uGSFowOFfwSboPDv0qzuSM25xbBx0Dif+OjZnNYjXBSGgxCSkp2pNxgYNo4KnMRpMcJFZzga2lSX8+7ZuwrBozMchJATWRkms9neVQgbteFQNNanP5HZuwphozYchJBjN7+3dwnCRnM4nlQpc0qL7F2FgPH9lX1CTNyhX2wYfD+rZ8WunhVr+frKvx56VCnv+fHYzXS7LPtHB5pHDkJITmlR0csqe1chVJSHgxBy+vZNe5cgVPRcCQa5Lnv4cfwaLzd323ab8v7Ot6dG2LbPt6dGKA+fhLbGJn30srnJtnu0jv6RQ9fVde7ef+xdhSDRHw5CSGpOtsFksncVwiOKcNSpWtIfF9i7CuERRTiI7Q5LTWIagcQSjgJFxdOqysH302U0Dr4ToRBLOAgh5+7b4LDUgOGg0rWCh8yvEINgOOik1nXeKMwbZCddJgwHpS7l3n3tlfZOrbyhjnkPOHJQK09RXtPS3P3vOlXLoesX536y715ZMfMeRHVAyvfH521aTUV93/9TR3t4jHJ1Y9hPe6e2QaWyfF1n6LLyLrPZfE2Wuzg88nhW+tX83C6jgRAywsWV4U6JyEYOvsNxozAPmvh/H79m66J3GPaT8US29+zpARTwdcaNL27809zrCkKPvlZqgGA4aGZ5wsJq5FDxu9ijfYkuHJY8XJiOHGazuWf1yLrWZmh+7CGVSPxHj2FeiUavq21pgbbyP2hhOMgIxuFo02p7rmg/cDGt3/ZTvMf/sD+JeSX3y0o2J3/FvD3XxHW2Ykni4DDWYyTDxi2aIbSCLA/EHg4fTy/m98q2DqXlhXkg9nD4e7E4JmhRs1uuWuhEH47RY5k3bmW5lrnQiT0cfl6jmTceUqvW80Ds4ZjAZuRoaGvlrJChSOzhiJgQyLxxeV0tZ4UMRaIOh6eb+8Sx45i3r2Dz/S0FRB2OqAAWy7YYjMaqpkbuihmCxB0ONmv6KBrrxXZ/g6jDER34BvPGYptTiJjD4ezkFMlmWqmoF9fRKBFzOBaFRbg5OzNvjyOHiMRHz2LV/nlNNUeVDFkiDYeb8/BFYSzukW/qaC8WXzjouZ5D4uAwxcc3MmBibWvLraKn1hu/GxHt7OTEvPOckiKz+NYmFHY4AsaMnT5hYmTAxOkTJk318x/uJCWEnLt/u99wrJjBbtXi2yXPBl6lYAk1HIumTn986KuRrn1c/ukzytP6e8P9AuYHs1so7G7Jc1bt6SDUcFhZqcd7ZD/h2LN0JasnaZTW1dSpwEs7KUbhAam31ZEjOvCNhWHTWHV4p1iMcwoZCiOHp5t7sI9vmK9/zJQQm3Q4ytXNRSrV6vV9bt27bBXbDsV5wEH4D4fEwWHST7xDxvuFjvcP9fULGe/X7ywwAN4jPRWN9Zavx0wOiZnMLoJtWs2D8hIb1SUwPIVjedSbC0Onhfr6T/b2cXLkfKfeo/oIh8dwl8/XbmLb1dWCXF2XtVssKcZTOOYEBf98Vgw/+yLACctnazeyusWo24UHd2xRkSDxdEDK82fPllNVQkzcssiZbPt5Vv3iWfULGxUlPDyFo4TfcLw2cgT7+B5c9d4A+jlxK8NGFQkST+Eorn3Jz4669T6bHeHi+rdN27o/PGWl8lXj4FcCEjSejjk6OrXVza/82NxBNBg9I4ebs/OZ3+wOGuczgE6O/fi90WQihLw3Z/7AniDJ9kTM18srISbOepumjvYMvh4yxN+p7POaah7D4UUIcZFKT27ZMbDn+1U1vbr08P9PiTu4ai2rKz8GLMTHr9/njRQq5byFg79PSEt4nFm83Ny9R3qe++3euSw/1ejx6dUL3ev+iBl/IwcP10OodZ0ypTxfXtbYrrqwY1/AGBY3LPWWU1r0w9NC29YmRHxOK5w8FKe2tTlPXp4vL8tXlBfXVJvM5sXTIr9M+DWr9Xp6MxiNn1w+Z9siBYq/cCgbG3RdXawusemT0WQqqX2ZJy/LV5Tny8trW5t7Njk5SvYvW8V8YbE+ffnvq+Xiu5a4T/yFw2gyldbVTPMPGMB71Trdo0p5nrysQFEuU8rVuk7LNlGBkz5fu2mK9/jBFJlbXnI8K30wPdCE1y/eSmqrmYfjRVNjoVIuU1YUKCqe11QZrd5QlBDz1h/XbHBgc5WGpTatZndaCj6quAev4bD+IbpGr3v6QilTymXKCpmyoqmjnXnPV/IfLAyLWBweOeDajCbT7tSTvScpxGs4LE9YFI313cNDYaW8uKba+vBghVav337q739Zv4XtDQc9kq6czyp6MrD30orvkUOt63xUqZApKwqV8sJKuQ2XQzGYTLtTk50lknciotm+NyU788ydLFtVQg1ew9Hc0T5t/w7uJnWT2bzj2xOp2z6cHRTM/F1XCx786dp3HJUkaHxfQ8r14Z7eYNhy8shzxg8avph7NxEPQgEUXmDc3qndePxwQ1sfy+a/Ju1u9r7z32AyIBSGgxDS0Kb64PRRK+tBm83mw+nX/3AxTYT3sTFHZzgIIfmK8qQr5/vcpNbptp8+ejj9Os8lCc6wgF2b7V0Dhw5v2LJyxpzer1S+atyacoTPr4iFi9qRo9vBS2frVa09P15+eG/5n5MwGQxRHo42rebAd6mEkMY21Zbkr/ecPdXeqbV3UYJB+bTSbX3sghuFeWJbnHrw7H87JA/S7mbbuwRBonxaQYOB4UAgDAcCYTgQCMOBQBgOBMJwIBCGA4EwHAiE4UAgDAcCYTgQCMOBQBgOBMJwIBCGA4EwHAiE4UAgDAcCYTgQCMOBQBgOBMJwIBCGA4EwHAiE4UAgDAcCYTgQCMOBQBgOBMJwIBCGA4EwHAiE4UCg/wGCkozJCNnWRAAAAABJRU5ErkJggg==">
-<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogIuaciOePreihqOeuoeeQhuezu+e1sSIsICJzaG9ydF9uYW1lIjogIuaciOePreihqCIsICJkZXNjcmlwdGlvbiI6ICLmn6XoqaLorbfnkIbluKsv55eF5oi/5Yqp55CG55qE5pyI54+t6KGo77yM5Lim5Y+v5LiK5YKzUERGL0V4Y2Vs6Ieq5YuV5Yyv5YWlIiwgInN0YXJ0X3VybCI6ICIuIiwgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNGNEY3RjYiLCAidGhlbWVfY29sb3IiOiAiIzFGNkY2MyIsICJpY29ucyI6IFt7InNyYyI6ICJkYXRhOmltYWdlL3BuZztiYXNlNjQsaVZCT1J3MEtHZ29BQUFBTlNVaEVVZ0FBQU1BQUFBREFDQUlBQUFEZHZ2dFFBQUFMcUVsRVFWUjRuTzNkZTFTVWRSN0g4ZDhBd2d3TWR6VkJicWFwdElWRmlzbFdkdHZNTksvYnhjbzllN3E0NWVsZ1I5dlQyVDFkVDdXYjNZNmIyZVpsTmROMFczVjFFeXZGR3hKcGdPQlNKZ296aklJd3d4MWhrR0dHZWZhUFdRbTVETTh6MzNubWdkL3plWjMrU0hqbTkvdzg1KzN6UERQelhEU0p5NTVpQUo3eVUzb0NNTFFoSUNCQlFFQ0NnSUFFQVFFSkFnSVNCQVFrQ0FoSUVCQ1FJQ0FnUVVCQWdvQ0FCQUVCQ1FJQ0VnUUVKQWdJU0JBUWtDQWdJRUZBUUlLQWdBUUJBUWtDQWhJRUJDUUlDRWdRRUpBZ0lDQkJRRUNDZ0lBRUFRRUpBZ0lTQkFRa0NBaElFQkNRSUNBZ1FVQkFnb0NBSkVEcENRdzZ3WUZCdDQ2YklINzVNa3YxaGZwYStlWXp5Q0dnbmtaRlJHNWNraUYrK2JmLzg2LzFSdzdJTjU5QkRyc3dJRUZBUUlLQWdBUUJBUWtDQWhJRUJDUUt2STBmRlI1NTRvMzNmTG5HNXpldnpTektsM1VWejkwejg2VUhGOHE2Q2pkTWRUVjN2dlZuUlZhTkxSQ1FJQ0FnUVVCQWdvQ0FCQUVCQ1FJQ0VnUUVKQWdJU0JBUWtDQWdJRUZBUUlLQWdBUUJBUWtDQWhKbHJzcHdPSjF1ZnV1djBXZzBHdkdqT1FYQktRamtTWkVJVEhEL2wrcWlZY3pmVC9LL1cvZURPOFd0V2c0S0JHUnViaHkzZkltYkJiWXVYWDdiK092RkQvakg3WnQyNVgxUG5oZkpwNGUrL2ZUUXQyS1dqQXpSRjcyOVN0TGcrY2JTaHo1YTZjbTA1SWRkR0pBZ0lDQkJRRUNpMG9DQ0E0TWV1ZlgyVll1ZjlwTnl0QTY5cWU3YStCdmlFaGROdTMzZTVGdERnclNNc2UvT250bVpsNnYwcElZd3RRUVVFcVNkZTB2YW85UHVTSWxQNnY3ekZRL015eXpLYjdkM0tEU3ZJWS8vZ0ZMaWt4YWwzekVuZFdwSVVGRHYzOFpFUkQ0NS9kNVBEbjd0KzRueGdkdUFRclc2dWJkTWZUeDlldkxvZVBkTExyMTM1ajlQNURTMHR2aG1ZcHpoTXlEdHNNRHNsLzhTcFE4VnM3QmVxOHU0Yi9ici85NHU5Nnk0eE9lN3NIWjd4dzRwaDhaUC9Qck9wT0VqNVpzUHgvZ01pREcyOXZEK3RnNmJ5SVVEL1AyWFB6QlB6dWx3aTl1QUdscGJOdWNjRnIvOGd6ZFBtUmdUSjk5OGVNVnRRSXl4ZFlmM1cyM3RJaGZXYURRcnNCR1NqdWVBR3EydG54MDdKSDc1Mzl4NDA2U0VNZkxOaDBzOEI4UVlXMy9rUUd2N1pmSEx2emhydm55VDRSTG5BVFcxV1RkbVM5Z0kzVDdoZWtrM2lRYk9BMktNYmN6T3N0ckV2aDFqakdYTW1DM2ZaUGpEZjBCTmJkWnQzMmVMWDM1VWVLUjhrK0VQL3dFeHhqWWNQZERoY0NnOUN6NnBJaUJMYzlOT3BVK2E1cFVxQW1LTXJUMzhUYWR5bHk1d1RDMEJuYStyM1hlcVFPbFpjRWd0QVRIR2NOS1BISlE1bldOMFZIVHVxMTY3ME9tRHg1Nzg0TEVuZS8vODFaMWZmUDdka2E0L2xsUlZIdjY1K083clU3eTFYbUNxMmdJeHhrUmUrd2ZpcVN1Z1BNTzVueTlXS0QwTHJ2QjVScUliLzhqTzZuTi9SN2N3TFYybWthZGNlNTFwMVliK2ZxdnNoYy9xMmdJeHh2WVc1dFhqOUdmdlVWMUFIUTdIMXR5alNzK0NINm9MaURHMk5mZW92UlBmYkhpSEdnT3F2ZFM4dDlCclQzOVMvTlpFeWxKalFJeXhUY2NPZW1zb1IyZW50NFlhaWxRYTBJOFY1MCtkTjNwbEtEc0NVcWZ0eDNPOE1nNjJRQ3FWV1pRbi9wb05OeHhPQktSS1ZwdnRxOEk4K2pqWWhhblg3dnpqM2Y4b0NNS2gwOFZTdjdSWCtTNU1kVjlsZEpkZlhsYlYyQkFiR1dYdmRPd3ArR0hka2YybDVxb0ZVNlpKR2dRQktjQm10NThvTzl2ZmI1Tmo0OE9EZzhXUFpyQ1lhMXVhZS8vYzNOemsvb1dDSUh6eGZYYW9WcmZwMkVITGxZVkR0VHJ4cTJhcTM0VXBFMUJkeTZWSFArNzMwZkZTN3hQOXlhR3ZQYjVQOUpxc2ZUMStFcWFUMEM1anpPYXdlN1pxUHFqNkdLaFBVZ05xYXJQS05KTWhRZFhIUUgwSzFVbmJoVFZaVzEzL1UzdXAyYzErdVV1QXYvL2tNZU1rcmFLbC9mTHB5Z3Y5L2Jha3FsTFNhTjZGZ0hvS2w3Z0ZhclQrZnd0MHJPVDBzWkxUQXk3dndhTU9TcW9xM2V6eGxZVmRXRSt4a1ZIaUY3Ylo3U3Evd3lzQzZpaythcmo0aFJ2Yld1V2J5WkNBZ0s0U0hCZ2s4dGFjTGsxV1ZSOUJNd1RVUTF4VXRLVGxHNjNZQWtFMzhkRVM5bCtNc1VaMXY0ZG5DS2lIK09nUmtwYXZhN2trMDB5R0NnUjBsZVJZYVRkcU5WaXFaWnJKVUlHQXJwS2FORmJTOGdhTFdhYVpEQlVJNkJkaHV1QngxOFJJZW9taEJsc2d1T0tteERHU25oYmQxbUViOEF0LzdpR2dYM2l3L3hMVWZVMFBRMERkM1NJMUlOWHZ2eGdDNnFMWDZ0TEdqcGYwRWh4Qk13VFVaVWJLelVIRGhrbDZpYkVHQVNHZ0srYWxUcFg2a3VJS2t3d1RHV0lRRUdPTVJldEQwOGNuUzNxSnVibXhvcjVPcHZrTUlYeWVVSFpOZUVSS1F0S2toREg2SUsyWVoxbk92bm1LdjUrMGYwdDVobEpQWjhjVlRnS0tETkhmR0o4NEtXR01xNXVSWWVHdW45ZGVhaFlUMElJcDZWTFhtR2M0SjNtV1BPSWhvRGNXTE9ydjNuTERROE1DL1AzZFg3bzFQZm1HU1FsSlVsZWFlKzZNMUpkd2lZZGpJSDMvVjNKcE5KcHJ3aVBjdjl5REJ4VWFMT2J5V292VVYzR0poNERjaTNINzlKMFpLYWtwOFVsU3h6endVNUhuRStMTElOcUY2Ylc2Q1RHeEUyUGp2ZnNFN2xFUi9RYmtwOUVzbnpuWGd6RVAvblRLOHdueFJiR0EvUDM4RW9lUFRJNk5tK2o2THlZdUxpcGEwbmVaSXJtNXltSk82dFFKTWFPbERsamQxRmhrOHM3TnFUamcwNEIrRlpjd2Rld0VWelRqUjhWSy9lVFhNLzA5UUc1RVdQZ3I4eC94WU1BZFArU3EvTDZJM2ZrMG9EbXBhWCs0KzM1ZnJwRXhGdFBYTHN4UG8vbmI0bWVpcFZ5QTRTSUl3bzY4Nzd3eEwwNzQ5Q0Jha1l0dyt3em8rZnRtcFY4MzBZUFJja3ZQNEFQbzdud2EwQmtsQXVwOUVKMDJkdnl5R1hNOEcrM3puQ01ETDZRbVBnM0lZREg3L25aTUk4TWlBcnA5VFJFVm92L29kODlJL2VMQzVaeTVLZ3Z2djY3bTA0RHNuWTR5bjUrRTVhZlJqQWlMY1AyL1hxdjc3TmtYUEg0dTg1cXNmVGdGc1FkZnY0MHZxYXFjR0NQdDBobTZtSWpJNnFZR1hXRGd4aVVaSG54czZISytyamF6S0o4eEZxclYvZmpPYW0vT2J5RHVuOWJUWlhQTzRkZDJiZlBCZkxyejlTZlJTaDFIaDJwMW55MVpsbmJ0ZFI0UHNuTHZUankydHpkZmI0RjhmeHhkMzlveUlpeDh4N0tYS0Z1KzQ2VWxYLy8zcEJkbnhRMEZkbUZ5cjBJUUJFT051YUM4ck1CWVZtQXNEZE1GcjMxcWFVeUVoTHYrOU5EcGRJbzVKMFNkZkIyUXBibXAwZG9hR2FMMzdyQTJ1NzI0d2xSUVhuYlNXSGJTWk9pNmFjYmkyKzU2ZGY0ancveEpmODNOT1lmT1ZsLzB4alE1cE1CM1lTVlZsZE04K2hDdmg0YldscFBsaG9MeXNueGo2WThWNTNzOEFpd3FSUC9tUTAvTXVta3ljUzJsNXFwM00zY1RCK0dZQWdHZElRUmt2TEp2eWplV3Vqa2paMDVxMnVzTEZrbTZWVlNmT2h5T2pDM3JWWDRUTy9lVTJRS0pYOWhxc3hWZktDODBHUXBOaGlLVHNVSEVEWjBXMzNiWG03OTluRERCWDZ6TTNIVUdUM2wyYXpBR1ZGNXJLVFFaQ2szR1FwUGhYUFZGcVcrZXQrWWVIUjBaL2V3OTFHOXRNNHZ5TjJaNzdibDB2Rklnb0hQbUtxY2crSFU3OWFlMS9mS3BDK1ZGSm1PaHlYRHFmRG54dm5HQ0lMeXpkMmRyKytVWFo4MzNlSkFpazNIRnRvMzQzSGxBQ2dUVWJ1OG9yN0VJVEhBVlUyZ3lsSnFydkg2R3pjZFord0lEaG1YTW1PM0JheXZxNjU3ZXNOcG1WL1V6REVSUzVvekVtZSs5M3VHUS9ibkpIMzZ6WjNobzJHUHBkMGg2VlgxcnkrL1hyY0t6NVVWUzVxUjZIOVRqOHNyT3JmdUxDOFV2WDNPcCtlSFZLM0hYQlBFNHZ5cWowK25NMkxKZTVDbk0xVTBORDMrRWVxVGhQQ0RHbU0xdWYyN1Qzd2ZjSlpucWFoNWUvYTZwcnNZM3MrSUcvd0V4eHN6TmpjOXZYdXZtNDRDY2t0TnpQM3dMNTZwNllCQmRGeWFyNDZVbDcrL2IvZEtEQzN2L2FzUFJBMy85U3NLcEdwZnRIUzlzR2Zqc0hOOHJyMVZnNTZ0SlhQYVU3OWVxQ0kxR3MyM3BpdTdmb2xodHRwZDNiTmxkY0VMQldRMTFxdGlGdVFpQzhLY3ZQKy82WXV1SHNyUDN2L3NhNmlGU1VVQ01NVk5kemFwdnY3TFo3Vy91K1hMUm12ZHgwRU9ub2wyWVM0Q2ZYM3owQ054YncxdlV0UVZpakRtY1R0VGpSYW9MQ0x3TEFRRUpBZ0lTQkFRa0NBaElFQkNRSUNBZ1FVQkFnb0NBQkFFQkNRSUNFZ1FFSkFnSVNCQVFrQ0FnSUVGQVFJS0FnQVFCQVFrQ0FoSUVCQ1FJQ0VnUUVKQWdJQ0JCUUVDQ2dJQUVBUUVKQWdJU0JBUWtDQWhJRUJDUUlDQWdRVUJBZ29DQUJBRUJDUUlDRWdRRUpQOERrSGE0TDZZbnBLSUFBQUFBU1VWT1JLNUNZSUk9IiwgInNpemVzIjogIjE5MngxOTIiLCAidHlwZSI6ICJpbWFnZS9wbmcifSwgeyJzcmMiOiAiZGF0YTppbWFnZS9wbmc7YmFzZTY0LGlWQk9SdzBLR2dvQUFBQU5TVWhFVWdBQUFnQUFBQUlBQ0FJQUFBQjdHa090QUFBZm9VbEVRVlI0bk8zZGFYaFY5WjNBOFh0dlFpQmhTVmdDU1VoQ0FJRWdDa2dWZ3dxdEM0dWdBb3FJZGhGYW9WcTEwcXJWYVR1ZDZjeFliYTNXRlFWRnBJcWlPQlVaUlRESXZvZUVzQVFDU1c0U0VySkFEQ1NCckhlWkZ6Q09Xa2p1dlRubi9NODV2Ky9uOFkyUW5QOVBIN2pmbk4zWjc1R2ZPUUFBOHJoVUR3QUFVSU1BQUlCUUJBQUFoQ0lBQUNBVUFRQUFvUWdBQUFoRkFBQkFLQUlBQUVJUkFBQVFpZ0FBZ0ZBRUFBQ0VJZ0FBSUJRQkFBQ2hDQUFBQ0VVQUFFQW9BZ0FBUWhFQUFCQ0tBQUNBVUFRQUFJUWlBQUFnRkFFQUFLRUlBQUFJUlFBQVFDZ0NBQUJDRVFBQUVJb0FBSUJRQkFBQWhDSUFBQ0FVQVFBQW9RZ0FBQWhGQUFCQUtBSUFBRUlSQUFBUWlnQUFnRkFFQUFDRUlnQUFJQlFCQUFDaENBQUFDRVVBQUVBb0FnQUFRaEVBQUJDS0FBQ0FVQVFBQUlRaUFBQWdGQUVBQUtFSUFBQUlSUUFBUUNnQ0FBQkNFUUFBRUlvQUFJQlFCQUFBaENJQUFDQVVBUUFBb1FnQUFBaEZBQUJBS0FJQUFFSVJBQUFRaWdBQWdGQUVBQUNFSWdBQUlCUUJBQUNoQ0FBQUNFVUFBRUFvQWdBQVFoRUFBQkNLQUFDQVVBUUFBSVFpQUFBZ0ZBRUFBS0VJQUFBSVJRQUFRQ2dDQUFCQ0VRQUFFSW9BQUlCUUJBQUFoQ0lBQUNBVUFRQUFvUWdBQUFoRkFBQkFLQUlBQUVJUkFBQVFpZ0FBZ0ZBRUFBQ0VJZ0FBSUJRQkFBQ2hDQUFBQ0VVQUFFQW9BZ0FBUWhFQUFCQ0tBQUNBVUFRQUFJUWlBQUFnRkFFQUFLRUlBQUFJUlFBQVFDZ0NBQUJDRVFBQUVJb0FBSUJRNGFvSEFIUTBLbVZnY3M5WVZhdHZQcEpUZmFaTzFlcEFtd2dBN095ZWE4Yk5HSDJ0cXRWbnZQZ01BWUNaY1FnSUFJUWlBQUFnRkFFQUFLRUlBQUFJUlFBQVFDZ0NBQUJDRVFBQUVJb0FBSUJRQkFBQWhDSUFBQ0FVQVFBQW9RZ0FBQWhGQUFCQUtBSUFBRUlSQUFBUWlnQUFnRkFFQUFDRTRvMWdvWmg3L1FTRjc1bXlscExxcXZ2ZWVGbjFGS2FRbXBENDRvL25xcDdDYmg1L2I4bitraUxWVTFnVkFRaEZiTmZvSWZGOVZVOWhEZUd1TU5Vam1FV25EaEg4c2RGY1pNZU9xa2V3TUE0QkFZQlFCQUFBaENJQUFDQVVBUUFBb1FnQUFBaEZBQUJBS0FJQUFFSVJBQUFRaWdBQWdGQUVBQUNFSWdBQUlCUUJBQUNoQ0FBQUNFVUFBRUFvQWdBQVFoRUFBQkNLQUFDQVVBUUFBSVFpQUFBZ0ZBRUFBS0VJQUFBSVJRQUFRQ2dDQUFCQ0VRQUFFSW9BQUlCUUJBQUFoQ0lBQUNBVUFRQUFvUWdBQUFoRkFBQkFLQUlBQUVJUkFBQVFpZ0FBZ0ZBRUFBQ0VJZ0FBSUJRQkFBQ2hDQUFBQ0VVQUFFQW9BZ0FBUWhFQUFCQ0tBQUNBVU9HcUI3Q2tQNjFhOGFkVks3VGQ1dktISGsrN1pJaTIyd3pLSHo1YTl2ZXRHeFFPWUh2WnhlNlUrZmNadk9oZjc1a3pZL1MxQmkvNnoxNVlzK3FGTmF0VVQ0SHZZZzhBQUlRaUFBQWdGQUVBQUtFSUFBQUlSUUFBUUNnQ0FBQkNFUUFBRUlvQUFJQlFCQUFBaENJQUFDQVVBWUNwOWVzVisvaVU2U09TKzZzZUJMQWhuZ1VFTTRvSUQ1ODRmTlNzdExIWERFcDFPcDJqQnc2Kzg2VS9xeDRLc0JzQ0FITkpqVStjbVhiZDdWZU5pWW5xL1BVdlhqVmcwUGpMUjZZZnlGWTNGMkJEQkFDbTBMbGpwMXV2dUdyV21MRWordzI0NEJmOHk2MHpOdVRzOS9oOEJnOEcyQmdCZ0dKWHBBeVlsVGIyMWxHam95STZ0dkpsQTNySHpSb3o3dDF0RzQyYUM3QS9BZ0ExdW5mdU12M0t0RmxqeGcyT1N3andXMzUxODlTUDkrdzgyOVNvNjJDQUhBUUFobkk2bmRjTVNwMlZObmJpOEZFUjRjSDk4ZXZacGV2UGI1ajAvT2NyOVJrTkVJY0F3Q0J4MGQxbmpMN21yclN4U1QxN2hieVJ1ZGRQV0xaOVkyWE5hZTNtQXVRaUFOQlh1TXQxL2JEaHM5TEcvV0RvWldHdTl0NTNFaGtSOGV1YnB6NnhmS2ttc3dIQ0VRRG9KYVZYNzd2U3hzNFlmVTFzdDJnTk56dGo5TFdMTjZZZnJTalRjSnVBVEFRQUd1dllvY09rNGFObXBZMU51MlNJMCtuVWZQdGhMdGZqdDl3Kzk4MVhOTjh5SUEwQmdHYUc5azI2NitycnBsODVKam9xU3RlRnhsODJjdlNBUWJ2ZGVicXVBdGdlQVVCN2Rla1VlZHVvcSs1S0d6Y2lPY1d3UlorOGJjYnRMenh0MkhLQUxSRUFoQzQ2S3VyM1UrKzY1WXFySWlNaURGNTZWTXJBaWNOSHJkMmZaZkM2Z0ozd05GQ0VycmFoNGZLa2ZzWi8rcC96eEMyM2g3ZjdzaUpBTXY3K0lIUit2Lzg1ZGJkbERlZ2ROelB0T2xXckF6WkFBTkF1NlFleTl4MHJVclg2L0VsVFZlMS9BRFpBQU5CZXo2MytXTlhTdmJ0RjMvZURDYXBXQjZ5T0FLQzlOdWZtWktpN0luUGVEUk8vK2VZQUFJRWpBTkRBYzZ0WHFscTZhNmZJZVRkTVZMVTZZR2tFQUJyWW1YOWsyOUhEcWxhZlBlN0dubDI2cWxvZHNDNENBRzBvM0FtSWl1ajQ0UGpKcWxZSHJJc0FRQnRaUlFYckQrMVh0ZnFQcnIwK1BxYTdxdFVCaXlJQTBNenpxejlSdFhSRWVQaEQ0NmVvV2gyd0tBSUF6UndzTFU0L2tLMXE5WGErYWdZUWlBQkFTeStzWGFWcTZmQ3dzUGtUYjFPMU9tQkZCQUJheWlrOWxuNHdXOVhxMDY1TUc5Z25UdFhxZ09VUUFHanN4VFgvbzJycE1KZnJWNU9tcWxvZHNCd0NBSTBkTEMxV3VCTXdaZVNWcVFtSnFsWUhySVVBUUhzS2R3S2NUdWVqTjA5VHRUcGdMUVFBMmxPN0V6RCs4cEVqa3Z1cldoMndFQUlBWFNqY0NYQTRISTlObnFad2RjQXFDQUIwY2JDMGVGM09QbFdyajAwZE5ucmdZRldyQTFaQkFLQ1hGOWNvdXlmQTRYQThObVc2d3RVQlN5QUEwTXVCa21LRlR3Y2FQV0RRMk5SaHFsWUhMSUVBUUVjTDBsY3JYUDJ4eWRPZERxZkNBUUNUSXdEUTBaN0MvTjBGUjFXdFBpSTVoWjBBb0JVRUFQcDZKZjB6aGF2MzdoYXRjSFhBNUFnQTlMVTVOK2RnYWJIcUtRQmNBQUdBN2w1VmVpWUF3TVVRQU9odTdmNHM5NGtLMVZNQStDNENBTjM1L1A0RjZ6NVhQUVdBN3lJQU1NTEt6SjFscDZwVlR3SGdXd2dBak9EeGVoZHRXS3Q2Q2dEZlFnQmdrT1U3dGxTZnFWTTlCWUQvUndCZ2tNYVc1amMzcHF1ZUFzRC9Jd0F3emp0Yk41eHBiRkE5QllEekNBQ01VOWZZOFBldEcxUlBBZUE4QWdCRExkNlkzdGpTckhvS0FBNEhBWURCdmpwVDk4SE9yYXFuQU9Cd0VBQVliK0g2TlI2dlYvVVVBQWdBREZkMnFucGw1azdWVXdBZ0FGRGh0UzgvOS9uOXFxY0FwQXRYUFlDMURld1RGK2JVSnFLUkVSMDEyVTdJK2tUSERJNUxhTThXamxhVUJmaVZCWlVWYS9kbjNUemllKzFaRGtBN0VZQjJXZkhMSjN0MDdxSjZDbTA4T0g3S2crT250R2NMS2ZQdkMveUxGNnhiVFFBQXRUZ0VCRFVPbEJSdnljMVJQUVVnR2dHQU1xOTl5VE9pQVpVSUFKVFpucGQ3NkhpSjZpa0F1UWdBVkhwejR4ZXFSd0RrSWdCUWFWWFc3c3FhMDZxbkFJUWlBRkRKNC9XK3ZlVkwxVk1BUW5FWktCUjdiL3VtaHlmY0VxWDZOZ2dqWFR0NDZMSmZQS3A2Q2tQTm4zVGIvRW0zYWJqQnVZdGZTVCtRcmVFR1pXSVBBSXJWMU5ldjJMVk45UlNBUkFRQTZyMjFLWjBuUXdER0l3QlFyN2pxWlBxQnZhcW5BTVFoQURDRk56WndQU2hnTkFJQVU5aFRtSjlkN0ZZOUJTQUxBWUJaTE5uTTlhQ0FvUWdBek9LejdEMG5hMnRVVHdFSVFnQmdGaDZ2OTcwZG0xVlBBUWhDQUdBaXk3WnQ1SFhCZ0dFSUFFemtSRzNONS9zeVZVOEJTRUVBWUM1THQ2eFhQWUptdUxzTkprY0FZQzU3Q3ZOelNvK3Bua0liQkFBbVJ3QmdPcmJaQ2ZEN2ZhcEhBRnBEQUdBNm4yVHRPblgyak9vcE5PRDFzUWNBVXlNQU1KMm1scFlQZG01VlBZVUdmT3dCd053SUFNem8zVzBiL2RZL2dNNDVBSmdjQVlBWmxWWlhiVDF5U1BVVTdXV0Roc0hlQ0FCTTZuM3IzeFhNSGdCTWpnREFwTDQ0bUYxOXBrNzFGTzNpOVhFT0FLWkdBR0JTSHEvM285M2JWVS9STGh3Q2dza1JBSmlYMVk4Q2NSVVFUSTRBd0x3S1QxYnVMamlxZW9yUWNRNEFKa2NBWUdxVzNnbmdIQUJNamdEQTFGYnZ5NnlwcjFjOVJZaWFQUjdWSXdDdElRQXd0YWFXbG8vMzdGQTlSWWlhV2xwVWp3QzBoZ0RBN0ZiczNxWjZoQkExZTlrRGdLa1JBSmhkVHVteEkrWEhnLzJ1b3FvVHYxL3hya2ZwVVhnT0FjSGtDQUFzNEI4WlFSd0YybmVzOElFbHI5M3cxTzlXN040VzdsTDJKN3paNCtFK0FKaGN1T29CZ0xhdHpOejV4SzEzdUp6T1ZyN0c3L2R2UEh6dzlmVnJkdVVmT2ZjcjNTS2pESm51d3BvOW5BQ0EyUkVBV0VCbHplbnRlWWV2RzN6cEJYL1g0L1Yra3JscjRmbzFSeXZLdnZuclhUdEZHakxkaFRWeC9BZW1Sd0JnRGFzeWQvOXpBTTQyTmI2M2ZmTmJtOUxMVDUvNjUyOWhEd0JvSFFHQU5hdzlrUFhVekI5MUNEdi9KL1pFYmMyU1RldmUzYmF4cnJIaFl0L1NOVkxsSGtBajE0REM5QWdBcktHbXZuNXo3cUViaHcwdnFLeFl1SDdOeDN0MnRyUjFrV1UzcFllQXVBUUk1a2NBWUJtTE4zNnhmTWZtZFRuN0FyeTZSdTBob0NZT0FjSDBDRUM3alByZGZLMDJ0ZnloeDlNdUdhTFYxa0x3aDQrVy9YM3JCb1VEdEdsN1htNVFYNi8yRUJCN0FEQS83Z09BYmFuZEE2aHZhbEs0T2hBSUFnRGJVbnNaYUcyRFZaOWhCemtJQUd4TGJRRE9ORFVxWEIwSUJBR0FiWFdMVW5rSXFLN2hvdGVuQWlaQkFHQmJhaThEUFhQeEd4UUFreUFBc0MyMUo0RmJ1VU1OTUFrdUE0VnRxVDBIMEVvQXNvdmROei83UjJQRytQWE5VOGRmTnRLWXRWcXhiTnZHZDdkdjBuQ0RKVjlWYWJnMXNRZ0FiRXZ0ZlFDdG5BTTQyOVIwK0hpSk1XUFUxSjgxWnFIV25heXJOZXcvR1lIakVCRHN5ZVYwZGxGOERvQ3JnR0IyQkFEMjFMTnJ0OWJmSDZDM3VrYnVBNERaRVFEWVUxeDBqTm9CNnRnRGdPa1JBTmhUWEV4M3RRTndGUkRNandEQW51S2lGUWZBSkdkZmdWWVFBTmhUdk5JOWdMckdCcDRHQ3ZNakFMQ25Qa3JQQVp5c3JWRzRPaEFnQWdCN2lvL3BvWEQxcXJwYWhhc0RBU0lBc0NlMVZ3R2RKQUN3QWdJQUczSTZuZXdCQUcwaUFMQ2h1T2lZeUlnSWhRTVFBRmdDQVlBTjlZL3RvM1lBQWdCTElBQ3dvUlFDQUFTQUFNQ0dCdlJXSEFCT0FzTVNDQUJzcUg5c25Ob0IyQU9BSlJBQTJGRC8yTjVxQnlBQXNBUUNBTHNKZDdtU2U4WXFIS0NtdnI2eHBWbmhBRUNBQ0FEc0pxbG5iSGhZbU1JQmpuMTFVdUhxUU9BSUFPeG1hRUtpMmdFSUFLeUNBTUJ1TGt2cXAzWUEzbGNPcXlBQXNKdGhmWlBWRHNBZUFLeUNBTUJ1VExBSFFBQmdEUVFBdGhJWDNiMW5sNjVxWjJBUEFGWkJBR0Fyd3hLVDFBN2c4L3VQbjZwV093TVFJQUlBVzdrc1VmSHhuL0pUMVI2dlYrME1RSUFJQUd4RmVRQTQvZ01MSVFDd2xlLzFINmgyZ0pKcXJnR0ZaUkFBMk1lZ3VJUWVxczhBY3hNQUxJUUF3RDdTTGhtaWVnUkhmbVc1NmhHQVFCRUEySWNaQW5ENGVJbnFFWUJBRVFEWXg5VURCNnNkb0tHNW1aUEFzQkFDQUp1NHBFOThyNjdkMU01d3BMelU1L2VyblFFSUhBR0FUVnh0aHVNL1phV3FSd0NDUUFCZ0UyTk1FSUJjQWdCTElRQ3dnM0NYYSt5UVlhcW40QXd3TElZQXdBNUdEeHdjSFJXbGVncEhidmx4MVNNQVFTQUFzSU1KbDEraGVnUkgyYW5xMm9aNjFWTUFRU0FBc0FNekJJQXp3TEFjQWdETHV5eXhYMEwzSHFxbmNPU1djUUlBRmtNQVlIbmpMeCtwZWdTSHcrRTR4QmxnV0EwQmdPVk5OTUh4SDRmRHNhY3dYL1VJUUhBSUFLeXRYNi9ZMUlSRTFWTTRpcXRPVnRhY1ZqMEZFQndDQUd1Ny9hcHJWSS9nY0RnY0dlNmpxa2NBZ2tZQVlHRXVwL1BPMGRlcW5zTGhjRGgyRitTcEhnRUlHZ0dBaFYwNzVGSXpYUC9qY0RneTNBUUExa01Bb0wySThIQmpGcnJyNnV1TVdhaDFKMnRyQ2s5V3FwNENDSnBCZjFGaGIxMDdSVjZlMUc5RWN2L2h5U2tqa3Z0bkZSVTh0SFNoM292R1JIVTJ3LzFmRG9kak56Lyt3NW9JQUVMUnNVT0hTL3NtalVqdVB6d3BaV1MvL3Yxait6aWR6cTkvdCt4MHRRRXpUTHN5emJCZGpkWngvQWNXWllxL1B6Qy9jSmRyVUh6ZkVVa3B3NVA3ajBoT0daS1FHTzY2NlBIRCtPanVCb3cwMHh6SGZ4d094KzRDTGdHQ0pSRUFYSmpUNlV6cDFmdnJvenJERXBNNmRZZ0k4SHY3eEhSM09aMjZ2aHRyVk1yQVMvc202YmY5d0oxcGJPQTFBTEFvQW9Eem5FNW5mRXozY3ovZ0QwOU9HWjZVMGkweXhBY3NoN3RjdmJwMk8xRmJvKzJFMy9UQWpUZnJ0L0dnWkxqemVRMGtMSW9BNEx6ZlRaMzV4enZ1MFdwcjhUSGQ5UXZBSlgzaWI3cHNoRTRiRDliNlEvdFZqd0NFaU10QWNaNjJKMVRqWW5TOFBQLytHeWQ5ODV5eld1c083bE05QWhBaUFnQmRKTVRvZFI0NFBxYjd0TytsNmJUeFlPV1VIaXMzNUpJblFBOEVBTHFJMHkwQTkvMWdRbmhZbUU0YkQxYjZ3V3pWSXdDaEl3RFFSYncraDRCaW9qcmZmYzA0UGJZY0dnSUFTeU1BMElWT2V3Qnp2bjlUVkVSSFBiWWNndkxUMVRtbHgxUlBBWVNPQUVBWGV0d0wxcnRiOU56ckoyaSsyWkNsYy9vWEZrY0FvSXU0bUJqTkw5UjVmTXJ0NXZueDM4SHhIMWdmQVRBTDE4V2ZyR0JGSGNMQ2UzYnBxdUVHaHlVbTN6SGFGTzkrT2Vkc1UrUE92Q09xcHdEYWhSdkIxSWlNaUJnY2w1Q2FrSlNha0pnYTMzZG8zNlNZcU02cWg5SllmRXozcXJwYXJiYjIrNmt6WGFhNTl0L2hjR3c0ZEtERjYxRTlCZEF1Qk1BSVRxY3pxVWV2MUlURW9RbUpReElTaHlZazl1dlYyMVFmWjNxSWkrbCtvS1JZazAyTnYzemttRUdwbW14S0sxOGMyS3Q2QktDOUNJQXV1a1ZHcGNiM1RVMUlURTFJU2szb095UStzWE5IRXgyOE5rYUNSbGVDaG9lRi9mYTJPelhabEZicUdodStPSkN0ZWdxZ3ZRaUFCc0pkcnY2OTQ4Ny9nQitmT0RRaDBTVHZLVlJMcXl0Qlo0KzlzWDlzSDAwMnBaVlZtYnNhVzVwVlR3RzBGd0VJUmErdTNZWW1KS2FlK3ljK2NWQmNna25lVEdJcThWb0VJS1ZYNzBjblQydi9kclQxd2M2dHFrY0FOTURIVnRzNmR1Z3dxRS9DL3gzQjczdHBRbElQVGE5dnNhdjIzd3JnY2pxZnZXZE9aRVNnN3lFd1JtNVo2ZjZTSXRWVEFCb2dBRzI0Y2Rqd1JUOTdLTXhlMTJnYUk3N2R4OEhtZlArbXF3WU0wbVFZRFgyd2M0dnFFUUJ0OExuV2h1S3FrM3o2aHlZdXVudDc3Z1hySDl2bjhTblROWnhIRXkxZXo4ck1YYXFuQUxUQlIxc2JDazlXTm51NDNEc1VFZUhoM1R0M0NlMTd3MXl1NTM3NDA4QmZRbW1ZdGZ2M25qcDdSdlVVZ0RZSVFCdThQbDllUlpucUthd3E1UFBBYzYrZk1DcGxvTGJEYU9LRFhaeitoWDBRZ0xieHl1K1FoWFlyd05DK1NiKytlWnJXczJpZy9IVDF0aU9IVkU4QmFJWUF0TzB3QVFoVkNMY0NkTy9jWmRGUEh6VG5aYlVmN3RyRys5OWhKd1NnYmV3QmhDellRMEJoTHRmTDk4NUw2dGxMcDNuYW84WHJXYjVqcytvcEFDMFJnTFlkTGl0UlBZSlZ4UVY1SzhBVHQ5eHgzZUJMZFJxbW5mNDdZMGY1NlZPcXB3QzBSQURhOXRXWk9nMmZhaWxLVUkvRXVIWFU2SGszVE5Sdm1QYncrbnl2ci90YzlSU0F4Z2hBUUhMTE9Rb1Vpc0RQQVF6dG0vU1hXYlAxbktWZFBzdmVVMVIxUXZVVWdNWUlRRUE0RFJDYUFKOEdFUlBWZWRGUEh6VGJJeCsrNXZmN0Y2U3ZWajBGb0QwQ0VCQXVCQXBOeHc0ZDJyd1hySFBIamt2bVBXTE9FNy9uck12Wnh5NGdiSWtBQklROWdKQzFmaUZRUkhqNEcvYzlmRVhLQU1QbUNjR0NkZno0RDNzaUFBSEpxeWp6K255cXA3Q2tWZ0lRN25JdG1QUEFOU1o3MWRkM2JEdDZlRytSVy9VVWdDN01lTHVOQ1RWN1BPNFRGWVBpRWxRUFlqMXhGN2taMk9WMFB2K2orMjRhTnNMZ2VZTDFhdnBuRi96MUpmTWU2Uk1kWSt3c29UREp1NGwrZU0zM0oxeCtoZDZyRkZlZGVHREphM3F2WWljRUlGQkh5bzhUZ0JCY2JBL2dxWmsvdm0zVWFJT0hDVloyc1h0N1h1NEZmMnRRWEh4aUQvT2V0ekNiMkc3UnNkMmk5VjZGQi9jR2kvOWZnZUk4Y0dndUdJRGZUWjE1OTVoeHhnOFRyTCt0V2FWNkJFQkg3QUVFS3BmN2dVTVMvKzFEUUU2bjgxOXVuVEgzK2dtcTVnbmN1cHg5bXc0ZlZEMEZvQ01DRUNqMkFFTHp6VDJBOExDd1orK2VNLzNLTklYekJLakY2L212ano5UVBRV2dMd0lRcUxKVDFYV05EVjA3UmFvZXhHSytmaHhRNTQ0ZFg1L3ppN0dwdzlUT0U2QTNONlJ6Nnk5c2ozTUFRV0FuSUFTUkVSSFJVVkU5dTNSZC90QnZyUExwWDFseitwWDBUMVZQQWVpT1BZQWdIQ2tySFcyK2Q1U2Jsc2ZueXlrdDNsMlFsOXd6OXBWNzcrL1hLMWIxUklGNmV0VkhaNXVhVkU4QjZJNEFCSUU5Z0RhZGJXcktLaXJZNDg3TGNPZnRMWFkzTkRjUFQwcDUrK2Z6ZTNicHFucTBRR1VXRnF6TTNLbDZDc0FJQkNBSVBCRGlncXJxYWpQY2VSbnUvQXozMFVQSFM3NTV5L1J0bzBZL00rdmVxSWlPQ3NjTGlzL3YvN2YvZmsvMUZJQkJDRUFRanBRZjkvdjlUcWRUOVNEcUZaNnMzT1BPMyswK3VzZWRYM2l5OHArL29FTlkrTDlPditzbjExMXYvR3p0c1h6SGxvT2x4YXFuQUF4Q0FJSnd0cW14cExvcXVhZGxqbVZyeU92ekhUcGVrdUUrbXVIT3ozRG50ZjZHbk1RZXZSYk11WDk0VW9wUjAybWp0cUgrcjZzL1ZqMEZZQndDRUp6Y3NsSTVBV2hvYnQ1YjdNNXc1MlVVNU8wdExnand2T2hOdzBZODk4T2ZSVWRGNlQyZTV2NXI1WWZWWitwVVR3RVlod0FFSjdmc3VBSFB0RkxvUkcxTlptRitabUZCaGpzdnA3VFlFOHd6VU1OY3JzZW1UTC8vaGtsV1BFcTJabi9XaDd1MnFwNENNQlFCQ0k3OUhnamg5Zmx5eTBveml3ck9mZTZYVmxlRnRwMCswVEV2LzJUZTZJR0R0UjNQR0JVMXA1NWN2bFQxRklEUkNFQnc3SEVsYUUxOWZkYTVUL3lpZ24zRmhmWE43YjNtZmViVjEvMSsyc3h1a2RZNzdPTndPUHgrLzZQTDNqcGRmMWIxSUlEUkNFQndpcXRPTkxZMGQrcGcwcmZYWG96ZjczZWZxTXdzeXM4c0xNZ3N6Qzg0VWVIMyt6WFpjbkxQMkdkbTNXdnlsN3EwYnRHR3RkdU9IbFk5QmFBQUFRaU96KzgvVWw0MklqbEY5U0J0cTI5dTJsZGNlTzdZenQ0aXQrWS80WWE1WExQSDNmalk1T21tZlpsN0lISktqLzMxczVXcXB3RFVJQUJCTzFKZWF0b0FISy8rNnV1aitibGxKVUdkd2cxS2FuemluKytlYmRyL0R3RnFhRzcrNVR1TFdyd2UxWU1BYWhDQW9KbnFmdUNtbHBhRHBjZXlpZ3JPSGRNL1VWdWo5NG9kd3NJZkhELzVvZkZUd3NQQzlGNUxiLys1OG9PQ3lnclZVd0RLRUlDZ0tUOFBYSGFxT3F1b0lLdkluVlZVa0ZONnpPQWZZUHYxaXAwMVpxd05QdjNYNWV4N2Ivc20xVk1BS2hHQW9CbS9CL0ROSC9Pemlnb3FhMDRiUE1BMzVWZVdUM3YrVDR2blBqd3NNVm5oR08xVVVYUHFOKysvclhvS1FERUNFTFJUWjg5VTFwenVFeDJqNnlySHE3L0tLaXJZVyt6T0xDdzRkTHpFVk1lcEsycE8zZm5TbjErNmQ5NU53MGFvbmlVVVRTMHQ4OTU4bFp0K0FRSVFpdHl5VXMwRDBORGNmS0NrS0t2SXZiZlluVlZVY0ZML28vbnRVZC9jTk8vTlY1NmErV05Mdk52OU81NVl2blIvU1pIcUtRRDFDRUFvY3N0THZ6LzBzdlp2cDdqcVpGWlJ3ZDZpZ3F3aXQ2NFg3ZWpCNS9mLzlzTjNtbHBhWm8rN1VmVXNRWGp0eTg5NTNEOXdEZ0VJUmNpbkFjNDJOZTA3VnJpM3FHQnZrVHVyMkczMW94Qit2Ly9mLy9GK2s2Zmw1emRNVWoxTFFOWWYydi9zcC85UVBRVmdGZ1FnRklGZkNPVDMrd3RQVm41OTBVNWVSWm5YVWovbUIrTHBWUjgxdFhoK09mRVcxWU8wSWFmMDJNTkxGL2swdWdVYXNBRUNFSXFDeWdxUDEzdXhTeUhyR2h1eWl3dlBYYkdUWGV5dXFhODNlRHpqUGYvNVNxZlQ4ZkFFOHphZzVLdXEyWXRlUE52VXFIb1F3RVFJUUNoYXZKNzhFK1dwOFlubi90WHY5K2RYbG1lZE83QlRWSkJYV2E3VmszWXM1TG5WSzd0MGlweGp5dk1CMVdmcWZ2TDYzMHgrWGgwd0hnRUlVVVpCM29tYW1xeWlnc3lpZ3V3aWQxMWpnK3FKMVB1UGo1ZDM2ZGpwenF1dlZUM0l0OVEzTjgxWjlPSUYzMXNKQ0VjQVF2U3ZIeTFUUFlMcCtQMytKejlZMnJsVHA4a2p2cWQ2bHZOYXZKNEhscnkyNzFpUjZrRUFNM0twSGdDMjR2WDVIdm43RzF0eWMxUVA0bkE0SEI2djl4ZExYdDkwK0tEcVFRQ1RJZ0RRV0l2WGMvK1MxdzRmVi96cU5JL1A5K0RTaGVrSHM5V09BWmdaQVlEMnpqWTF6bDcwWXZucGFsVURlSHkrWHk1ZHVIWi9scW9CQUVzZ0FOQkZaYzNwMlF0ZlZISnUzT1B6elgvbmpkWDdNbzFmR3JBV0FnQzlIQ2svUG0veHF3WS94cTZwcGVXQnR4Wjh1amZEeUVVQml5SUEwTkdPdk56ZmZ2aU9ZY3VkYldxOGQrRUxIUGNIQWtRQW9LOFZ1N2E5dFdtZEFRdFZuejB6NjVWbmQrWWZNV0F0d0I0SUFIVDMxQ2NmYmoxNlNOY2x5azlYMy9uU013ZEtpblZkQmJBWkFnRGRlWDIraDk1ZVdGeDFVcWZ0SHl3dG52NjNwM203THhBc0FnQWpuSzQvZTkrYkwrdnhMTFl2RHV5ZCtkSmZLbXBPYWI1bHdQWUlBQXlTVjFIMnhQS2wybTV6MGZxMTk3KzFvTDY1U2R2TkFrSVFBQmpuMDcwWmIyLytVcE5OZWJ6ZUo1Y3YvZE9xRlR6Zkh3Z1pBWUNobnZwa1Jmc2Z6WGFpdHVidVYvKzZmT2NXTFNZQzVITDJlK1JucW1lQUxJazllbjMyMkIraW82SkMrL1pkK1VjZVhMcXdxcTVXMjZrQWdkZ0RnTkZLcTZzZVhiWTR0Tzk5L2NzMTl5eDRqazkvUUJNRUFBcXN5OW4zN3JhTlFYMUxYV1BEdk1XdlB2TS9IOW52cGNxQUtnUUFhanoxeVllQnY2VnJUMkgrNUdmLytNV0J2YnFPQkVoREFLQkdRM1B6cjk1ZDNPYVA4eDZmNy9uUFY5NzE4bDlLdnFveVpqQkFEZ0lBWmJLTDNhK21yMjdsQzRxcVR0enh3dE12cmYyVXd6NkFIZ2dBVkhwcDdhcmNzdElML3RieW5Wc20vK1dQKzQ0Vkdqd1NJQWNCZ0VvZW4rKzNINzdqLy9iTlhLWFZWVDkrN2Zrbmx5L2xGbDlBVndRQWltVVZGYnkvNC93dFhUNi8vNjFONlJPZStiY3RSL1I5ZWlnQWg4TVJybm9Bd1BIblR6K2FOUHlLcWpOMXYzbi83ZXhpdCtweEFDbTRFeGltTUxSdlVuNUZ1Y0h2andTRVl3OEFwbkQ0ZUlucUVRQnhPQWNBQUVJUkFBQVFpZ0FBZ0ZBRUFBQ0VJZ0FBSUJRQkFBQ2hDQUFBQ0VVQUFFQW9BZ0FBUWhFQUFCQ0tBQUNBVUFRQUFJUWlBQUFnRkFFQUFLRUlBQUFJUlFBQVFDZ0NBQUJDRVFBQUVJb0FBSUJRQkFBQWhDSUFBQ0FVQVFBQW9RZ0FBQWhGQUFCQUtBSUFBRUlSQUFBUWlnQUFnRkFFQUFDRUlnQUFJQlFCQUFDaENBQUFDRVVBQUVBb0FnQUFRaEVBQUJDS0FBQ0FVQVFBQUlRaUFBQWdGQUVBQUtFSUFBQUlSUUFBUUNnQ0FBQkNFUUFBRUlvQUFJQlFCQUFBaENJQUFDQVVBUUFBb1FnQUFBaEZBQUJBS0FJQUFFSVJBQUFRaWdBQWdGQUVBQUNFSWdBQUlCUUJBQUNoQ0FBQUNFVUFBRUFvQWdBQVFoRUFBQkNLQUFDQVVBUUFBSVFpQUFBZ0ZBRUFBS0VJQUFBSVJRQUFRQ2dDQUFCQ0VRQUFFSW9BQUlCUUJBQUFoQ0lBQUNBVUFRQUFvUWdBQUFoRkFBQkFLQUlBQUVJUkFBQVFpZ0FBZ0ZBRUFBQ0VJZ0FBSUJRQkFBQ2hDQUFBQ0VVQUFFQW9BZ0FBUWhFQUFCQ0tBQUNBVUFRQUFJUWlBQUFnRkFFQUFLRUlBQUFJUlFBQVFDZ0NBQUJDRVFBQUVJb0FBSUJRQkFBQWhDSUFBQ0FVQVFBQW9RZ0FBQWhGQUFCQUtBSUFBRUlSQUFBUWlnQUFnRkQvQ3c2WXAwdzU5dnRuQUFBQUFFbEZUa1N1UW1DQyIsICJzaXplcyI6ICI1MTJ4NTEyIiwgInR5cGUiOiAiaW1hZ2UvcG5nIn1dfQ==">
-<meta name="theme-color" content="#1F6F63">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="月班表">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
-<style>
-  :root{
-    --bg: #F4F7F6;
-    --surface: #FFFFFF;
-    --ink: #1E2A28;
-    --ink-muted: #5C6D68;
-    --line: #DCE4E1;
-    --line-strong: #C3CFCB;
-
-    --nurse: #1F6F63;
-    --nurse-tint: #E4F1EE;
-    --assistant: #A9721F;
-    --assistant-tint: #F5EBDA;
-
-    --shift-d: #B4780E;
-    --shift-d-bg: #FBEBCD;
-    --shift-e: #A24B30;
-    --shift-e-bg: #F6E1D8;
-    --shift-n: #34437A;
-    --shift-n-bg: #E3E6F3;
-    --shift-off: #7C8683;
-    --shift-off-bg: #ECEFED;
-    --shift-other: #4A4A46;
-    --shift-other-bg: #EFEEE8;
-
-    --radius: 8px;
-  }
-
-  *{ box-sizing: border-box; }
-
-  body{
-    margin:0;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: "Noto Sans TC", sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  header.app-header{
-    padding: 28px 32px 20px;
-    border-bottom: 1px solid var(--line);
-    background: var(--surface);
-  }
-  header.app-header h1{
-    font-family: "Noto Serif TC", serif;
-    font-size:32.5px;
-    font-weight: 700;
-    margin: 0 0 4px;
-    letter-spacing: 0.02em;
-  }
-  header.app-header p{
-    margin: 0;
-    color: var(--ink-muted);
-    font-size:17.5px;
-  }
-
-  main{
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 24px 20px 64px;
-  }
-
-  /* ---- 類別切換 ---- */
-  .category-picker{
-    display: flex;
-    gap: 12px;
-    margin-bottom: 24px;
-  }
-  .category-btn{
-    flex: 1;
-    max-width: 260px;
-    padding: 16px 18px;
-    border-radius: var(--radius);
-    border: 1.5px solid var(--line-strong);
-    background: var(--surface);
-    cursor: pointer;
-    text-align: left;
-    font-family: inherit;
-    transition: border-color .15s ease, background .15s ease;
-  }
-  .category-btn .cat-name{
-    display:block;
-    font-size:21.2px;
-    font-weight: 700;
-    margin-bottom: 2px;
-  }
-  .category-btn .cat-hint{
-    display:block;
-    font-size:15.6px;
-    color: var(--ink-muted);
-  }
-  .category-btn[data-cat="nurse"].active{
-    border-color: var(--nurse);
-    background: var(--nurse-tint);
-  }
-  .category-btn[data-cat="nurse"].active .cat-name{ color: var(--nurse); }
-  .category-btn[data-cat="assistant"].active{
-    border-color: var(--assistant);
-    background: var(--assistant-tint);
-  }
-  .category-btn[data-cat="assistant"].active .cat-name{ color: var(--assistant); }
-
-  .empty-hint{
-    padding: 48px 24px;
-    text-align: center;
-    color: var(--ink-muted);
-    border: 1.5px dashed var(--line-strong);
-    border-radius: var(--radius);
-    background: var(--surface);
-  }
-
-  .workspace{ display:none; }
-  .workspace.active{ display:block; }
-
-  .panel{
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 18px 20px;
-    margin-bottom: 18px;
-  }
-  .panel h2{
-    font-size:18.8px;
-    font-weight: 700;
-    margin: 0 0 14px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .field-row{
-    display:flex;
-    align-items:flex-end;
-    gap: 14px;
-    flex-wrap: wrap;
-  }
-  .field{ display:flex; flex-direction:column; gap:5px; }
-  .field label{ font-size:15.6px; color: var(--ink-muted); }
-  .field input, .field select{
-    font-family: inherit;
-    font-size:17.5px;
-    padding: 8px 10px;
-    border: 1px solid var(--line-strong);
-    border-radius: 6px;
-    background: #fff;
-    color: var(--ink);
-    width: 110px;
-  }
-
-  button.btn{
-    font-family: inherit;
-    font-size:17.5px;
-    font-weight: 600;
-    padding: 9px 18px;
-    border-radius: 6px;
-    border: 1px solid transparent;
-    cursor: pointer;
-  }
-  button.btn-primary{ background: var(--ink); color: #fff; }
-  button.btn-primary:disabled{ background:#B8BEBB; cursor:not-allowed; }
-  button.btn-ghost{ background: transparent; color: var(--ink-muted); border-color: var(--line-strong); }
-  button.btn-danger{ background: transparent; color: #A24B30; border-color: #E3C4B7; }
-
-  input[type="file"]{ font-family: inherit; font-size:16.9px; }
-
-  .upload-note{ font-size:15.6px; color: var(--ink-muted); margin-top: 8px; line-height:1.6; }
-
-  /* ---- 匯入預覽區 ---- */
-  .import-preview{
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px dashed var(--line);
-    display:none;
-  }
-  .import-preview.show{ display:block; }
-  .import-warning{
-    font-size:16.2px;
-    color: #A24B30;
-    background: var(--shift-e-bg);
-    border: 1px solid #E3C4B7;
-    padding: 8px 12px;
-    border-radius: 6px;
-    margin-bottom: 12px;
-  }
-  .import-actions{ display:flex; gap:10px; margin-top: 14px; }
-
-  /* ---- 班表格 ---- */
-  /* 手機用需要「上下左右都能滑、重要欄位/列都凍結」，
-     所以限制捲動容器的高度，讓表頭(上)和員編/姓名欄(左)都能用 position:sticky 固定住 */
-  .table-scroll{
-    overflow: auto;
-    max-height: 70vh;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-  }
-  table.schedule-table{
-    border-collapse: collapse;
-    font-size:15.6px;
-    white-space: nowrap;
-  }
-  table.schedule-table th, table.schedule-table td{
-    border: 1px solid var(--line);
-    padding: 6px 8px;
-    text-align: center;
-  }
-  table.schedule-table thead{
-    position: sticky;
-    top: 0;
-    z-index: 3;
-  }
-  table.schedule-table thead th{
-    background: #F0F3F2;
-    font-weight: 600;
-    color: var(--ink-muted);
-  }
-  table.schedule-table thead th.weekend{
-    color: var(--shift-e);
-    background: var(--shift-e-bg);
-  }
-  table.schedule-table .col-id, table.schedule-table .col-name{
-    position: sticky;
-    background: var(--surface);
-    font-weight: 600;
-  }
-  table.schedule-table .col-id{ left: 0; min-width: 66px; }
-  table.schedule-table .col-name{ left: 66px; min-width: 76px; text-align:left; }
-  table.schedule-table tbody .col-id, table.schedule-table tbody .col-name{ z-index:1; }
-  /* 表頭左上角那兩格，同時吃到「上」跟「左」兩種凍結，層級要最高才不會被別的格子蓋住 */
-  table.schedule-table thead .col-id, table.schedule-table thead .col-name{ background:#F0F3F2; z-index:4; }
-
-  /* ---- 統計列 ---- */
-  /* 統計區塊放進 tfoot，並整塊固定在捲動容器的最下方，垂直捲動時隨時看得到 */
-  table.schedule-table tfoot{
-    position: sticky;
-    bottom: 0;
-    z-index: 3;
-  }
-  tr.stat-row td{ font-weight: 700; background: #F7F5EE; }
-  tr.stat-row td.col-id, tr.stat-row td.col-name{ background: #F7F5EE; }
-  tr.stat-row.stat-divider td{ border-top: 2px solid var(--line-strong); }
-  tr.stat-row .stat-row-label{ color: var(--ink); }
-  td.stat-count{ text-align: center; color: var(--ink); }
-  /* 統計區塊左上角(左邊標籤欄位)，同時吃到「下」跟「左」兩種凍結，層級要最高 */
-  table.schedule-table tfoot .col-id, table.schedule-table tfoot .col-name{ z-index: 4; }
-  /* 合計列：粗體、黑色、字級比其他統計列再放大15% (15.6px * 1.15 ≈ 17.9px) */
-  tr.stat-row.stat-total td{ font-weight: 700; color: #000; font-size: 17.9px; background: #F1EEE2; }
-  tr.stat-row.stat-total td.col-id, tr.stat-row.stat-total td.col-name{ background: #F1EEE2; }
-
-  table.personal-stat-table{
-    border-collapse: collapse;
-    width: 100%;
-    margin-top: 14px;
-  }
-  table.personal-stat-table th, table.personal-stat-table td{
-    border: 1px solid var(--line);
-    padding: 8px 6px;
-    text-align: center;
-  }
-  table.personal-stat-table thead th{ background:#F0F3F2; color: var(--ink-muted); font-weight:600; }
-  table.personal-stat-table .stat-row-label{ font-weight:700; background:#F7F5EE; text-align:left; padding-left:12px; }
-  table.personal-stat-table td.stat-count{ font-weight:700; font-size:18.8px; }
-
-  td.shift-d{ color: var(--shift-d); background: var(--shift-d-bg); }
-  td.shift-e{ color: var(--shift-e); background: var(--shift-e-bg); }
-  td.shift-n{ color: var(--shift-n); background: var(--shift-n-bg); }
-  td.shift-off{ color: var(--shift-off); background: var(--shift-off-bg); }
-  td.shift-other{ color: var(--shift-other); background: var(--shift-other-bg); }
-  td.shift-empty{ color: var(--line-strong); }
-
-  .legend{ display:flex; gap:14px; flex-wrap:wrap; margin: 12px 2px 0; font-size:15px; color: var(--ink-muted); }
-  .legend span.swatch{ display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:5px; vertical-align:-1px; }
-
-  .clickable-name{ cursor:pointer; text-decoration: underline dotted; text-underline-offset: 2px; }
-  .clickable-name:hover{ background: rgba(31,111,99,0.08); }
-
-  /* 班別代碼可點擊編輯：滑鼠移上去提示可以點，編輯中則顯示一個小輸入框 */
-  td.shift.editable-shift{ cursor:pointer; }
-  td.shift.editable-shift:hover{ outline: 2px dashed var(--nurse); outline-offset: -2px; }
-  td.shift.editing{ padding: 2px; }
-  td.shift input.shift-edit-input{
-    width: 100%;
-    min-width: 44px;
-    box-sizing: border-box;
-    text-align: center;
-    font: inherit;
-    font-weight: 700;
-    border: 2px solid var(--nurse);
-    border-radius: 4px;
-    padding: 4px 2px;
-    background: #FFFFFF;
-    color: var(--ink);
-  }
-  td.shift select.shift-edit-select{
-    width: 100%;
-    min-width: 56px;
-    box-sizing: border-box;
-    text-align: center;
-    text-align-last: center;
-    font: inherit;
-    font-weight: 700;
-    border: 2px solid var(--nurse);
-    border-radius: 4px;
-    padding: 4px 2px;
-    background: #FFFFFF;
-    color: var(--ink);
-  }
-
-  /* ---- 個人月班表(月曆樣式) ---- */
-  /* 同樣限制高度，讓「星期」表頭在垂直捲動時固定在上方；欄位有最小寬度，
-     手機螢幕太窄時會出現水平捲動，此時表頭仍會固定在上面 */
-  .calendar-scroll{
-    overflow: auto;
-    max-height: 70vh;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-  }
-  table.calendar-table{
-    border-collapse: collapse;
-    width: 100%;
-    min-width: 560px;
-  }
-  table.calendar-table th, table.calendar-table td{
-    border: 1px solid var(--line);
-    text-align: center;
-    vertical-align: top;
-    min-width: 76px;
-  }
-  table.calendar-table thead{
-    position: sticky;
-    top: 0;
-    z-index: 2;
-  }
-  table.calendar-table thead th{
-    background: #F0F3F2;
-    font-weight: 600;
-    color: var(--ink-muted);
-    padding: 8px 4px;
-    font-size:15.6px;
-  }
-  table.calendar-table thead th.weekend{ color: var(--shift-e); background: var(--shift-e-bg); }
-  table.calendar-table td.cal-day{ height: 64px; padding: 6px 4px; }
-  table.calendar-table td.cal-empty{ background: #FAFBFA; }
-  .cal-day-num{ font-size:15px; color: var(--ink-muted); text-align: left; margin-bottom: 6px; }
-  .cal-day-shift{ font-size:17.5px; font-weight: 700; }
-
-  .toast-wrap{ position: fixed; bottom: 22px; right: 22px; display:flex; flex-direction:column; gap:8px; z-index: 50; }
-  .toast{
-    background: var(--ink); color:#fff; padding: 10px 16px; border-radius: 6px;
-    font-size:16.9px; box-shadow: 0 4px 14px rgba(0,0,0,.18);
-    animation: toast-in .18s ease;
-  }
-  .toast.error{ background: #A24B30; }
-  @keyframes toast-in{ from{ opacity:0; transform: translateY(6px);} to{opacity:1; transform:translateY(0);} }
-
-  /* ---- 資料備份區 ---- */
-  .backup-panel{
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 14px 20px;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-  .backup-panel .backup-info{ font-size:15.6px; color: var(--ink-muted); line-height:1.6; }
-  .backup-panel .backup-actions{ display:flex; gap:10px; align-items:center; }
-  .backup-panel .btn-import-xml-label{
-    font-family: inherit; font-size:17.5px; font-weight:600; padding:9px 18px;
-    border-radius:6px; border:1px solid var(--line-strong); color: var(--ink-muted);
-    cursor:pointer; background: transparent;
-  }
-
-  /* ---- 登入畫面 ---- */
-  #loginScreen{
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-  .login-card{
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 32px 28px;
-    width: 100%;
-    max-width: 360px;
-  }
-  .login-card h1{
-    font-family: "Noto Serif TC", serif;
-    font-size:25px;
-    margin: 0 0 4px;
-  }
-  .login-card p.login-sub{ font-size:15.6px; color:var(--ink-muted); margin:0 0 20px; }
-  .login-card .field{ margin-bottom: 14px; }
-  .login-card .field label{ display:block; font-size:15.6px; color:var(--ink-muted); margin-bottom:5px; }
-  .login-card .field input{
-    width: 100%; font-family: inherit; font-size:17.5px; padding:9px 10px;
-    border:1px solid var(--line-strong); border-radius:6px; background:#fff; color:var(--ink);
-    box-sizing: border-box;
-  }
-  .login-card button.btn-login{
-    width:100%; margin-top:6px;
-    font-family: inherit; font-size:17.5px; font-weight:700; padding:10px 18px;
-    border-radius:6px; border:none; background:var(--ink); color:#fff; cursor:pointer;
-  }
-  .login-card button.btn-login:disabled{ background:#B8BEBB; cursor:not-allowed; }
-  .login-error{ font-size:15.6px; color:#A24B30; margin-top:10px; min-height:1em; }
-
-  .header-user-bar{
-    display:flex; align-items:center; justify-content:space-between;
-    max-width:1180px; margin:0 auto; padding:0 32px;
-  }
-  .header-user-bar .user-email{ font-size:15.6px; color:var(--ink-muted); }
-  .header-user-bar button.btn-logout{
-    font-family: inherit; font-size:15.6px; color:var(--ink-muted);
-    background:transparent; border:1px solid var(--line-strong); border-radius:6px;
-    padding:5px 12px; cursor:pointer;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>月班表管理系統</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans TC', sans-serif; background: #f3f4f6; }
+    #loading {
+      position: fixed; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: #f3f4f6; z-index: 9999;
+    }
+    .spinner {
+      width: 48px; height: 48px; border: 5px solid #e5e7eb;
+      border-top-color: #3b82f6; border-radius: 50%;
+      animation: spin 0.8s linear infinite; margin-bottom: 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loading p { color: #6b7280; font-size: 16px; }
+  </style>
 </head>
 <body>
-
-<div id="loginScreen">
-  <form class="login-card" id="loginForm">
-    <h1>月班表管理系統</h1>
-    <p class="login-sub">請先登入才能查詢或匯入班表</p>
-    <div class="field">
-      <label>帳號 (Email)</label>
-      <input type="email" id="loginEmail" autocomplete="username" required>
-    </div>
-    <div class="field">
-      <label>密碼</label>
-      <input type="password" id="loginPassword" autocomplete="current-password" required>
-    </div>
-    <button type="submit" class="btn-login" id="btnLogin">登入</button>
-    <div class="login-error" id="loginError"></div>
-  </form>
-</div>
-
-<div id="appRoot" style="display:none;">
-
-<header class="app-header">
-  <h1>月班表管理系統</h1>
-  <p>查詢護理師 / 病房助理的月班表，並可上傳 PDF 班表自動匯入儲存格</p>
-  <div class="header-user-bar" style="margin-top:10px;">
-    <span class="user-email" id="currentUserEmail"></span>
-    <button type="button" class="btn-logout" id="btnLogout">登出</button>
+  <div id="loading">
+    <div class="spinner"></div>
+    <p>載入中，請稍候…</p>
   </div>
-</header>
+  <div id="root"></div>
 
-<main>
-  <div class="category-picker">
-    <button type="button" class="category-btn" data-cat="nurse">
-      <span class="cat-name">護理師</span>
-      <span class="cat-hint">查詢或匯入護理師月班表</span>
-    </button>
-    <button type="button" class="category-btn" data-cat="assistant">
-      <span class="cat-name">病房助理</span>
-      <span class="cat-hint">查詢或匯入病房助理月班表</span>
-    </button>
-  </div>
+  <script type="text/babel" data-presets="react">
+/**
+ * 月班表線上管理系統
+ * - 資料以 XML 格式備份/還原
+ * - 使用 window.storage（Claude）或 localStorage（GitHub Pages）做跨 session 持久化
+ * - 支援桌機與手機版
+ * - 預載入 115年5月（西元2026年）班表（由 PDF 轉入）
+ */
+// React Hooks 由全域 React 物件取得（供 Babel standalone 使用）
+const { useState, useEffect, useCallback } = React;
 
-  <div class="backup-panel">
-    <div class="backup-info">
-      資料備份與還原：可將護理師／病房助理所有月份的班表匯出成一份 XML 檔留存；<br>
-      匯入 XML 時，若該月份已有資料會先詢問是否覆蓋。
-    </div>
-    <div class="backup-actions">
-      <button type="button" class="btn btn-ghost" id="btnExportXml">匯出 XML 備份</button>
-      <label class="btn-import-xml-label">
-        匯入 XML 備份
-        <input type="file" id="importXmlInput" accept=".xml,application/xml" style="display:none;">
-      </label>
-    </div>
-  </div>
+// ═══════════════════════════════════════
+// 一、常數定義
+// ═══════════════════════════════════════
 
-  <div id="emptyHint" class="empty-hint">請先選擇上方的「護理師」或「病房助理」，才能查詢或匯入班表</div>
+/** 星期名稱（0=日...6=六） */
+const WEEKDAY = ["日", "一", "二", "三", "四", "五", "六"];
 
-  <div id="workspace-nurse" class="workspace" data-cat="nurse"></div>
-  <div id="workspace-assistant" class="workspace" data-cat="assistant"></div>
-</main>
+/** 民國年換算基數：西元年 - 1911 = 民國年 */
+const ROC_OFFSET = 1911;
 
-</div>
+/** 預設班別設定（醫療慣例顏色） */
+const DEFAULT_SHIFT_DEFS = [
+  { code: "D",   name: "白班", fg: "#1e3a5f", bg: "#90CAF9" },
+  { code: "E",   name: "小夜", fg: "#7c2d12", bg: "#FED7AA" },
+  { code: "N",   name: "大夜", fg: "#ffffff", bg: "#3949AB" },
+  { code: "OFF", name: "例休", fg: "#6b7280", bg: "#E5E7EB" },
+  { code: "S",   name: "特休", fg: "#065f46", bg: "#D1FAE5" },
+];
 
-<div class="toast-wrap" id="toastWrap"></div>
+/** 預設員工資料（由 RCW-115年5月病房助理班表 PDF 轉入） */
+const DEFAULT_EMPLOYEES = [
+  { id: "N0935", name: "陳志偉", email: "",                    license: "丙照",       startDate: "" },
+  { id: "N0960", name: "吳玉柱", email: "achir1015@gmail.com", license: "照顧服務員", startDate: "2012-08-19" },
+  { id: "N1512", name: "王詩捷", email: "",                    license: "丙照",       startDate: "" },
+  { id: "N1564", name: "蔣可薇", email: "",                    license: "丙照",       startDate: "" },
+  { id: "N1642", name: "梁桂清", email: "",                    license: "丙照",       startDate: "" },
+  { id: "N1764", name: "李漢銓", email: "",                    license: "",           startDate: "" },
+  { id: "N1042", name: "徐韶璟", email: "",                    license: "丙照",       startDate: "" },
+  { id: "N1616", name: "李忠坪", email: "",                    license: "丙照",       startDate: "" },
+  { id: "N1918", name: "潘全偉", email: "",                    license: "",           startDate: "" },
+  { id: "N1919", name: "黃俊騰", email: "",                    license: "",           startDate: "" },
+];
 
-<script>
-/* =========================================================================
-   一、共用小工具
-   ========================================================================= */
-
-// 將民國年轉換為西元年 (例如 115 -> 2026)
-function rocToWest(rocYear){ return rocYear + 1911; }
-// 將西元年轉換為民國年 (例如 2026 -> 115)
-function westToRoc(westYear){ return westYear - 1911; }
-
-function escapeHtml(str){
-  return String(str ?? '').replace(/[&<>"']/g, ch => ({
-    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
-  }[ch]));
-}
-
-function showToast(message, isError){
-  const wrap = document.getElementById('toastWrap');
-  const el = document.createElement('div');
-  el.className = 'toast' + (isError ? ' error' : '');
-  el.textContent = message;
-  wrap.appendChild(el);
-  setTimeout(() => el.remove(), 3600);
-}
-
-const CATEGORY_LABEL = { nurse: '護理師', assistant: '病房助理' };
-const WEEKDAY_LABELS = ['日','一','二','三','四','五','六']; // 對應 JS Date.getDay() 的 0~6
-
-/* =========================================================================
-   二、領域模型 (Domain Model)
-   把「月班表」想成一個資料夾：
-     - 資料夾的標籤是「類別 + 西元年 + 月份」
-     - 資料夾裡放著每一位員工的「個人班表卡」(員編、姓名、每天的班別代碼)
-   之後查詢、匯入、儲存都是在操作這個資料夾，而不是直接兜 DOM 或表格字串。
-   ========================================================================= */
-
-// 一位員工在某個月份的個人班表卡
-class Employee{
-  constructor(empId, name){
-    this.empId = empId;
-    this.name = name;
-    this.shifts = {}; // { 1:'D1', 2:'OFF', ... }，key 為當月的日期數字
-  }
-}
-
-// 某個類別、某年某月的完整月班表
-class MonthlySchedule{
-  constructor(category, westYear, month){
-    this.category = category;   // 'nurse' | 'assistant'
-    this.westYear = westYear;   // 西元年，例如 2026
-    this.month = month;         // 1~12
-    this.employees = [];        // Employee[]
-  }
-  get rocYear(){ return westToRoc(this.westYear); }
-  get daysInMonth(){ return new Date(this.westYear, this.month, 0).getDate(); }
-  get storageKey(){
-    return `schedule:${this.category}:${this.westYear}-${String(this.month).padStart(2,'0')}`;
-  }
-  // 計算某一天是星期幾（不依賴PDF裡的星期文字，避免解析誤差）
-  weekdayOf(day){
-    return WEEKDAY_LABELS[new Date(this.westYear, this.month - 1, day).getDay()];
-  }
-  toJSON(){
-    return {
-      category: this.category,
-      westYear: this.westYear,
-      month: this.month,
-      employees: this.employees.map(e => ({ empId: e.empId, name: e.name, shifts: e.shifts }))
-    };
-  }
-  static fromPlainObject(obj){
-    const s = new MonthlySchedule(obj.category, obj.westYear, obj.month);
-    s.employees = obj.employees.map(e => {
-      const emp = new Employee(e.empId, e.name);
-      emp.shifts = e.shifts || {};
-      return emp;
-    });
-    return s;
-  }
-}
-
-/* =========================================================================
-   三、儲存層 (Repository)
-   改用 Firebase Firestore 當雲端資料庫，取代原本只存在單一瀏覽器裡的
-   localStorage——這樣不同電腦、不同瀏覽器開這個網頁，看到的都是同一份資料。
-   上面的領域模型完全不用知道底層存的是 Firestore 還是別的東西。
-
-   資料結構：一個 schedules 集合(collection)，每個文件(document)是
-   一份「類別＋年＋月」的月班表，文件ID用 category-westYear-month 組成，
-   例如 nurse-2026-09。
-   ========================================================================= */
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCDoaGP0aeW7P1nhFas-4T3krVftiroG34",
-  authDomain: "monthlyschedule-a5dea.firebaseapp.com",
-  projectId: "monthlyschedule-a5dea",
-  storageBucket: "monthlyschedule-a5dea.firebasestorage.app",
-  messagingSenderId: "204422687469",
-  appId: "1:204422687469:web:bfa6d1672fddbd576ffae4"
+/**
+ * 115年4月班表（西元2026年4月），由 PDF 轉入
+ * 格式：每個字串為 4/1 ~ 4/30 共 30 天的班別，以逗號分隔
+ * 特殊說明：E/學=學習小夜→E、N/學=學習大夜→N
+ */
+const PDF_SCHEDULE_2026_4 = {
+  N0935: "D,D,D,OFF,D,D,E,OFF,D,D,OFF,D,D,OFF,OFF,E,E,E,OFF,OFF,OFF,D,D,D,D,OFF,OFF,D,D,D",
+  N0960: "N,OFF,N,N,N,OFF,N,N,OFF,N,N,OFF,OFF,N,OFF,E,N,N,N,N,OFF,N,N,N,N,OFF,N,N,OFF,OFF",
+  N1512: "E,E,E,N,OFF,E,E,E,E,OFF,OFF,E,E,N,N,N,OFF,OFF,OFF,N,N,N,OFF,OFF,N,N,OFF,OFF,D,D",
+  N1564: "N,N,OFF,OFF,N,N,OFF,OFF,N,N,OFF,N,N,OFF,N,N,N,N,N,OFF,N,OFF,N,N,OFF,N,N,OFF,N,N",
+  N1642: "E,E,OFF,E,E,E,OFF,N,N,OFF,N,N,N,OFF,OFF,OFF,E,E,E,E,E,E,OFF,OFF,OFF,OFF,E,E,E,E",
+  N1764: "OFF,OFF,E,E,E,OFF,OFF,E,E,E,E,OFF,E,E,E,OFF,D,D,OFF,OFF,D,D,OFF,E,E,E,OFF,E,E,E",
+  N1042: "OFF,N,N,OFF,OFF,D,D,D,D,OFF,D,D,D,D,D,OFF,OFF,OFF,OFF,E,E,OFF,E,E,E,E,OFF,N,N,N",
+  N1616: "OFF,D,D,D,OFF,OFF,D,D,D,E,OFF,OFF,OFF,E,E,OFF,D,D,D,D,OFF,E,E,OFF,D,D,D,D,D,OFF",
+  N1918: "D,D,OFF,D,D,OFF,D,D,OFF,D,OFF,OFF,D,D,D,D,OFF,OFF,D,D,D,OFF,D,D,E,E,E,OFF,OFF,D",
+  N1919: "D,OFF,N,N,N,N,N,OFF,OFF,D,D,OFF,OFF,D,D,D,D,OFF,OFF,D,D,D,D,D,OFF,D,D,D,OFF,OFF",
 };
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const auth = firebase.auth();
-const SCHEDULES_COLLECTION = 'schedules';
 
-/* =========================================================================
-   三之一、登入驗證 (Firebase Authentication)
-   在資料真的被讀寫之前，先擋一層登入畫面：只有登入成功的使用者，
-   appRoot(整個班表系統畫面)才會顯示出來；沒登入前，畫面上只有登入表單，
-   不會去呼叫任何 Firestore 的查詢/匯入功能。
-   ========================================================================= */
+/**
+ * 115年5月班表（西元2026年5月），由 PDF 轉入
+ * 格式：每個字串為 5/1 ~ 5/31 共 31 天的班別，以逗號分隔
+ * 特殊說明：E/學 = 學習小夜，統一記錄為 E
+ */
+const PDF_SCHEDULE_2026_5 = {
+  N0935: "OFF,D,D,D,OFF,D,D,D,OFF,D,D,D,D,OFF,E,E,E,E,OFF,OFF,D,D,OFF,D,D,OFF,D,D,D,OFF,OFF",
+  N0960: "N,N,OFF,N,N,N,OFF,D,OFF,N,N,N,N,OFF,OFF,OFF,N,N,N,N,N,OFF,OFF,N,N,N,N,OFF,N,N,OFF",
+  N1512: "E,E,OFF,OFF,OFF,OFF,E,E,E,E,E,OFF,E,E,E,E,E,OFF,N,N,N,N,N,OFF,OFF,E,E,E,OFF,OFF,E",
+  N1564: "N,N,OFF,D,OFF,N,N,N,N,N,N,OFF,OFF,OFF,OFF,OFF,OFF,OFF,OFF,OFF,N,N,N,N,N,OFF,N,N,N,N,-",
+  N1642: "E,OFF,E,E,E,E,E,OFF,OFF,E,OFF,E,E,E,OFF,N,N,N,OFF,OFF,E,E,OFF,E,E,OFF,D,E,E,E,OFF",
+  N1764: "OFF,E,N,N,OFF,E,OFF,E,E,OFF,E,E,OFF,N,N,N,OFF,OFF,E,E,E,E,E,OFF,OFF,E,E,OFF,E,E,E",
+  N1042: "OFF,OFF,D,D,D,D,D,OFF,D,D,OFF,OFF,D,D,D,D,OFF,D,D,D,D,OFF,D,OFF,D,D,N,N,OFF,OFF,D",
+  N1616: "D,D,OFF,E,E,OFF,OFF,D,D,OFF,D,D,D,OFF,D,D,D,D,OFF,OFF,OFF,D,D,D,OFF,D,D,D,D,OFF,OFF",
+  N1918: "D,OFF,OFF,D,D,D,D,D,OFF,OFF,D,D,OFF,D,D,OFF,D,E,E,E,OFF,OFF,E,E,E,OFF,OFF,D,D,D,D",
+  N1919: "E,E,E,OFF,N,N,N,N,N,OFF,OFF,OFF,N,N,N,OFF,OFF,D,D,D,D,D,OFF,OFF,D,D,OFF,OFF,D,D,N",
+};
 
-const loginScreen = document.getElementById('loginScreen');
-const appRoot = document.getElementById('appRoot');
-const loginForm = document.getElementById('loginForm');
-const loginEmailInput = document.getElementById('loginEmail');
-const loginPasswordInput = document.getElementById('loginPassword');
-const loginErrorEl = document.getElementById('loginError');
-const btnLoginEl = document.getElementById('btnLogin');
-const currentUserEmailEl = document.getElementById('currentUserEmail');
-const btnLogoutEl = document.getElementById('btnLogout');
+// ═══════════════════════════════════════
+// 二、工具函數
+// ═══════════════════════════════════════
 
-auth.onAuthStateChanged(user => {
-  if(user){
-    loginScreen.style.display = 'none';
-    appRoot.style.display = '';
-    currentUserEmailEl.textContent = user.email || '';
-    loginErrorEl.textContent = '';
-  }else{
-    loginScreen.style.display = '';
-    appRoot.style.display = 'none';
-  }
-});
+/** 取得某年月的天數 */
+const daysInMonth = (y, m) => new Date(y, m, 0).getDate();
 
-loginForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const email = loginEmailInput.value.trim();
-  const password = loginPasswordInput.value;
-  loginErrorEl.textContent = '';
-  btnLoginEl.disabled = true;
-  btnLoginEl.textContent = '登入中...';
-  try{
-    await auth.signInWithEmailAndPassword(email, password);
-    loginPasswordInput.value = '';
-  }catch(err){
-    // 把常見的 Firebase 錯誤代碼轉成看得懂的中文說明
-    const code = err && err.code;
-    const messages = {
-      'auth/invalid-email': '帳號格式不正確',
-      'auth/user-not-found': '查無此帳號',
-      'auth/wrong-password': '密碼錯誤',
-      'auth/invalid-credential': '帳號或密碼錯誤',
-      'auth/too-many-requests': '嘗試登入次數過多，請稍後再試',
-      'auth/network-request-failed': '網路連線失敗，請確認網路狀態'
-    };
-    loginErrorEl.textContent = messages[code] || ('登入失敗：' + (err.message || err));
-  }finally{
-    btnLoginEl.disabled = false;
-    btnLoginEl.textContent = '登入';
-  }
-});
+/** 西元年 → 民國年 */
+const toROC = (y) => y - ROC_OFFSET;
 
-btnLogoutEl.addEventListener('click', () => auth.signOut());
+/** 產生月份資料 key，例如 "2026-5" */
+const monthKey = (y, m) => `${y}-${m}`;
 
-
-const ScheduleRepository = {
-  docIdOf(category, westYear, month){
-    return `${category}-${westYear}-${String(month).padStart(2, '0')}`;
-  },
-  async load(category, westYear, month){
-    try{
-      const snap = await db.collection(SCHEDULES_COLLECTION).doc(this.docIdOf(category, westYear, month)).get();
-      if(!snap.exists) return null;
-      return MonthlySchedule.fromPlainObject(snap.data());
-    }catch(err){
-      console.error('讀取Firestore失敗:', err);
-      return null; // 找不到這份文件，或連線失敗，都當作尚未有這個月份的資料
+/**
+ * 將單一月份的 PDF 班表字串轉換為資料結構
+ * @param {number} year  西元年
+ * @param {number} month 月份
+ * @param {object} pdfData 格式：{ 員工id: "D,OFF,N,..." }
+ */
+function buildMonthMap(year, month, pdfData) {
+  const days = daysInMonth(year, month);
+  const empMap = {};
+  DEFAULT_EMPLOYEES.forEach((emp) => {
+    const raw = pdfData[emp.id];
+    if (raw) {
+      const arr = raw.split(",");
+      while (arr.length < days) arr.push("-");
+      empMap[emp.id] = arr.slice(0, days);
+    } else {
+      empMap[emp.id] = Array(days).fill("-");
     }
-  },
-  async save(schedule){
-    const docId = this.docIdOf(schedule.category, schedule.westYear, schedule.month);
-    try{
-      await db.collection(SCHEDULES_COLLECTION).doc(docId).set(schedule.toJSON());
-    }catch(err){
-      // 最常見原因：安全性規則不允許寫入、或網路離線
-      throw new Error('雲端資料庫寫入失敗：' + (err.message || err));
-    }
-  },
-  async remove(category, westYear, month){
-    try{ await db.collection(SCHEDULES_COLLECTION).doc(this.docIdOf(category, westYear, month)).delete(); }
-    catch(err){ console.error('刪除Firestore資料失敗:', err); }
-  },
-  // 讀取所有已儲存的月班表（不分類別），供XML匯出使用
-  async loadAll(){
-    try{
-      const snapshot = await db.collection(SCHEDULES_COLLECTION).get();
-      const schedules = [];
-      snapshot.forEach(doc => {
-        try{ schedules.push(MonthlySchedule.fromPlainObject(doc.data())); }
-        catch(err){ /* 略過格式毀損的單筆資料 */ }
+  });
+  return empMap;
+}
+
+/**
+ * 建立初始班表資料（同時載入 4月與5月，均由 PDF 轉入）
+ * 資料結構：{ "2026-4": {...}, "2026-5": {...} }
+ */
+function buildInitialSchedule() {
+  return {
+    [monthKey(2026, 4)]: buildMonthMap(2026, 4, PDF_SCHEDULE_2026_4),
+    [monthKey(2026, 5)]: buildMonthMap(2026, 5, PDF_SCHEDULE_2026_5),
+  };
+}
+
+// ═══════════════════════════════════════
+// 三、XML 序列化 / 解析
+// ═══════════════════════════════════════
+
+/**
+ * 將系統資料序列化為 XML 字串
+ * @param {{ employees, shiftDefs, schedules }} data
+ */
+function serializeToXml({ employees, shiftDefs, schedules }) {
+  // XML 特殊字元逸出
+  const esc = (s) =>
+    String(s || "")
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+
+  const lines = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<scheduleSystem>',
+    '  <employees>',
+  ];
+  employees.forEach((e) =>
+    lines.push(
+      `    <employee id="${esc(e.id)}" name="${esc(e.name)}" ` +
+        `email="${esc(e.email)}" license="${esc(e.license)}" startDate="${esc(e.startDate)}"/>`
+    )
+  );
+  lines.push("  </employees>", "  <shiftTypes>");
+  shiftDefs.forEach((s) =>
+    lines.push(
+      `    <shiftType code="${esc(s.code)}" name="${esc(s.name)}" ` +
+        `fg="${esc(s.fg)}" bg="${esc(s.bg)}"/>`
+    )
+  );
+  lines.push("  </shiftTypes>", "  <schedules>");
+  Object.entries(schedules).forEach(([key, empMap]) => {
+    const [y, m] = key.split("-");
+    lines.push(`    <schedule year="${y}" month="${m}">`);
+    Object.entries(empMap).forEach(([empId, shifts]) => {
+      shifts.forEach((sh, i) => {
+        if (sh && sh !== "-")
+          lines.push(
+            `      <entry empId="${esc(empId)}" day="${i + 1}" shift="${esc(sh)}"/>`
+          );
       });
-      return schedules;
-    }catch(err){
-      console.error('讀取全部Firestore資料失敗:', err);
-      return [];
-    }
-  }
+    });
+    lines.push("    </schedule>");
+  });
+  lines.push("  </schedules>", "</scheduleSystem>");
+  return lines.join("\n");
+}
+
+/**
+ * 從 XML 字串解析出系統資料
+ * @param {string} xmlStr
+ * @returns {{ employees, shiftDefs, schedules }}
+ */
+function parseFromXml(xmlStr) {
+  const doc = new DOMParser().parseFromString(xmlStr, "text/xml");
+  if (doc.querySelector("parsererror")) throw new Error("XML 格式錯誤");
+
+  const employees = [...doc.querySelectorAll("employee")].map((el) => ({
+    id: el.getAttribute("id") || "",
+    name: el.getAttribute("name") || "",
+    email: el.getAttribute("email") || "",
+    license: el.getAttribute("license") || "",
+    startDate: el.getAttribute("startDate") || "",
+  }));
+
+  const shiftDefs = [...doc.querySelectorAll("shiftType")].map((el) => ({
+    code: el.getAttribute("code") || "",
+    name: el.getAttribute("name") || "",
+    fg: el.getAttribute("fg") || "#333",
+    bg: el.getAttribute("bg") || "#eee",
+  }));
+
+  const schedules = {};
+  [...doc.querySelectorAll("schedule")].forEach((sch) => {
+    const y = sch.getAttribute("year");
+    const m = sch.getAttribute("month");
+    const key = `${y}-${m}`;
+    const days = daysInMonth(+y, +m);
+    schedules[key] = {};
+    // 先為每個員工建立空陣列
+    employees.forEach((e) => {
+      schedules[key][e.id] = Array(days).fill("-");
+    });
+    // 再填入 XML 內的班別記錄
+    [...sch.querySelectorAll("entry")].forEach((en) => {
+      const id = en.getAttribute("empId");
+      const day = +en.getAttribute("day") - 1; // 轉為 0-based index
+      const sh = en.getAttribute("shift");
+      if (schedules[key][id] && day >= 0) schedules[key][id][day] = sh;
+    });
+  });
+
+  return { employees, shiftDefs, schedules };
+}
+
+// ═══════════════════════════════════════
+// 四、共用樣式函數
+// ═══════════════════════════════════════
+
+/** 按鈕樣式 */
+const btn = (bg, fg = "#fff") => ({
+  padding: "7px 14px",
+  background: bg,
+  color: fg,
+  border: "none",
+  borderRadius: 6,
+  cursor: "pointer",
+  fontSize: 18,
+  fontWeight: 500,
+  fontFamily: "inherit",
+});
+
+/** 文字輸入框樣式 */
+const inp = (disabled = false) => ({
+  width: "100%",
+  padding: "7px 10px",
+  borderRadius: 6,
+  border: "1px solid #d1d5db",
+  fontSize: 18,
+  boxSizing: "border-box",
+  background: disabled ? "#f9fafb" : "#fff",
+  color: "#1f2937",
+  fontFamily: "inherit",
+});
+
+/** 標籤樣式 */
+const lbl = {
+  display: "block",
+  fontSize: 17,
+  color: "#6b7280",
+  marginBottom: 4,
+  fontWeight: 500,
 };
 
-/* =========================================================================
-   四、PDF 解析模組
-   實際測試發現：許多班表 PDF（多半是 Excel 匯出）欄位很窄，
-   「員編」「姓名」這種兩字標籤會被拆成兩個字、各佔一行來顯示；
-   員工姓名也常因為欄位塞不下，2個字在第一行、剩下的字擠到下一行，
-   而且「員編」文字本身跟姓名兩行的相對位置，每個人還不一定一樣。
-   因此不能只靠「同一列文字」來抓表格，改用下面的策略：
-     1. 用日期欄的「9/1」「9/2」...文字，建立每天的欄位x座標錨點
-        （這一列通常最完整、最不會被拆行，最適合當基準）
-     2. 找出日期列正下方、由星期文字組成的「星期列」，
-        它的y座標就是「表頭」與「員工資料」的分界線
-     3. 在分界線以下，找出所有符合員編格式（如B2476）的文字，
-        依上下順序切成一個一個「員工區塊」
-     4. 區塊內 x 落在日期欄範圍的文字，視為班別代碼，
-        用「離哪個日期錨點x最近」分配到對應日期
-     5. 姓名欄位容易跨行、且跟員編的相對位置不穩定，因此姓名文字
-        改用「離哪個員工的主要資料列(班別那一列)最近」來重新分配，
-        才不會抓錯行、把姓名兜到隔壁員工身上
-   ========================================================================= */
+/** 卡片樣式 */
+const card = {
+  background: "#fff",
+  borderRadius: 12,
+  padding: 20,
+  border: "1px solid #e5e7eb",
+  boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+};
 
-const PdfTableExtractor = {
-  async extractPages(file){
-    const buf = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({
-      data: buf,
-      cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
-      cMapPacked: true,
-      standardFontDataUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/standard_fonts/'
-    }).promise;
-    const pages = [];
-    for(let p = 1; p <= pdf.numPages; p++){
-      const page = await pdf.getPage(p);
-      const content = await page.getTextContent();
-      const items = content.items
-        .filter(it => it.str && it.str.trim() !== '')
-        .map(it => ({ x: it.transform[4], y: it.transform[5], text: it.str.trim() }));
-      pages.push(items);
-    }
-    return pages;
-  },
+/** 訊息框樣式 */
+const msg = (ok) => ({
+  marginTop: 12,
+  padding: "8px 14px",
+  borderRadius: 6,
+  fontSize: 18,
+  background: ok ? "#f0fdf4" : "#fef2f2",
+  color: ok ? "#15803d" : "#b91c1c",
+  border: `1px solid ${ok ? "#bbf7d0" : "#fecaca"}`,
+});
 
-  // 從整頁文字中，找出「9/1」「9/2」...這種日期格式最集中的那一個y座標，當作日期表頭列
-  buildDateAnchors(items){
-    const dateItems = items.filter(it => /^\d{1,2}\/\d{1,2}$/.test(it.text));
-    const buckets = new Map();
-    for(const it of dateItems){
-      const key = Math.round(it.y);
-      if(!buckets.has(key)) buckets.set(key, []);
-      buckets.get(key).push(it);
-    }
-    let bestKey = null, bestList = [];
-    for(const [key, list] of buckets){
-      if(list.length > bestList.length){ bestKey = key; bestList = list; }
-    }
-    const anchors = bestList
-      .map(it => {
-        const m = it.text.match(/^(\d{1,2})\/(\d{1,2})$/);
-        return { day: parseInt(m[2], 10), x: it.x };
-      })
-      .sort((a, b) => a.x - b.x);
-    return { anchors, headerY: bestKey };
-  },
+// ═══════════════════════════════════════
+// 五、班表頁籤元件
+// ═══════════════════════════════════════
 
-  // 找出日期列正下方、由星期文字組成的那一列的y座標，做為表頭與員工資料的分界線
-  findHeaderCutoffY(items, headerY){
-    if(headerY == null) return null;
-    const weekdayChars = new Set(['日', '一', '二', '三', '四', '五', '六']);
-    const belowHeader = items.filter(it => it.y < headerY - 1 && weekdayChars.has(it.text));
-    if(belowHeader.length === 0) return headerY - 1; // 找不到星期列時，至少排除日期列本身
-    return Math.max(...belowHeader.map(it => it.y)) - 1;
-  },
+/**
+ * ScheduleTab：橫向班表表格
+ * - 列 = 員工
+ * - 欄 = 日期（1~31）
+ * - 點擊格子 → 展開班別選擇列
+ */
+function ScheduleTab({ employees, shiftDefs, schedule, year, month, onUpdate }) {
+  // 目前正在編輯的儲存格 { empId, dayIdx }
+  const [editing, setEditing] = useState(null);
 
-  // 把日期欄位範圍內的班別代碼文字，依 y 座標聚成一列一列，一列就代表一位員工的資料列。
-  // 不依賴「員編」是否存在——新進人員可能暫時還沒有員編，但只要那一列有排班，班別儲存格就一定存在，
-  // 這樣才不會因為缺員編而整列資料被吃掉、或跟上一位員工的資料混在一起。
-  groupShiftRows(shiftItems){
-    const sorted = shiftItems.slice().sort((a, b) => b.y - a.y); // 由上而下
-    const rows = [];
-    for(const it of sorted){
-      let row = rows.find(r => Math.abs(r.y - it.y) < 3);
-      if(!row){ row = { y: it.y, items: [] }; rows.push(row); }
-      row.items.push(it);
-    }
-    return rows;
-  },
+  const days = daysInMonth(year, month);
+  const dayArr = Array.from({ length: days }, (_, i) => i); // [0,1,...,30]
 
-  // 把員編依「上下順序」配對到資料列：員編在PDF裡本來就跟資料列上下順序一致，
-  // 但員編文字跟它那一列資料的y座標落差，每個人不一定完全固定(量測到有±9左右的誤差)，
-  // 若只看「離哪一列最近」，可能會因為單一列的誤差而配到錯的列。
-  // 改用「整體配對總落差最小」的方式一次算出全部配對(動態規劃)，同時允許某幾列沒有員編
-  // (插在任何位置，不限最後一列——例如某個人從缺員編到有員編，是插在队伍中間)，才不會一個配錯、全部跟著錯位。
-  alignIdsToRows(idsDesc, rowsDesc){
-    const I = idsDesc.length, R = rowsDesc.length;
-    const INF = Infinity;
-    const dp = Array.from({ length: I + 1 }, () => new Array(R + 1).fill(INF));
-    const choice = Array.from({ length: I + 1 }, () => new Array(R + 1).fill(null));
-    for(let j = 0; j <= R; j++) dp[0][j] = 0;
-    for(let i = 1; i <= I; i++){
-      for(let j = i; j <= R; j++){ // j 必須 >= i，前面才塞得下 i 個員編
-        const skip = dp[i][j - 1];
-        const prev = dp[i - 1][j - 1];
-        const matchCost = prev === INF ? INF : prev + Math.abs(idsDesc[i - 1].y - rowsDesc[j - 1].y);
-        if(matchCost <= skip){ dp[i][j] = matchCost; choice[i][j] = 'match'; }
-        else { dp[i][j] = skip; choice[i][j] = 'skip'; }
+  /** 查找班別定義，找不到時回傳預設 */
+  const findSt = (code) =>
+    shiftDefs.find((s) => s.code === code) || {
+      code,
+      fg: "#9ca3af",
+      bg: "#f3f4f6",
+      name: code,
+    };
+
+  /** 判斷是否為休假（非工作班別） */
+  const isOffShift = (sh) => {
+    const WORK = ["D", "E", "N", "S"];
+    return !sh || sh === "-" || !WORK.includes(sh.toUpperCase());
+  };
+
+  /** 計算某一天每種班別的人數 */
+  const dayStat = (di) => {
+    const c = { OFF: 0 };
+    shiftDefs.forEach((s) => {
+      c[s.code] = 0;
+    });
+    employees.forEach((e) => {
+      const sh = (schedule[e.id] || [])[di] || "-";
+      if (isOffShift(sh)) {
+        c.OFF = (c.OFF || 0) + 1; // 國、休、休假、颱風、地震、-、空值 全計為OFF
+      } else if (c[sh] !== undefined) {
+        c[sh]++;
       }
-    }
-    const rowToId = new Array(R).fill(null);
-    let i = I, j = R;
-    while(i > 0 && j > 0){
-      if(choice[i][j] === 'match'){ rowToId[j - 1] = idsDesc[i - 1]; i--; j--; }
-      else { j--; }
-    }
-    return rowToId; // rowToId[k] = 配對到第k列(由上而下，k從0開始)的員編項目，或 null(這一列沒有員編)
-  },
+    });
+    return c;
+  };
 
-  /* -----------------------------------------------------------------------
-     「直式／轉置版面」解析：
-     有些醫院匯出的PDF，日期是由上而下排成一欄（而不是橫向表頭），
-     員編／姓名則橫向排成表頭列，整張表等於是把原本的表格「轉90度」。
-     這種版面无法用上面「日期橫向表頭」的邏輯找到日期錨點，
-     因此改用「星期文字（日一二三四五六）由上而下連續出現一整個月」
-     來偵測並定位每一天的資料列。
-     ----------------------------------------------------------------------- */
+  return (
+    <div style={card}>
+      {/* ── 班別圖例 + 操作說明 ── */}
+      <div style={{ marginBottom: 12 }}>
+        {/* 班別色碼說明 */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8, alignItems: "center" }}>
+          <span style={{ fontSize: 17, color: "#6b7280", marginRight: 2 }}>班別：</span>
+          {shiftDefs.map((s) => (
+            <span key={s.code} style={{
+              padding: "2px 10px", borderRadius: 4, fontSize: 17, fontWeight: 500,
+              color: s.fg, background: s.bg,
+            }}>
+              {s.code}　{s.name}
+            </span>
+          ))}
+        </div>
+        {/* 操作說明提示列 */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap",
+          background: "#eff6ff", border: "1px solid #bfdbfe",
+          borderRadius: 6, padding: "6px 12px",
+        }}>
+          <span style={{ fontSize: 17, color: "#1d4ed8" }}>
+            ✏️ <strong>如何修改班別：</strong>
+          </span>
+          <span style={{ fontSize: 17, color: "#1d4ed8" }}>
+            點擊任意<strong>班別格子</strong>
+          </span>
+          <span style={{ fontSize: 17, color: "#6b7280" }}>→</span>
+          <span style={{ fontSize: 17, color: "#1d4ed8" }}>
+            該員工列下方展開<strong>班別選單</strong>
+          </span>
+          <span style={{ fontSize: 17, color: "#6b7280" }}>→</span>
+          <span style={{ fontSize: 17, color: "#1d4ed8" }}>
+            點選新班別或「清除」
+          </span>
+          {editing && (
+            <span style={{
+              marginLeft: "auto", padding: "2px 10px",
+              background: "#dbeafe", borderRadius: 4,
+              fontSize: 17, color: "#1e40af", fontWeight: 500,
+            }}>
+              編輯中：{employees.find(e=>e.id===editing.empId)?.name} 第{editing.dayIdx+1}日
+            </span>
+          )}
+        </div>
+      </div>
 
-  // 偵測垂直日期欄：星期文字(日一二三四五六)最集中的那個x座標，由上而下依序視為第1天、第2天...
-  buildVerticalDateRows(items){
-    const weekdayChars = new Set(['日', '一', '二', '三', '四', '五', '六']);
-    const weekdayItems = items.filter(it => weekdayChars.has(it.text));
-    if(weekdayItems.length < 20) return { rows: [], minDateY: null }; // 數量太少，不像一整個月的星期欄
-    const buckets = new Map();
-    for(const it of weekdayItems){
-      const key = Math.round(it.x);
-      if(!buckets.has(key)) buckets.set(key, []);
-      buckets.get(key).push(it);
-    }
-    let bestList = [];
-    for(const [, list] of buckets){
-      if(list.length > bestList.length) bestList = list;
-    }
-    const rows = bestList
-      .slice()
-      .sort((a, b) => a.y - b.y)
-      .map((it, idx) => ({ day: idx + 1, y: it.y }));
-    const minDateY = rows.length ? Math.min(...rows.map(r => r.y)) : null;
-    return { rows, minDateY };
-  },
+      {/* ── 班表表格（橫向捲動） ── */}
+      <div style={{ overflowX: "auto" }}>
+        <table style={{ borderCollapse: "collapse", fontSize: 17 }}>
+          {/* 欄寬設定 */}
+          <colgroup>
+            <col style={{ minWidth: 108 }} />
+            {dayArr.map((di) => (
+              <col key={di} style={{ width: 30 }} />
+            ))}
+            <col style={{ minWidth: 70 }} />
+          </colgroup>
 
-  // 偵測橫向的員編／姓名表頭欄位（在日期欄最上方那一段文字裡）
-  buildVerticalColumns(items, minDateY){
-    const headerItems = items.filter(it => it.y < minDateY - 5);
-    const groups = [];
-    for(const it of headerItems){
-      let g = groups.find(g => Math.abs(g.y - it.y) < 4);
-      if(!g){ g = { y: it.y, items: [] }; groups.push(g); }
-      g.items.push(it);
-    }
-    const idRow = groups.find(g => g.items.some(it => EMP_ID_PATTERN.test(it.text)));
-    if(!idRow) return [];
-    const idCols = idRow.items.filter(it => EMP_ID_PATTERN.test(it.text)).sort((a, b) => a.x - b.x);
-    const columns = idCols.map(idIt => ({ empId: idIt.text.trim(), x: idIt.x, nameParts: [] }));
+          {/* ── 標頭列 ── */}
+          <thead>
+            <tr>
+              {/* 員工欄標頭（sticky 固定） */}
+              <th
+                style={{
+                  padding: "6px 10px",
+                  textAlign: "left",
+                  background: "#1b6ca8",
+                  color: "#fff",
+                  position: "sticky",
+                  left: 0,
+                  zIndex: 2,
+                  fontSize: 17,
+                  borderRadius: "6px 0 0 0",
+                }}
+              >
+                員工
+              </th>
+              {/* 日期標頭 */}
+              {dayArr.map((di) => {
+                const d = di + 1;
+                const dow = new Date(year, month - 1, d).getDay();
+                // 日=紅、六=藍、平日=深藍
+                const bg =
+                  dow === 0 ? "#b91c1c" : dow === 6 ? "#1d4ed8" : "#1b6ca8";
+                return (
+                  <th
+                    key={di}
+                    style={{
+                      padding: "2px 1px",
+                      textAlign: "center",
+                      background: bg,
+                      color: "#fff",
+                      fontSize: 14,
+                    }}
+                  >
+                    <div style={{ fontWeight: 500 }}>{d}</div>
+                    <div style={{ opacity: 0.8 }}>{WEEKDAY[dow]}</div>
+                  </th>
+                );
+              })}
+              {/* 統計欄標頭 */}
+              <th
+                style={{
+                  padding: "6px 4px",
+                  background: "#1b6ca8",
+                  color: "#fff",
+                  textAlign: "center",
+                  fontSize: 15,
+                  borderRadius: "0 6px 0 0",
+                }}
+              >
+                統計
+              </th>
+            </tr>
+          </thead>
 
-    // 其餘表頭文字（扣掉「員編」「姓名」等標籤）視為姓名候選，依x座標分配給最近的欄位
-    for(const g of groups){
-      if(g === idRow) continue;
-      for(const it of g.items){
-        if(it.text === '員編' || it.text === '姓名') continue;
-        let best = null, bestDist = Infinity;
-        for(const col of columns){
-          const dist = Math.abs(col.x - it.x);
-          if(dist < bestDist){ bestDist = dist; best = col; }
-        }
-        if(best) best.nameParts.push(it);
-      }
-    }
-    for(const col of columns){
-      col.nameParts.sort((a, b) => a.x - b.x);
-      col.name = col.nameParts.map(it => it.text).join('').trim();
-    }
-    return columns;
-  },
+          {/* ── 資料列 ── */}
+          <tbody>
+            {employees.flatMap((emp, ri) => {
+              const empShifts = schedule[emp.id] || Array(days).fill("-");
+              // 計算本月白班/小夜/大夜/休假次數
+              const WORK_SHIFTS = ["D", "E", "N", "S"];
+              const cnt = { D: 0, E: 0, N: 0, OFF: 0 };
+              empShifts.forEach((s) => {
+                if (!s || s === "-" || !WORK_SHIFTS.includes(s.toUpperCase())) {
+                  cnt.OFF++; // 國、休、休假、颱風、地震、-、空值 全計為OFF
+                } else if (cnt[s] !== undefined) {
+                  cnt[s]++;
+                }
+              });
+              const rowBg = ri % 2 === 0 ? "#fff" : "#f9fafb";
+              const rows = [];
 
-  // 把每一列（每一天）落在欄位x座標附近的文字，分配為該員工當天的班別代碼
-  assignVerticalShifts(items, rows, columns){
-    if(columns.length === 0) return;
-    const weekdayChars = new Set(['日', '一', '二', '三', '四', '五', '六']);
-    const minColX = Math.min(...columns.map(c => c.x)) - 6; // 排除日期欄與星期欄本身
-    const valueItems = items.filter(it =>
-      it.x >= minColX && !/^\d{1,2}\/\d{1,2}/.test(it.text) && !weekdayChars.has(it.text)
+              // ── 員工班表列 ──
+              rows.push(
+                <tr key={emp.id} style={{ background: rowBg }}>
+                  {/* 員工名稱欄（sticky 固定） */}
+                  <td
+                    style={{
+                      padding: "4px 10px",
+                      position: "sticky",
+                      left: 0,
+                      zIndex: 1,
+                      background: rowBg,
+                      borderRight: "1px solid #e5e7eb",
+                    }}
+                  >
+                    <div style={{ fontWeight: 500, color: "#1f2937", fontSize: 18 }}>
+                      {emp.name}
+                    </div>
+                    <div style={{ fontSize: 14, color: "#9ca3af" }}>{emp.id}</div>
+                  </td>
+
+                  {/* 班別格子 */}
+                  {dayArr.map((di) => {
+                    const sh = empShifts[di] || "-";
+                    const st = findSt(sh);
+                    const active =
+                      editing?.empId === emp.id && editing?.dayIdx === di;
+                    const dow = new Date(year, month - 1, di + 1).getDay();
+                    // 週末背景微黃
+                    const wkBg =
+                      dow === 0 || dow === 6
+                        ? ri % 2 === 0
+                          ? "#fffbeb"
+                          : "#fef9e7"
+                        : undefined;
+                    return (
+                      <td
+                        key={di}
+                        style={{
+                          padding: 2,
+                          textAlign: "center",
+                          background: active ? "#dbeafe" : wkBg,
+                        }}
+                      >
+                        <button
+                          title={`點擊修改班別\n員工：${emp.name}\n日期：${month}/${di+1}\n目前：${sh === "-" ? "（無）" : sh}`}
+                          onClick={() =>
+                            setEditing(
+                              active ? null : { empId: emp.id, dayIdx: di }
+                            )
+                          }
+                          style={{
+                            width: 28, height: 24, borderRadius: 3,
+                            border: active ? "2px solid #1b6ca8" : "1px solid transparent",
+                            background: active ? "#dbeafe" : sh === "-" ? "#f9fafb" : st.bg,
+                            color: sh === "-" ? "#d1d5db" : st.fg,
+                            fontSize: 13, fontWeight: 700,
+                            cursor: "pointer", fontFamily: "inherit",
+                          }}
+                        >
+                          {sh === "-" ? "·" : sh}
+                        </button>
+                      </td>
+                    );
+                  })}
+
+                  {/* 出勤統計欄 */}
+                  <td
+                    style={{
+                      padding: "2px 4px",
+                      textAlign: "center",
+                      fontSize: 14,
+                      lineHeight: 1.6,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    <span style={{ color: "#1d4ed8" }}>白{cnt.D}</span>{" "}
+                    <span style={{ color: "#c2410c" }}>夜{cnt.E}</span>{" "}
+                    <span style={{ color: "#4338ca" }}>大{cnt.N}</span>{" "}
+                    <span style={{ color: "#6b7280" }}>休{cnt.OFF}</span>
+                  </td>
+                </tr>
+              );
+
+              return rows;
+            })}
+          </tbody>
+
+          {/* ── 每日統計列 ── */}
+          <tfoot>
+            <tr
+              style={{
+                borderTop: "2px solid #d1d5db",
+                background: "#f3f4f6",
+              }}
+            >
+              <td
+                style={{
+                  padding: "4px 10px",
+                  fontWeight: 500,
+                  fontSize: 15,
+                  color: "#6b7280",
+                  position: "sticky",
+                  left: 0,
+                  background: "#f3f4f6",
+                  borderRight: "1px solid #e5e7eb",
+                  zIndex: 1,
+                }}
+              >
+                每日人數
+              </td>
+              {dayArr.map((di) => {
+                const stats = dayStat(di);
+                return (
+                  <td
+                    key={di}
+                    style={{
+                      padding: "1px",
+                      textAlign: "center",
+                      fontSize: 13,
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    {["D", "E", "N"]
+                      .filter((c) => stats[c] > 0)
+                      .map((c) => {
+                        const st = findSt(c);
+                        // 白色文字的班（如大夜）改用背景色顯示數字
+                        const col =
+                          st.fg === "#ffffff" ? st.bg : st.fg;
+                        return (
+                          <div
+                            key={c}
+                            style={{ fontWeight: 700, color: col }}
+                          >
+                            {stats[c]}
+                          </div>
+                        );
+                      })}
+                  </td>
+                );
+              })}
+              <td />
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      {/* ── 編輯面板（固定在班表下方，不影響表格版面）── */}
+      {editing && (() => {
+        const editEmp    = employees.find(e => e.id === editing.empId);
+        const editShifts = schedule[editing.empId] || [];
+        const curSh      = editShifts[editing.dayIdx] || "-";
+        const dow        = new Date(year, month - 1, editing.dayIdx + 1).getDay();
+        const dowLabel   = ["日","一","二","三","四","五","六"][dow];
+        return (
+          <div style={{
+            marginTop: 8,
+            background: "#eff6ff",
+            border: "2px solid #3b82f6",
+            borderRadius: 10,
+            padding: "14px 16px",
+            display: "flex",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: 8,
+          }}>
+            {/* 說明文字 */}
+            <span style={{
+              fontSize: 17, fontWeight: 700, color: "#1e40af",
+              marginRight: 6, whiteSpace: "nowrap",
+            }}>
+              ✏️ {editEmp?.name}・{month}/{editing.dayIdx + 1}（{dowLabel}）
+            </span>
+            <span style={{ fontSize: 15, color: "#6b7280", marginRight: 8 }}>
+              目前：<strong style={{ color: "#1e3a5f" }}>{curSh === "-" ? "（無）" : curSh}</strong>
+            </span>
+            {/* 班別選擇按鈕 */}
+            {shiftDefs.map((st) => (
+              <button
+                key={st.code}
+                onClick={() => {
+                  onUpdate(editing.empId, editing.dayIdx, st.code);
+                  setEditing(null);
+                }}
+                style={{
+                  padding: "7px 16px",
+                  border: curSh === st.code ? "3px solid #1e3a5f" : "2px solid transparent",
+                  borderRadius: 6,
+                  background: st.bg,
+                  color: st.fg,
+                  fontSize: 17, fontWeight: 700,
+                  cursor: "pointer", fontFamily: "inherit",
+                  boxShadow: curSh === st.code ? "0 0 0 2px #93c5fd" : "none",
+                }}
+              >
+                {st.code}　{st.name}
+              </button>
+            ))}
+            {/* 清除 */}
+            <button
+              onClick={() => { onUpdate(editing.empId, editing.dayIdx, "-"); setEditing(null); }}
+              style={{
+                padding: "7px 14px", border: "1px solid #d1d5db",
+                borderRadius: 6, background: "#f9fafb", color: "#6b7280",
+                fontSize: 17, cursor: "pointer", fontFamily: "inherit",
+              }}
+            >
+              清除
+            </button>
+            {/* 關閉 */}
+            <button
+              onClick={() => setEditing(null)}
+              style={{
+                marginLeft: "auto",
+                padding: "7px 14px", border: "1px solid #d1d5db",
+                borderRadius: 6, background: "#fff", color: "#9ca3af",
+                fontSize: 15, cursor: "pointer", fontFamily: "inherit",
+              }}
+            >
+              ✕ 關閉
+            </button>
+          </div>
+        );
+      })()}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════
+// 六、員工管理頁籤元件
+// ═══════════════════════════════════════
+
+function EmployeeTab({ employees, onChange }) {
+  const blank = { id: "", name: "", email: "", license: "", startDate: "" };
+  const [form, setForm] = useState(blank);
+  const [editId, setEditId] = useState(null); // 目前正在編輯的員工 id
+  const [message, setMessage] = useState(null); // [是否成功, 訊息文字]
+
+  const set = (k, v) => setForm((p) => ({ ...p, [k]: v }));
+  const reset = () => {
+    setForm(blank);
+    setEditId(null);
+  };
+
+  /** 儲存（新增或更新） */
+  const save = () => {
+    if (!form.id || !form.name) {
+      setMessage([false, "員工編號和姓名為必填"]);
+      return;
+    }
+    if (!editId && employees.find((e) => e.id === form.id)) {
+      setMessage([false, `員工編號 ${form.id} 已存在`]);
+      return;
+    }
+    onChange(
+      editId
+        ? employees.map((e) => (e.id === editId ? { ...form } : e))
+        : [...employees, { ...form }]
     );
-    for(const row of rows){
-      // 容許上下約7個單位的誤差（同一天的班別代碼有時會因字型高度被拆成上下兩小段）
-      const rowItems = valueItems.filter(it => it.y >= row.y - 7 && it.y <= row.y + 7);
-      for(const it of rowItems){
-        let best = null, bestDist = Infinity;
-        for(const col of columns){
-          const dist = Math.abs(it.x - col.x);
-          if(dist < bestDist){ bestDist = dist; best = col; }
-        }
-        if(best) best.shifts[row.day] = (best.shifts[row.day] || '') + it.text;
-      }
-    }
-  }
-};
+    setMessage([true, `員工 ${form.name} 已${editId ? "更新" : "新增"}`]);
+    reset();
+  };
 
-// 從PDF全部文字中，偵測年份與月份（同時支援西元 2026/09 與民國 115/09、115年9月 等格式）
-// 注意：文字要「不含空白」串接，否則像「115 年 09 月」這種被拆成多個文字物件的標題會比對不到
-function detectYearMonth(fullText){
-  const m = fullText.match(/(\d{3,4})[\/\-\.年](\d{1,2})\s*月?/);
-  if(!m) return { westYear: null, month: null };
-  let year = parseInt(m[1], 10);
-  const month = parseInt(m[2], 10);
-  if(year < 1000) year += 1911; // 3位數視為民國年，轉換為西元年
-  if(month < 1 || month > 12) return { westYear: null, month: null };
-  return { westYear: year, month };
+  /** 刪除員工 */
+  const del = (e) => {
+    if (!confirm(`確定刪除員工 ${e.name}（${e.id}）？`)) return;
+    onChange(employees.filter((x) => x.id !== e.id));
+    setMessage([true, `員工 ${e.name} 已刪除`]);
+  };
+
+  // 欄位定義
+  const FIELDS = [
+    { k: "id",        label: "員工編號 *", ph: "N0960",            dis: !!editId },
+    { k: "name",      label: "員工姓名 *", ph: "吳玉柱" },
+    { k: "email",     label: "E-Mail",     ph: "xxx@gmail.com" },
+    { k: "license",   label: "證照",       ph: "照顧服務員單一級" },
+    { k: "startDate", label: "入職日期",   ph: "2012-08-19", type: "date" },
+  ];
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      {/* ── 新增/編輯表單 ── */}
+      <div style={card}>
+        <h3
+          style={{
+            margin: "0 0 14px",
+            fontSize: 21,
+            fontWeight: 500,
+            color: "#1f2937",
+          }}
+        >
+          {editId ? "編輯員工" : "新增員工"}
+        </h3>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(165px, 1fr))",
+            gap: 12,
+          }}
+        >
+          {FIELDS.map((f) => (
+            <div key={f.k}>
+              <label style={lbl}>{f.label}</label>
+              <input
+                type={f.type || "text"}
+                value={form[f.k]}
+                placeholder={f.ph}
+                disabled={f.dis}
+                onChange={(e) => set(f.k, e.target.value)}
+                style={inp(f.dis)}
+              />
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: 14, display: "flex", gap: 8 }}>
+          <button onClick={save} style={btn("#1b6ca8")}>
+            {editId ? "更新員工" : "新增員工"}
+          </button>
+          {editId && (
+            <button onClick={reset} style={btn("#6b7280")}>
+              取消
+            </button>
+          )}
+        </div>
+        {message && (
+          <div style={msg(message[0])}>
+            {message[0] ? "✓ " : "✗ "}
+            {message[1]}
+          </div>
+        )}
+      </div>
+
+      {/* ── 員工清單 ── */}
+      <div style={card}>
+        <h3
+          style={{
+            margin: "0 0 14px",
+            fontSize: 21,
+            fontWeight: 500,
+            color: "#1f2937",
+          }}
+        >
+          員工清單（{employees.length} 人）
+        </h3>
+        <div style={{ overflowX: "auto" }}>
+          <table
+            style={{ width: "100%", borderCollapse: "collapse", fontSize: 18 }}
+          >
+            <thead>
+              <tr>
+                {["員工編號", "姓名", "E-Mail", "證照", "入職日期", "操作"].map(
+                  (h) => (
+                    <th
+                      key={h}
+                      style={{
+                        padding: "7px 10px",
+                        textAlign: "left",
+                        borderBottom: "2px solid #e5e7eb",
+                        color: "#6b7280",
+                        fontWeight: 500,
+                        fontSize: 17,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {h}
+                    </th>
+                  )
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {employees.map((e, i) => (
+                <tr
+                  key={e.id}
+                  style={{ borderBottom: "1px solid #f3f4f6" }}
+                >
+                  <td
+                    style={{
+                      padding: "8px 10px",
+                      fontWeight: 500,
+                      color: "#1b6ca8",
+                    }}
+                  >
+                    {e.id}
+                  </td>
+                  <td style={{ padding: "8px 10px", color: "#1f2937" }}>
+                    {e.name}
+                  </td>
+                  <td
+                    style={{
+                      padding: "8px 10px",
+                      color: "#6b7280",
+                      fontSize: 17,
+                    }}
+                  >
+                    {e.email || "—"}
+                  </td>
+                  <td style={{ padding: "8px 10px", color: "#1f2937" }}>
+                    {e.license || "—"}
+                  </td>
+                  <td style={{ padding: "8px 10px", color: "#6b7280" }}>
+                    {e.startDate || "—"}
+                  </td>
+                  <td
+                    style={{ padding: "8px 10px", whiteSpace: "nowrap" }}
+                  >
+                    <button
+                      onClick={() => {
+                        setForm({ ...e });
+                        setEditId(e.id);
+                        setMessage(null);
+                      }}
+                      style={{
+                        ...btn("#f59e0b", "#7c2d12"),
+                        padding: "3px 10px",
+                        fontSize: 15,
+                        marginRight: 6,
+                      }}
+                    >
+                      編輯
+                    </button>
+                    <button
+                      onClick={() => del(e)}
+                      style={{
+                        ...btn("#ef4444"),
+                        padding: "3px 10px",
+                        fontSize: 15,
+                      }}
+                    >
+                      刪除
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-const EMP_ID_PATTERN = /^[A-Za-z]{1,2}\d{3,6}$/; // 員編格式，例如 B2476
+// ═══════════════════════════════════════
+// 七、班別設定頁籤元件
+// ═══════════════════════════════════════
 
-// 主流程：把PDF解析成一份 MonthlySchedule
-async function parsePdfToSchedule(file, category){
-  const pages = await PdfTableExtractor.extractPages(file);
-  const fullText = pages.flat().map(i => i.text).join(''); // 不加空白，避免拆開的標題文字比對不到
+function ShiftTypeTab({ shiftDefs, onChange }) {
+  const blank = { code: "", name: "", fg: "#1e3a5f", bg: "#90CAF9" };
+  const [form, setForm] = useState(blank);
+  const [editCode, setEditCode] = useState(null);
+  const [message, setMessage] = useState(null);
 
-  const employees = [];
-  let detected = { westYear: null, month: null };
-  let newEmployeeSeq = 0; // 給還沒有員編的新進人員編暫時代號用(NEW1, NEW2, ...)，整份PDF共用同一組序號
+  const set = (k, v) => setForm((p) => ({ ...p, [k]: v }));
+  const reset = () => {
+    setForm(blank);
+    setEditCode(null);
+  };
 
-  for(const items of pages){
-    if(items.length === 0) continue;
-    const { anchors, headerY } = PdfTableExtractor.buildDateAnchors(items);
-
-    // 門檻設為5：避免日期直向排列的版面中，剛好有1～少數幾個日期巧合落在同一個y座標，
-    // 被誤判成「只有1～少數幾欄」的橫向日期表頭，導致誤用版面一的邏輯去解析版面二的PDF
-    if(anchors.length >= 5){
-      // ---- 版面一：日期橫向排成表頭列，員工由上而下排列 ----
-
-      // 年月只在「日期表頭列以上」的文字裡找（也就是標題那一小段），
-      // 避免日期資料本身互相接續(例如 9/9 接 9/10 變成 ...9/9|9/10...)巧合湊出看似合法的年月而誤判
-      if(detected.westYear == null && headerY != null){
-        const titleText = items.filter(it => it.y > headerY + 1).map(it => it.text).join('');
-        detected = detectYearMonth(titleText);
-      }
-
-      const firstDateX = anchors[0].x - 8; // 日期欄最左側再留一點緩衝，做為姓名欄與日期欄的分界
-      const cutoffY = PdfTableExtractor.findHeaderCutoffY(items, headerY);
-
-      // 用班別代碼本身的y座標聚成一列一列，一列＝一位員工（見 groupShiftRows 說明：
-      // 不依賴員編是否存在，所以新進人員就算還沒有員編，也不會被吃掉或跟別人混在一起）
-      const shiftItemsAll = items.filter(it => it.y < cutoffY && it.x >= firstDateX);
-      const rows = PdfTableExtractor.groupShiftRows(shiftItemsAll).sort((a, b) => b.y - a.y); // 由上而下
-
-      // 員編／姓名候選字：都在日期欄左側，員編是固定格式，姓名是其餘文字
-      const empIdCandidates = items.filter(it => it.y < cutoffY && it.x < firstDateX && EMP_ID_PATTERN.test(it.text));
-      const nameCandidates = items.filter(it => it.y < cutoffY && it.x < firstDateX && !EMP_ID_PATTERN.test(it.text));
-
-      // 依「上下順序＋整體落差最小」把員編配對到資料列，而不是單純比對單一列的距離
-      // (見 alignIdsToRows 說明：這樣才不會因為某一列的員編位置有誤差，就整批配錯)
-      const idsDesc = empIdCandidates.slice().sort((a, b) => b.y - a.y);
-      const rowToId = PdfTableExtractor.alignIdsToRows(idsDesc, rows);
-
-      for(let k = 0; k < rows.length; k++){
-        const row = rows[k];
-        row.shiftItems = row.items.sort((a, b) => a.x - b.x);
-        row.nameFragments = [];
-        row.empId = rowToId[k] ? rowToId[k].text.trim() : null; // 配不到員編就代表這一列目前沒有員編(例如剛到職、還沒建檔的新進人員)
-      }
-
-      // 姓名候選字：因為員編(或這一列本身)跟姓名的相對位置每個人不太一樣，改成整頁蒐集後，
-      // 依「離哪一列最近」重新分配，而不是依員編位置切出的區塊分配
-      for(const cand of nameCandidates){
-        let best = null, bestDist = Infinity;
-        for(const row of rows){
-          const diff = row.y - cand.y; // 正值代表候選字在這一列下方
-          if(diff < -5 || diff > 25) continue; // 只接受這一列上方一點點、或下方最多約一行高度的範圍
-          if(diff < bestDist){ bestDist = diff; best = row; }
-        }
-        if(best) best.nameFragments.push(cand);
-      }
-
-      for(const row of rows){
-        row.nameFragments.sort((a, b) => (b.y - a.y) || (a.x - b.x)); // 由上而下、同一行由左而右
-        const name = row.nameFragments.map(it => it.text).join('').trim();
-
-        const shifts = {};
-        for(const it of row.shiftItems){
-          let best = null, bestDist = Infinity;
-          for(const a of anchors){
-            const dist = Math.abs(it.x - a.x);
-            if(dist < bestDist){ bestDist = dist; best = a; }
-          }
-          if(!best) continue;
-          shifts[best.day] = (shifts[best.day] || '') + it.text;
-        }
-
-        // 還沒有員編的人（例如剛到職、還沒建檔的新進人員），先給一個暫時代號，
-        // 之後正式有員編了，可以再用「編輯班別代碼」以外的方式手動補上(或等下次匯入覆蓋)
-        let empId = row.empId;
-        if(!empId){
-          newEmployeeSeq++;
-          empId = `NEW${newEmployeeSeq}`;
-        }
-
-        const emp = new Employee(empId, name);
-        emp.shifts = shifts;
-        employees.push(emp);
-      }
-      continue;
+  const save = () => {
+    if (!form.code || !form.name) {
+      setMessage([false, "代號和名稱為必填"]);
+      return;
     }
-
-    // ---- 版面二：日期直向排成一欄，員編／姓名橫向排成表頭（整張表等於轉90度） ----
-    const { rows, minDateY } = PdfTableExtractor.buildVerticalDateRows(items);
-    if(rows.length === 0) continue; // 兩種版面都偵測不到，可能不是班表內容，略過
-
-    const columns = PdfTableExtractor.buildVerticalColumns(items, minDateY);
-    if(columns.length === 0) continue;
-
-    for(const col of columns) col.shifts = {};
-    PdfTableExtractor.assignVerticalShifts(items, rows, columns);
-
-    for(const col of columns){
-      const emp = new Employee(col.empId, col.name);
-      emp.shifts = col.shifts;
-      employees.push(emp);
+    if (!editCode && shiftDefs.find((s) => s.code === form.code)) {
+      setMessage([false, `班別代號 ${form.code} 已存在`]);
+      return;
     }
-  }
+    onChange(
+      editCode
+        ? shiftDefs.map((s) => (s.code === editCode ? { ...form } : s))
+        : [...shiftDefs, { ...form }]
+    );
+    setMessage([
+      true,
+      `班別 ${form.code}（${form.name}）已${editCode ? "更新" : "新增"}`,
+    ]);
+    reset();
+  };
 
-  // 這種版面的PDF內文常常沒有年月標題文字，退而求其次改從檔名辨識
-  // （例如「RCW-115年10月護理師班表.pdf」）
-  if(detected.westYear == null){
-    detected = detectYearMonth(file.name || '');
-  }
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      {/* ── 新增/編輯班別 ── */}
+      <div style={card}>
+        <h3
+          style={{
+            margin: "0 0 14px",
+            fontSize: 21,
+            fontWeight: 500,
+            color: "#1f2937",
+          }}
+        >
+          {editCode ? "編輯班別" : "新增班別"}
+        </h3>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 14,
+            alignItems: "flex-end",
+          }}
+        >
+          {/* 代號 */}
+          <div>
+            <label style={lbl}>班別代號 *</label>
+            <input
+              value={form.code}
+              placeholder="D"
+              disabled={!!editCode}
+              onChange={(e) => set("code", e.target.value.toUpperCase())}
+              style={{ ...inp(!!editCode), width: 80 }}
+            />
+          </div>
+          {/* 名稱 */}
+          <div>
+            <label style={lbl}>班別名稱 *</label>
+            <input
+              value={form.name}
+              placeholder="白班"
+              onChange={(e) => set("name", e.target.value)}
+              style={{ ...inp(), width: 100 }}
+            />
+          </div>
+          {/* 文字顏色 */}
+          <div>
+            <label style={lbl}>文字顏色</label>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <input
+                type="color"
+                value={form.fg}
+                onChange={(e) => set("fg", e.target.value)}
+                style={{
+                  width: 38,
+                  height: 34,
+                  padding: 2,
+                  border: "1px solid #d1d5db",
+                  borderRadius: 6,
+                  cursor: "pointer",
+                }}
+              />
+              <span
+                style={{
+                  fontSize: 15,
+                  color: "#9ca3af",
+                  fontFamily: "monospace",
+                }}
+              >
+                {form.fg}
+              </span>
+            </div>
+          </div>
+          {/* 背景顏色 */}
+          <div>
+            <label style={lbl}>背景顏色</label>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <input
+                type="color"
+                value={form.bg}
+                onChange={(e) => set("bg", e.target.value)}
+                style={{
+                  width: 38,
+                  height: 34,
+                  padding: 2,
+                  border: "1px solid #d1d5db",
+                  borderRadius: 6,
+                  cursor: "pointer",
+                }}
+              />
+              <span
+                style={{
+                  fontSize: 15,
+                  color: "#9ca3af",
+                  fontFamily: "monospace",
+                }}
+              >
+                {form.bg}
+              </span>
+            </div>
+          </div>
+          {/* 預覽 */}
+          <div>
+            <label style={lbl}>預覽效果</label>
+            <span
+              style={{
+                padding: "5px 16px",
+                borderRadius: 4,
+                fontWeight: 700,
+                fontSize: 21,
+                color: form.fg,
+                background: form.bg,
+                border: "1px solid #e5e7eb",
+              }}
+            >
+              {form.code || "?"} {form.name || "—"}
+            </span>
+          </div>
+          <button onClick={save} style={btn("#1b6ca8")}>
+            {editCode ? "更新" : "新增"}
+          </button>
+          {editCode && (
+            <button onClick={reset} style={btn("#6b7280")}>
+              取消
+            </button>
+          )}
+        </div>
+        {message && (
+          <div style={msg(message[0])}>
+            {message[0] ? "✓ " : "✗ "}
+            {message[1]}
+          </div>
+        )}
+      </div>
 
-  // 同一員編若跨頁出現（例如分頁延續），合併其班別資料
-  const merged = new Map();
-  for(const e of employees){
-    if(merged.has(e.empId)) Object.assign(merged.get(e.empId).shifts, e.shifts);
-    else merged.set(e.empId, e);
-  }
+      {/* ── 班別清單 ── */}
+      <div style={card}>
+        <h3
+          style={{
+            margin: "0 0 14px",
+            fontSize: 21,
+            fontWeight: 500,
+            color: "#1f2937",
+          }}
+        >
+          班別清單
+        </h3>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+          {shiftDefs.map((st) => (
+            <div
+              key={st.code}
+              style={{
+                border: "1px solid #e5e7eb",
+                borderRadius: 12,
+                padding: 14,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 8,
+                minWidth: 96,
+                background: "#f9fafb",
+              }}
+            >
+              {/* 班別徽章 */}
+              <div
+                style={{
+                  padding: "6px 20px",
+                  borderRadius: 4,
+                  fontWeight: 700,
+                  fontSize: 25,
+                  color: st.fg,
+                  background: st.bg,
+                  textAlign: "center",
+                }}
+              >
+                {st.code}
+              </div>
+              <div style={{ fontSize: 17, color: "#6b7280" }}>{st.name}</div>
+              <div style={{ display: "flex", gap: 5 }}>
+                <button
+                  onClick={() => {
+                    setForm({ ...st });
+                    setEditCode(st.code);
+                    setMessage(null);
+                  }}
+                  style={{
+                    ...btn("#f59e0b", "#7c2d12"),
+                    padding: "2px 8px",
+                    fontSize: 15,
+                  }}
+                >
+                  編輯
+                </button>
+                <button
+                  onClick={() => {
+                    if (!confirm(`確定刪除班別 ${st.code}（${st.name}）？`))
+                      return;
+                    onChange(shiftDefs.filter((s) => s.code !== st.code));
+                  }}
+                  style={{
+                    ...btn("#ef4444"),
+                    padding: "2px 8px",
+                    fontSize: 15,
+                  }}
+                >
+                  刪除
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
 
-  const schedule = new MonthlySchedule(category, detected.westYear, detected.month);
-  schedule.employees = Array.from(merged.values());
-
-  // 類別比對同樣可能因內文沒有文字而找不到，所以也把檔名一併納入判斷
-  const combinedText = fullText + (file.name || '');
-  const oppositeKeyword = category === 'nurse' ? '病房助理' : '護理師';
-  const categoryMismatch = combinedText.includes(oppositeKeyword) && !combinedText.includes(CATEGORY_LABEL[category]);
-
-  return { schedule, categoryMismatch, rowsFound: employees.length };
+    </div>
+  );
 }
 
-/* =========================================================================
-   四之二、Excel (.xlsx) 解析模組
-   有些醫院的班表PDF其實是「掃描圖檔」，沒有可抽取的文字層，
-   pdf.js 抓不到任何文字、上面的PDF解析流程會直接失敗。
-   這種情況建議先用外部工具（例如華為雲「通用表格識別」OCR服務、
-   或你參考的 pdf2excel 專案）把PDF轉成 Excel，再把 Excel 匯入這裡。
-   Excel本身就有規整的儲存格結構，不需要像PDF那樣用座標去猜欄位，
-   直接讀「列、欄」即可；邏輯比PDF解析單純很多。
-   ========================================================================= */
 
-async function parseExcelToSchedule(file, category){
-  const buf = await file.arrayBuffer();
-  const workbook = XLSX.read(buf, { type: 'array' });
+// ═══════════════════════════════════════
+// 八之一、PDF 轉入元件
+// ═══════════════════════════════════════
 
-  // 有些轉檔結果會把PDF每一頁存成獨立的工作表(sheet)，所以要逐一掃描所有分頁
-  const allSheetRows = workbook.SheetNames.map(name =>
-    XLSX.utils.sheet_to_json(workbook.Sheets[name], { header: 1, raw: false, defval: '' })
+/**
+ * PdfImportSection：PDF 班表轉入
+ * 流程：上傳 PDF → 解析文字 → 預覽確認 → 寫入班表
+ * 使用 PDF.js 提取文字，再用正則式辨識年月與班別
+ */
+function PdfImportSection({ employees, schedules, onAddSchedule }) {
+  // phase: idle | parsing | preview | confirmed | done | error
+  const [phase, setPhase]         = useState("idle");
+  const [preview, setPreview]     = useState(null); // { year, month, empMap, days }
+  const [errMsg, setErrMsg]       = useState("");
+  const [showPaste, setShowPaste] = useState(false);
+  const [pasteText, setPasteText] = useState("");
+
+  // ── 標準化班別代號 ──
+  // 去掉前綴數字（"3D"→"D"）、取斜線前段（"D/W"→"D", "E/學"→"E"）
+  const norm = (raw) => {
+    if (!raw) return null;
+    const stripped = raw.replace(/^\d+/, "");
+    const base = stripped.split("/")[0].toUpperCase();
+    if (base === "OFF") return "OFF";
+    if (["D", "E", "N", "S"].includes(base)) return base;
+    return null;
+  };
+
+  // ── 核心解析：文字 → { year, month, empMap, days } ──
+  const parseText = (text) => {
+    // 1. 辨識年月（例："115年5月班表" 或 "115 年 5 月 班表"）
+    const ymMatch = text.match(/(\d{2,3})\s*[年]\s*(\d{1,2})\s*[月]\s*班表/);
+    if (!ymMatch) {
+      throw new Error(
+        "找不到班表年月\n" +
+        "請確認 PDF 包含「XXX年X月班表」文字\n" +
+        "例：115年5月班表 或 115 年 5 月班表"
+      );
+    }
+    const year  = parseInt(ymMatch[1]) + 1911; // 民國年 → 西元年
+    const month = parseInt(ymMatch[2]);
+    const days  = daysInMonth(year, month);
+
+    // 2. 切成 token 陣列
+    const tokens = text.split(/\s+/).filter(Boolean);
+
+    // 3. 逐一找員工 ID（N 或 B 開頭後接 4 位數字）
+    const EMP_RE = /^[NB]\d{4}$/;
+    const empMap = {};
+
+    for (let i = 0; i < tokens.length; i++) {
+      if (!EMP_RE.test(tokens[i])) continue;
+      const empId = tokens[i];
+      if (empMap[empId]) continue; // 已解析過，跳過
+
+      // 從 ID 之後收集班別 token
+      const shifts = [];
+      let j = i + 1;
+      let nonShiftRun = 0;
+
+      while (j < tokens.length && shifts.length < days + 2) {
+        const sh = norm(tokens[j]);
+        if (sh) {
+          shifts.push(sh);
+          nonShiftRun = 0;
+        } else {
+          // 遇到中文字且班別數已足夠 → 進入姓名區，停止
+          if (/[\u4e00-\u9fa5]/.test(tokens[j]) && shifts.length >= days - 2) break;
+          nonShiftRun++;
+          if (nonShiftRun >= 3 && shifts.length > 0) break;
+        }
+        j++;
+      }
+
+      // PDF 第一欄是前月末，若收到的 token 比 days 多一個就跳過第一個
+      if (shifts.length >= days + 1) {
+        empMap[empId] = shifts.slice(1, days + 1);
+      } else if (shifts.length >= days) {
+        empMap[empId] = shifts.slice(0, days);
+      }
+      i = j - 1;
+    }
+
+    if (Object.keys(empMap).length === 0) {
+      throw new Error(
+        "無法辨識任何員工班別\n" +
+        "可能原因：\n" +
+        "・PDF 版面複雜，文字順序錯亂\n" +
+        "・請改用「文字貼上」方式（在 PDF 閱讀器按 Ctrl+A 全選後複製）"
+      );
+    }
+
+    return { year, month, empMap, days };
+  };
+
+  // ── 動態載入 PDF.js ──
+  const loadPdfJs = () =>
+    new Promise((resolve, reject) => {
+      if (window.pdfjsLib) { resolve(); return; }
+      const s = document.createElement("script");
+      s.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+      s.onload = () => {
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+        resolve();
+      };
+      s.onerror = () => reject(new Error("PDF.js 載入失敗，請檢查網路"));
+      document.head.appendChild(s);
+    });
+
+  // ── 上傳 PDF 檔案 ──
+  const handlePdfFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = "";
+    setPhase("parsing");
+    setErrMsg("");
+    try {
+      await loadPdfJs();
+      const buf = await file.arrayBuffer();
+      const pdf = await window.pdfjsLib.getDocument({ data: buf }).promise;
+      let fullText = "";
+      for (let p = 1; p <= pdf.numPages; p++) {
+        const page = await pdf.getPage(p);
+        const tc   = await page.getTextContent();
+        // 依 y 由上到下、x 由左到右排序
+        const items = tc.items.sort((a, b) => {
+          const dy = Math.round(b.transform[5] - a.transform[5]);
+          return dy !== 0 ? dy : a.transform[4] - b.transform[4];
+        });
+        fullText += items.map((it) => it.str).join(" ") + "\n";
+      }
+      const result = parseText(fullText);
+      setPreview(result);
+      setPhase("preview");
+    } catch (err) {
+      setErrMsg(err.message);
+      setPhase("error");
+    }
+  };
+
+  // ── 解析貼上的文字 ──
+  const handlePasteImport = () => {
+    setErrMsg("");
+    try {
+      const result = parseText(pasteText);
+      setPreview(result);
+      setPhase("preview");
+    } catch (err) {
+      setErrMsg(err.message);
+      setPhase("error");
+    }
+  };
+
+  // ── 確認轉入（含覆蓋判斷）──
+  const confirmImport = () => {
+    const { year, month, empMap, days } = preview;
+    const k = monthKey(year, month);
+
+    // 判斷是否已有舊資料
+    const hasOldData = !!schedules[k];
+    if (hasOldData) {
+      // 有舊資料 → 強制詢問是否覆蓋
+      const rocY = year - 1911;
+      const ok = window.confirm(
+        "【覆蓋確認】\n\n" +
+        "民國 " + rocY + " 年 " + month + " 月（西元 " + year + " 年）\n" +
+        "已有班表資料存在。\n\n" +
+        "確定要刪除舊資料並匯入新的 PDF 班表嗎？\n" +
+        "（此操作無法復原）"
+      );
+      if (!ok) return; // 取消 → 留在 preview 繼續等待
+    }
+
+    // 建立完整員工班表（PDF 中沒出現的員工填空）
+    const fullMap = {};
+    employees.forEach((emp) => {
+      fullMap[emp.id] = empMap[emp.id] || Array(days).fill("-");
+    });
+
+    // 呼叫父層：先清除舊資料再寫入（由 onAddSchedule 內部處理）
+    onAddSchedule(year, month, fullMap, hasOldData);
+    setPhase("done");
+    setPreview(null);
+    setPasteText("");
+  };
+
+  // ── 輔助：查員工姓名 ──
+  const empName = (id) => employees.find((e) => e.id === id)?.name || id;
+
+  // ── 已解析月份是否已有資料 ──
+  const previewHasOld = preview ? !!schedules[monthKey(preview.year, preview.month)] : false;
+
+  return (
+    <div style={{
+      background: "#faf5ff",
+      border: "2px solid #a78bfa",
+      borderRadius: 12,
+      padding: 20,
+    }}>
+      {/* 標題列 */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+        <span style={{
+          background: "#7c3aed", color: "#fff",
+          borderRadius: 6, padding: "3px 10px", fontSize: 17, fontWeight: 700,
+        }}>PDF 轉入</span>
+        <h3 style={{ margin: 0, fontSize: 21, fontWeight: 500, color: "#4c1d95" }}>
+          PDF 班表匯入
+        </h3>
+      </div>
+      <p style={{ margin: "0 0 14px", fontSize: 18, color: "#6d28d9", lineHeight: 1.6 }}>
+        上傳班表 PDF，系統自動辨識年月與班別，預覽確認後再寫入。
+        若該月份已有資料，將詢問是否覆蓋。
+      </p>
+
+      {/* ── idle / error：上傳區 ── */}
+      {(phase === "idle" || phase === "error") && (
+        <div>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
+            {/* 主要按鈕：上傳 PDF */}
+            <label style={{
+              background: "#7c3aed", color: "#fff",
+              padding: "9px 18px", borderRadius: 6,
+              cursor: "pointer", display: "inline-block",
+              fontSize: 20, fontWeight: 500, fontFamily: "inherit",
+            }}>
+              上傳 PDF 班表
+              <input
+                type="file"
+                accept=".pdf,application/pdf"
+                onChange={handlePdfFile}
+                style={{ display: "none" }}
+              />
+            </label>
+
+            {/* 備用：文字貼上 */}
+            <button
+              onClick={() => setShowPaste((v) => !v)}
+              style={{
+                padding: "9px 14px", background: "transparent",
+                color: "#7c3aed", border: "1px solid #a78bfa",
+                borderRadius: 6, cursor: "pointer",
+                fontSize: 18, fontFamily: "inherit",
+              }}
+            >
+              {showPaste ? "收起文字貼上" : "改用文字貼上（備用）"}
+            </button>
+          </div>
+
+          {/* 文字貼上展開區 */}
+          {showPaste && (
+            <div style={{
+              background: "#fff", border: "1px solid #c4b5fd",
+              borderRadius: 8, padding: 14, marginBottom: 10,
+            }}>
+              <p style={{ margin: "0 0 8px", fontSize: 17, color: "#6b7280" }}>
+                在 PDF 閱讀器中按 Ctrl+A 全選 → Ctrl+C 複製，再貼到下方：
+              </p>
+              <textarea
+                value={pasteText}
+                onChange={(e) => setPasteText(e.target.value)}
+                placeholder={"貼上從 PDF 複製的文字...\n\n例：115年5月班表\nN0935 陳志偉 3D OFF D D D OFF..."}
+                style={{
+                  width: "100%", height: 130, padding: "8px 10px",
+                  border: "1px solid #c4b5fd", borderRadius: 6,
+                  fontSize: 17, fontFamily: "monospace",
+                  boxSizing: "border-box", resize: "vertical", background: "#fff",
+                }}
+              />
+              <button
+                onClick={handlePasteImport}
+                disabled={!pasteText.trim()}
+                style={{
+                  marginTop: 8,
+                  padding: "7px 16px",
+                  background: pasteText.trim() ? "#7c3aed" : "#9ca3af",
+                  color: "#fff", border: "none", borderRadius: 6,
+                  cursor: pasteText.trim() ? "pointer" : "not-allowed",
+                  fontSize: 18, fontFamily: "inherit",
+                }}
+              >
+                解析文字
+              </button>
+            </div>
+          )}
+
+          {/* 錯誤訊息 */}
+          {phase === "error" && (
+            <div style={{
+              padding: "10px 14px", background: "#fef2f2",
+              border: "1px solid #fecaca", borderRadius: 6,
+              fontSize: 18, color: "#b91c1c", whiteSpace: "pre-line",
+              lineHeight: 1.7,
+            }}>
+              ✗ {errMsg}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── parsing：解析中 ── */}
+      {phase === "parsing" && (
+        <div style={{
+          padding: "24px 0", textAlign: "center",
+          color: "#7c3aed", fontSize: 20,
+        }}>
+          <div style={{ fontSize: 39, marginBottom: 8 }}>⏳</div>
+          解析 PDF 中，請稍候...
+        </div>
+      )}
+
+      {/* ── preview：預覽確認 ── */}
+      {phase === "preview" && preview && (
+        <div>
+          {/* 辨識結果摘要 */}
+          <div style={{
+            display: "flex", flexWrap: "wrap", gap: 16,
+            background: "#ede9fe", borderRadius: 8,
+            padding: "10px 16px", marginBottom: 12,
+            alignItems: "center",
+          }}>
+            <div>
+              <div style={{ fontSize: 15, color: "#7c3aed" }}>辨識月份</div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: "#4c1d95" }}>
+                民國 {preview.year - 1911} 年 {preview.month} 月
+              </div>
+              <div style={{ fontSize: 15, color: "#8b5cf6" }}>西元 {preview.year} 年</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 15, color: "#7c3aed" }}>辨識員工數</div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: "#4c1d95" }}>
+                {Object.keys(preview.empMap).length} 人
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: 15, color: "#7c3aed" }}>月份天數</div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: "#4c1d95" }}>
+                {preview.days} 天
+              </div>
+            </div>
+
+            {/* 舊資料警示 */}
+            {previewHasOld && (
+              <div style={{
+                padding: "8px 14px", background: "#fef3c7",
+                border: "1px solid #fcd34d", borderRadius: 6,
+                fontSize: 18, color: "#92400e", fontWeight: 500,
+                lineHeight: 1.5,
+              }}>
+                ⚠ 此月份已有班表資料<br/>
+                <span style={{ fontSize: 15, fontWeight: 400 }}>
+                  按「確認轉入」後將詢問是否覆蓋
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* 班別預覽表格 */}
+          <div style={{
+            overflowX: "auto", marginBottom: 14,
+            border: "1px solid #ddd6fe", borderRadius: 8,
+          }}>
+            <table style={{ borderCollapse: "collapse", fontSize: 15, width: "100%" }}>
+              <thead>
+                <tr style={{ background: "#ede9fe" }}>
+                  <th style={{
+                    padding: "5px 10px", textAlign: "left",
+                    color: "#4c1d95", minWidth: 100,
+                  }}>員工</th>
+                  {Array.from({ length: preview.days }, (_, i) => {
+                    const dow = new Date(preview.year, preview.month - 1, i + 1).getDay();
+                    return (
+                      <th key={i} style={{
+                        padding: "3px 1px", textAlign: "center",
+                        color: dow === 0 ? "#b91c1c" : dow === 6 ? "#1d4ed8" : "#4c1d95",
+                        fontSize: 14, width: 24,
+                      }}>
+                        {i + 1}
+                      </th>
+                    );
+                  })}
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(preview.empMap).map(([id, shifts], ri) => (
+                  <tr key={id} style={{
+                    background: ri % 2 === 0 ? "#fff" : "#faf5ff",
+                    borderBottom: "1px solid #ede9fe",
+                  }}>
+                    <td style={{
+                      padding: "4px 10px", whiteSpace: "nowrap",
+                      color: "#4c1d95", fontWeight: 500,
+                    }}>
+                      {empName(id)}{" "}
+                      <span style={{ color: "#a78bfa", fontWeight: 400, fontSize: 14 }}>
+                        {id}
+                      </span>
+                    </td>
+                    {shifts.map((sh, di) => {
+                      const bgMap = { D: "#90CAF9", E: "#FED7AA", N: "#3949AB", OFF: "#E5E7EB" };
+                      const fgMap = { D: "#1e3a5f", E: "#7c2d12", N: "#fff", OFF: "#6b7280" };
+                      return (
+                        <td key={di} style={{ padding: "2px 1px", textAlign: "center" }}>
+                          <span style={{
+                            display: "inline-block", width: 22, height: 18,
+                            borderRadius: 2, lineHeight: "18px",
+                            background: bgMap[sh] || "transparent",
+                            color: fgMap[sh] || "#ccc",
+                            fontSize: 11, fontWeight: 700, textAlign: "center",
+                          }}>
+                            {sh === "-" ? "" : sh}
+                          </span>
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* 操作按鈕 */}
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <button onClick={confirmImport} style={{
+              padding: "9px 20px", background: "#16a34a",
+              color: "#fff", border: "none", borderRadius: 6,
+              cursor: "pointer", fontSize: 20, fontWeight: 500,
+              fontFamily: "inherit",
+            }}>
+              確認轉入{previewHasOld ? "（將詢問覆蓋）" : ""}
+            </button>
+            <button
+              onClick={() => { setPhase("idle"); setPreview(null); }}
+              style={{
+                padding: "9px 16px", background: "#fff",
+                color: "#6b7280", border: "1px solid #d1d5db",
+                borderRadius: 6, cursor: "pointer",
+                fontSize: 18, fontFamily: "inherit",
+              }}
+            >
+              取消
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── done：完成 ── */}
+      {phase === "done" && (
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{
+            flex: 1, padding: "10px 16px",
+            background: "#f0fdf4", border: "1px solid #bbf7d0",
+            borderRadius: 6, fontSize: 18, color: "#15803d",
+          }}>
+            ✓ 班表已成功轉入！已自動切換到該月班表頁籤。
+          </div>
+          <button
+            onClick={() => { setPhase("idle"); setErrMsg(""); }}
+            style={{
+              padding: "9px 14px", background: "#7c3aed",
+              color: "#fff", border: "none", borderRadius: 6,
+              cursor: "pointer", fontSize: 18, fontFamily: "inherit",
+              whiteSpace: "nowrap",
+            }}
+          >
+            再轉入一份
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DataTab({ employees, shiftDefs, schedules, onImport, onAddSchedule }) {
+  const [message, setMessage] = useState(null);
+
+  /** 匯出 XML 並下載 */
+  const exportXml = () => {
+    const xml = serializeToXml({ employees, shiftDefs, schedules });
+    const blob = new Blob([xml], { type: "application/xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const d = new Date();
+    a.href = url;
+    a.download = `班表_${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}.xml`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setMessage([true, "XML 檔案已匯出下載"]);
+  };
+
+  /** 匯入 XML 檔案 */
+  const importXml = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = ""; // 重置，方便重複選檔
+
+    const fr = new FileReader();
+    fr.onload = (ev) => {
+      try {
+        const data = parseFromXml(ev.target.result);
+        if (!data.employees.length) {
+          setMessage([false, "XML 內無員工資料"]);
+          return;
+        }
+        // 檢查是否有重疊月份
+        const overlap = Object.keys(data.schedules).filter(
+          (k) => schedules[k]
+        );
+        if (overlap.length) {
+          const labels = overlap
+            .map((k) => {
+              const [y, m] = k.split("-");
+              return `民國 ${toROC(+y)} 年 ${m} 月`;
+            })
+            .join("、");
+          if (!confirm(`以下月份已有資料：${labels}\n確定要覆蓋嗎？`)) return;
+        }
+        onImport(data);
+        setMessage([true, "XML 資料匯入成功"]);
+      } catch (err) {
+        setMessage([false, "匯入失敗：" + err.message]);
+      }
+    };
+    fr.readAsText(file, "UTF-8");
+  };
+
+  // 統計數字
+  const months = Object.keys(schedules).sort();
+  const totalRec = Object.values(schedules).reduce(
+    (s, em) =>
+      s +
+      Object.values(em).reduce(
+        (s2, sh) => s2 + sh.filter((x) => x && x !== "-").length,
+        0
+      ),
+    0
   );
 
-  const fullText = allSheetRows.flat(2).join('');
-  const detected = detectYearMonth(fullText);
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      {/* ── PDF 班表轉入（最優先，置頂）── */}
+      <PdfImportSection
+        employees={employees}
+        schedules={schedules}
+        onAddSchedule={onAddSchedule}
+      />
 
-  const employees = [];
-
-  for(const rows of allSheetRows){
-    // 找出同時含有「員編」與「姓名」的表頭列
-    const headerIdx = rows.findIndex(row => {
-      const text = row.join('');
-      return text.includes('員編') && text.includes('姓名');
-    });
-    if(headerIdx === -1) continue;
-    const header = rows[headerIdx];
-
-    // 建立欄位對照：欄位索引 -> 'empId' | 'name' | 日期數字
-    const colMap = {};
-    header.forEach((cellText, colIdx) => {
-      const text = String(cellText || '').trim();
-      const m = text.match(/^(\d{1,2})\/(\d{1,2})$/);
-      if(m) colMap[colIdx] = parseInt(m[2], 10);
-      else if(text.includes('員編')) colMap[colIdx] = 'empId';
-      else if(text.includes('姓名')) colMap[colIdx] = 'name';
-    });
-
-    for(let r = headerIdx + 1; r < rows.length; r++){
-      const row = rows[r];
-      const empIdCol = Object.keys(colMap).find(c => colMap[c] === 'empId');
-      const nameCol = Object.keys(colMap).find(c => colMap[c] === 'name');
-      const empId = empIdCol !== undefined ? String(row[empIdCol] || '').trim() : '';
-      if(!EMP_ID_PATTERN.test(empId)) continue;
-
-      const emp = new Employee(empId, nameCol !== undefined ? String(row[nameCol] || '').trim() : '');
-      for(const colIdx of Object.keys(colMap)){
-        const key = colMap[colIdx];
-        if(key === 'empId' || key === 'name') continue;
-        const val = String(row[colIdx] || '').trim();
-        if(val) emp.shifts[key] = val;
-      }
-      employees.push(emp);
-    }
-  }
-
-  const merged = new Map();
-  for(const e of employees){
-    if(merged.has(e.empId)) Object.assign(merged.get(e.empId).shifts, e.shifts);
-    else merged.set(e.empId, e);
-  }
-
-  const schedule = new MonthlySchedule(category, detected.westYear, detected.month);
-  schedule.employees = Array.from(merged.values());
-
-  const oppositeKeyword = category === 'nurse' ? '病房助理' : '護理師';
-  const categoryMismatch = fullText.includes(oppositeKeyword) && !fullText.includes(CATEGORY_LABEL[category]);
-
-  return { schedule, categoryMismatch, rowsFound: employees.length };
-}
-
-/* =========================================================================
-   四之一、XML 備份 / 還原
-   格式參考既有系統的做法（屬性式 XML、逐一逸出特殊字元），
-   並依本系統的資料結構調整：每份 <schedule> 多帶一個 category 屬性，
-   員工與班別以巢狀方式表示，對應 MonthlySchedule -> Employee -> shifts 的結構。
-
-   <scheduleSystem>
-     <schedules>
-       <schedule category="nurse" year="2026" month="9">
-         <employee empId="B2476" name="夏盈珍">
-           <entry day="1" shift="D1"/>
-           ...
-         </employee>
-       </schedule>
-     </schedules>
-   </scheduleSystem>
-   ========================================================================= */
-
-function xmlEscape(s){
-  return String(s ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-}
-
-// 將多份 MonthlySchedule 序列化為 XML 字串
-function serializeSchedulesToXml(schedules){
-  const lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<scheduleSystem>', '  <schedules>'];
-  for(const s of schedules){
-    lines.push(`    <schedule category="${xmlEscape(s.category)}" year="${s.westYear}" month="${s.month}">`);
-    for(const emp of s.employees){
-      lines.push(`      <employee empId="${xmlEscape(emp.empId)}" name="${xmlEscape(emp.name)}">`);
-      for(const day of Object.keys(emp.shifts)){
-        const shift = emp.shifts[day];
-        if(shift) lines.push(`        <entry day="${day}" shift="${xmlEscape(shift)}"/>`);
-      }
-      lines.push('      </employee>');
-    }
-    lines.push('    </schedule>');
-  }
-  lines.push('  </schedules>', '</scheduleSystem>');
-  return lines.join('\n');
-}
-
-// 從 XML 字串解析出多份 MonthlySchedule
-function parseXmlToSchedules(xmlStr){
-  const doc = new DOMParser().parseFromString(xmlStr, 'text/xml');
-  if(doc.querySelector('parsererror')) throw new Error('XML格式錯誤，請確認檔案內容');
-
-  const schedules = [];
-  doc.querySelectorAll('schedule').forEach(schEl => {
-    const category = schEl.getAttribute('category');
-    const westYear = parseInt(schEl.getAttribute('year'), 10);
-    const month = parseInt(schEl.getAttribute('month'), 10);
-    if((category !== 'nurse' && category !== 'assistant') || !westYear || !month) return;
-
-    const schedule = new MonthlySchedule(category, westYear, month);
-    schEl.querySelectorAll('employee').forEach(empEl => {
-      const emp = new Employee(empEl.getAttribute('empId') || '', empEl.getAttribute('name') || '');
-      empEl.querySelectorAll('entry').forEach(enEl => {
-        const day = enEl.getAttribute('day');
-        const shift = enEl.getAttribute('shift');
-        if(day && shift) emp.shifts[day] = shift;
-      });
-      schedule.employees.push(emp);
-    });
-    schedules.push(schedule);
-  });
-  return schedules;
-}
-
-// 匯出：把儲存空間內所有月班表打包成一份 XML 檔案並下載
-async function exportXmlBackup(){
-  const schedules = await ScheduleRepository.loadAll();
-  if(schedules.length === 0){ showToast('目前沒有任何班表資料可以匯出', true); return; }
-
-  const xml = serializeSchedulesToXml(schedules);
-  const blob = new Blob([xml], { type: 'application/xml;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  const d = new Date();
-  a.href = url;
-  a.download = `月班表備份_${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}.xml`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-  showToast(`已匯出 ${schedules.length} 個月份的班表資料`);
-}
-
-// 匯入：讀取XML檔案，若有月份已存在資料先詢問是否覆蓋，再逐筆寫入儲存空間
-async function importXmlBackup(file){
-  let schedules;
-  try{
-    const text = await file.text();
-    schedules = parseXmlToSchedules(text);
-  }catch(err){
-    showToast('XML檔案格式錯誤：' + (err.message || err), true);
-    return;
-  }
-  if(schedules.length === 0){ showToast('這份XML檔案內沒有可用的班表資料', true); return; }
-
-  const existing = await ScheduleRepository.loadAll();
-  const existingKeys = new Set(existing.map(s => s.storageKey));
-  const conflictCount = schedules.filter(s => existingKeys.has(s.storageKey)).length;
-  if(conflictCount > 0){
-    const ok = confirm(`匯入的資料中有 ${conflictCount} 個月份已經有資料，匯入後將會覆蓋，確定要繼續嗎？`);
-    if(!ok) return;
-  }
-
-  for(const s of schedules) await ScheduleRepository.save(s);
-  showToast(`已匯入 ${schedules.length} 個月份的班表資料`);
-
-  // 若目前已開啟的類別工作區正好顯示同一頁面，重新查詢一次以更新畫面
-  Object.keys(workspacesBuilt).forEach(cat => {
-    if(!workspacesBuilt[cat]) return;
-    const root = document.getElementById(`workspace-${cat}`);
-    const queryBtn = root && root.querySelector('.btn-query');
-    if(queryBtn) queryBtn.click();
-  });
-}
-
-/* =========================================================================
-   五、畫面渲染
-   ========================================================================= */
-
-function shiftClass(code){
-  if(!code) return 'shift-empty';
-  if(code.startsWith('OFF')) return 'shift-off';
-  if(code.startsWith('D') || code.includes('白值')) return 'shift-d';
-  if(code.startsWith('E')) return 'shift-e';
-  if(code.startsWith('N') || code.includes('夜8')) return 'shift-n';
-  return 'shift-other';
-}
-
-/* =========================================================================
-   統計規則（依需求文件定義）：看代碼「內容中是否含有」對應字元/字串，
-   不要求完全相等，例如 D/W、D/學 都算 D白班，OFF、國、休 都算 OFF休假。
-   ========================================================================= */
-function isDayShiftCode(code){ return !!code && (code.includes('D') || code.includes('白值')); }
-function isEveningShiftCode(code){ return !!code && code.includes('E'); }
-function isNightShiftCode(code){ return !!code && (code.includes('N') || code.includes('夜8')); }
-function isOffShiftCode(code){
-  if(!code) return false;
-  return code.toLowerCase().includes('off') || code.includes('國') || code.includes('休');
-}
-
-// 全員班表下方的「統計」列：逐日計算 D白班/E小夜/N大夜 各有幾位員工是該班別，
-// 並在最下面加一列「合計」= 當天 D+E+N 三種班別人數的總和，等於當天總共有多少人上班
-function buildGroupStatRows(schedule, days){
-  const countOf = (predicate) => days.map(d => schedule.employees.filter(e => predicate(e.shifts[d])).length);
-  const dCounts = countOf(isDayShiftCode);
-  const eCounts = countOf(isEveningShiftCode);
-  const nCounts = countOf(isNightShiftCode);
-  const totalCounts = days.map((_, i) => dCounts[i] + eCounts[i] + nCounts[i]);
-
-  const rowCells = (counts, extraClass = '') => counts.map(c => `<td class="stat-count ${extraClass}">${c}</td>`).join('');
-
-  const dividerRow = `<tr class="stat-row stat-divider"><td class="col-id stat-row-label">統計</td><td class="col-name"></td>${days.map(() => '<td></td>').join('')}</tr>`;
-  const dRow = `<tr class="stat-row"><td class="col-id"></td><td class="col-name stat-row-label">D白班</td>${rowCells(dCounts)}</tr>`;
-  const eRow = `<tr class="stat-row"><td class="col-id"></td><td class="col-name stat-row-label">E小夜</td>${rowCells(eCounts)}</tr>`;
-  const nRow = `<tr class="stat-row"><td class="col-id"></td><td class="col-name stat-row-label">N大夜</td>${rowCells(nCounts)}</tr>`;
-  const totalRow = `<tr class="stat-row stat-total"><td class="col-id"></td><td class="col-name stat-row-label">合計</td>${rowCells(totalCounts, 'stat-total-count')}</tr>`;
-  return dividerRow + dRow + eRow + nRow + totalRow;
-}
-
-function renderScheduleTable(schedule){
-  const days = Array.from({ length: schedule.daysInMonth }, (_, i) => i + 1);
-
-  const dateHeaderCells = days.map(d => `<th>${schedule.month}/${d}</th>`).join('');
-  const weekHeaderCells = days.map(d => {
-    const wd = schedule.weekdayOf(d);
-    const isWeekend = (wd === '六' || wd === '日');
-    return `<th class="${isWeekend ? 'weekend' : ''}">${wd}</th>`;
-  }).join('');
-
-  const bodyRows = schedule.employees.map(emp => {
-    const cells = days.map(d => {
-      const code = emp.shifts[d] || '';
-      return `<td class="shift editable-shift ${shiftClass(code)}" data-empid="${escapeHtml(emp.empId)}" data-day="${d}" title="點擊修改班別代碼">${escapeHtml(code)}</td>`;
-    }).join('');
-    return `<tr><td class="col-id">${escapeHtml(emp.empId)}</td><td class="col-name clickable-name" data-empid="${escapeHtml(emp.empId)}" title="點擊查看個人月班表">${escapeHtml(emp.name)}</td>${cells}</tr>`;
-  }).join('');
-
-  const statRows = buildGroupStatRows(schedule, days);
-
-  return `
-    <table class="schedule-table">
-      <thead>
-        <tr><th class="col-id">員編</th><th class="col-name">姓名</th>${dateHeaderCells}</tr>
-        <tr><th class="col-id"></th><th class="col-name"></th>${weekHeaderCells}</tr>
-      </thead>
-      <tbody>${bodyRows}</tbody>
-      <tfoot>${statRows}</tfoot>
-    </table>`;
-}
-
-// 個人月班表下方的小計表：統計這個人整個月 D白班/E小夜/N大夜/OFF休假 各出現幾天
-function renderPersonalStatTable(emp, daysInMonth){
-  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-  const countD = days.filter(d => isDayShiftCode(emp.shifts[d])).length;
-  const countE = days.filter(d => isEveningShiftCode(emp.shifts[d])).length;
-  const countN = days.filter(d => isNightShiftCode(emp.shifts[d])).length;
-  const countOff = days.filter(d => isOffShiftCode(emp.shifts[d])).length;
-
-  return `
-    <table class="personal-stat-table">
-      <thead><tr><th></th><th>D白班</th><th>E小夜</th><th>N大夜</th><th>OFF休假</th></tr></thead>
-      <tbody><tr><td class="stat-row-label">統計</td><td class="stat-count">${countD}</td><td class="stat-count">${countE}</td><td class="stat-count">${countN}</td><td class="stat-count">${countOff}</td></tr></tbody>
-    </table>`;
-}
-
-// 個人月班表：以「星期幾」排成一格一格的月曆樣式，可依 weekStartIndex(0=日~6=六) 調整每週從哪天開始
-function renderPersonalCalendarTable(schedule, emp, weekStartIndex){
-  const daysInMonth = schedule.daysInMonth;
-
-  // 依起始星期重新排序表頭：例如起始選「星期一」，表頭就會是 一二三四五六日
-  const orderedWeekdayIdx = Array.from({ length: 7 }, (_, i) => (weekStartIndex + i) % 7);
-  const headerCells = orderedWeekdayIdx.map(idx => {
-    const isWeekend = (idx === 0 || idx === 6); // 原始的日(0)、六(6)，不受排序影響，仍視為週末
-    return `<th class="${isWeekend ? 'weekend' : ''}">${WEEKDAY_LABELS[idx]}</th>`;
-  }).join('');
-
-  // 把每一天依「離起始星期幾天」算出它落在這一週的第幾欄，湊成一列一列的月曆
-  const rows = [];
-  let currentRow = new Array(7).fill(null);
-  for(let d = 1; d <= daysInMonth; d++){
-    const weekdayIdx = new Date(schedule.westYear, schedule.month - 1, d).getDay();
-    const col = (weekdayIdx - weekStartIndex + 7) % 7;
-    currentRow[col] = d;
-    if(col === 6){
-      rows.push(currentRow);
-      currentRow = new Array(7).fill(null);
-    }
-  }
-  if(currentRow.some(v => v !== null)) rows.push(currentRow);
-
-  const bodyRows = rows.map(row => {
-    const cells = row.map(day => {
-      if(day == null) return `<td class="cal-empty"></td>`;
-      const code = emp.shifts[day] || '';
-      return `<td class="cal-day ${shiftClass(code)}">
-        <div class="cal-day-num">${day}</div>
-        <div class="cal-day-shift">${escapeHtml(code)}</div>
-      </td>`;
-    }).join('');
-    return `<tr>${cells}</tr>`;
-  }).join('');
-
-  return `<table class="calendar-table"><thead><tr>${headerCells}</tr></thead><tbody>${bodyRows}</tbody></table>`;
-}
-
-const LEGEND_HTML = `
-  <div class="legend">
-    <span><span class="swatch" style="background:var(--shift-d-bg);border:1px solid var(--shift-d)"></span>白班 (D)</span>
-    <span><span class="swatch" style="background:var(--shift-e-bg);border:1px solid var(--shift-e)"></span>小夜 (E)</span>
-    <span><span class="swatch" style="background:var(--shift-n-bg);border:1px solid var(--shift-n)"></span>大夜 (N)</span>
-    <span><span class="swatch" style="background:var(--shift-off-bg);border:1px solid var(--shift-off)"></span>休假 (OFF)</span>
-    <span><span class="swatch" style="background:var(--shift-other-bg);border:1px solid var(--shift-other)"></span>其他代碼</span>
-  </div>`;
-
-/* =========================================================================
-   六、頁面組裝 —— 每個類別各建立一份查詢區 + 匯入區
-   ========================================================================= */
-
-function buildWorkspaceMarkup(category){
-  const now = new Date();
-  const defaultRocYear = westToRoc(now.getFullYear());
-  const defaultMonth = now.getMonth() + 1;
-  const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1)
-    .map(m => `<option value="${m}" ${m === defaultMonth ? 'selected' : ''}>${m}月</option>`).join('');
-
-  return `
-    <div class="panel">
-      <h2>查詢 ${CATEGORY_LABEL[category]} 月班表</h2>
-      <div class="field-row">
-        <div class="field">
-          <label>民國年</label>
-          <input type="number" class="roc-year-input" value="${defaultRocYear}" min="100" max="200">
+      {/* ── XML 備份 ── */}
+      <div style={card}>
+        <h3
+          style={{
+            margin: "0 0 10px",
+            fontSize: 21,
+            fontWeight: 500,
+            color: "#1f2937",
+          }}
+        >
+          XML 備份與還原
+        </h3>
+        <p
+          style={{
+            margin: "0 0 14px",
+            fontSize: 18,
+            color: "#6b7280",
+            lineHeight: 1.6,
+          }}
+        >
+          所有班表、員工、班別設定皆以 XML 格式儲存。
+          建議定期匯出並上傳至 Google Drive 備份。
+        </p>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <button onClick={exportXml} style={btn("#16a34a")}>
+            匯出 XML
+          </button>
+          <label
+            style={{
+              ...btn("#4f46e5"),
+              cursor: "pointer",
+              display: "inline-block",
+            }}
+          >
+            匯入 XML
+            <input
+              type="file"
+              accept=".xml,application/xml"
+              onChange={importXml}
+              style={{ display: "none" }}
+            />
+          </label>
+          <a
+            href="https://drive.google.com/drive/folders/1KaFaTW_YDupDZ2JpMuxHMu77fBVgXv2d"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              ...btn("#1a73e8"),
+              textDecoration: "none",
+              display: "inline-block",
+            }}
+          >
+            Google Drive 備份資料夾
+          </a>
         </div>
-        <div class="field">
-          <label>月份</label>
-          <select class="month-select">${monthOptions}</select>
-        </div>
-        <button type="button" class="btn btn-primary btn-query">查詢班表</button>
-        <button type="button" class="btn btn-danger btn-clear">清除本月資料</button>
-      </div>
-      <div class="result-area" style="margin-top:16px;"></div>
-    </div>
-
-    <div class="panel personal-panel" style="display:none;">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--line);">
-        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-          <button type="button" class="btn btn-ghost btn-prev-emp" title="上一筆">◀ 上一筆</button>
-          <h2 class="personal-title" style="border:none; padding:0; margin:0;"></h2>
-          <button type="button" class="btn btn-ghost btn-next-emp" title="下一筆">下一筆 ▶</button>
-        </div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <label style="font-size:15.6px; color:var(--ink-muted);">每週起始週：</label>
-          <select class="week-start-select">
-            <option value="0">星期日</option>
-            <option value="1">星期一</option>
-            <option value="2">星期二</option>
-            <option value="3">星期三</option>
-            <option value="4">星期四</option>
-            <option value="5">星期五</option>
-            <option value="6">星期六</option>
-          </select>
-        </div>
-      </div>
-      <div class="personal-calendar-area"></div>
-    </div>
-
-    <div class="panel">
-      <h2>匯入 ${CATEGORY_LABEL[category]} PDF 班表</h2>
-      <input type="file" class="pdf-input" accept="application/pdf">
-      <p class="upload-note">
-        上傳${CATEGORY_LABEL[category]}的月班表 PDF 後，系統會自動讀取表格內容，
-        並嘗試辨識年份與月份（西元、民國格式皆可）。確認無誤後按下「確認匯入」才會寫入儲存格。
-      </p>
-      <p class="upload-note" style="margin-top:8px;">
-        ※ 若您的 PDF 是「掃描圖檔」而非文字版（常見於印表機掃描的班表），本功能會抓不到任何文字而失敗。
-        這種情況請改用下方的 Excel 匯入：先用 OCR 工具（例如華為雲「通用表格識別」服務，或您參考的 pdf2excel 專案）
-        把 PDF 轉成 .xlsx 檔，再上傳到這裡。
-      </p>
-      <div style="margin-top:14px; padding-top:14px; border-top:1px dashed var(--line);">
-        <label style="font-size:15.6px; color:var(--ink-muted); display:block; margin-bottom:6px;">改上傳已轉換好的 Excel 檔 (.xlsx)</label>
-        <input type="file" class="excel-input" accept=".xlsx">
-      </div>
-      <div class="import-preview">
-        <div class="import-warning-slot"></div>
-        <div class="overwrite-warning-slot"></div>
-        <div class="field-row">
-          <div class="field">
-            <label>民國年（可修改）</label>
-            <input type="number" class="import-roc-year" min="100" max="200">
+        {message && (
+          <div style={msg(message[0])}>
+            {message[0] ? "✓ " : "✗ "}
+            {message[1]}
           </div>
-          <div class="field">
-            <label>月份（可修改）</label>
-            <select class="import-month">${Array.from({length:12},(_,i)=>i+1).map(m=>`<option value="${m}">${m}月</option>`).join('')}</select>
+        )}
+      </div>
+
+      {/* ── 資料摘要 ── */}
+      <div style={card}>
+        <h3
+          style={{
+            margin: "0 0 14px",
+            fontSize: 21,
+            fontWeight: 500,
+            color: "#1f2937",
+          }}
+        >
+          資料摘要
+        </h3>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))",
+            gap: 12,
+          }}
+        >
+          {[
+            ["員工人數", employees.length + " 人"],
+            ["班別種類", shiftDefs.length + " 種"],
+            ["班表月份", months.length + " 個月"],
+            ["班表記錄", totalRec + " 筆"],
+          ].map(([label, value]) => (
+            <div
+              key={label}
+              style={{
+                textAlign: "center",
+                padding: 14,
+                background: "#f0f9ff",
+                borderRadius: 8,
+                border: "1px solid #bae6fd",
+              }}
+            >
+              <div
+                style={{ fontSize: 31, fontWeight: 500, color: "#1b6ca8" }}
+              >
+                {value}
+              </div>
+              <div
+                style={{ fontSize: 15, color: "#6b7280", marginTop: 4 }}
+              >
+                {label}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── 已儲存月份清單 ── */}
+      {months.length > 0 && (
+        <div style={card}>
+          <h3
+            style={{
+              margin: "0 0 12px",
+              fontSize: 21,
+              fontWeight: 500,
+              color: "#1f2937",
+            }}
+          >
+            已儲存的班表月份
+          </h3>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {months.map((k) => {
+              const [y, m] = k.split("-");
+              return (
+                <span
+                  key={k}
+                  style={{
+                    padding: "4px 14px",
+                    background: "#eff6ff",
+                    color: "#1d4ed8",
+                    borderRadius: 20,
+                    fontSize: 18,
+                    fontWeight: 500,
+                    border: "1px solid #bfdbfe",
+                  }}
+                >
+                  民國 {toROC(+y)} 年 {m} 月（西元 {y} 年）
+                </span>
+              );
+            })}
           </div>
         </div>
-        <div class="preview-summary" style="margin-top:10px;font-size:16.2px;color:var(--ink-muted);"></div>
-        <div class="preview-table-area table-scroll" style="margin-top:10px;"></div>
-        <div class="import-actions">
-          <button type="button" class="btn btn-primary btn-confirm-import">確認匯入</button>
-          <button type="button" class="btn btn-ghost btn-cancel-import">取消</button>
-        </div>
+      )}
+
+      {/* ── 操作說明 ── */}
+      <div
+        style={{
+          ...card,
+          background: "#fffbeb",
+          border: "1px solid #fde68a",
+        }}
+      >
+        <h4
+          style={{
+            margin: "0 0 8px",
+            fontSize: 18,
+            fontWeight: 500,
+            color: "#92400e",
+          }}
+        >
+          操作說明
+        </h4>
+        <ul
+          style={{
+            margin: 0,
+            paddingLeft: 16,
+            fontSize: 17,
+            color: "#92400e",
+            lineHeight: 1.9,
+          }}
+        >
+          <li>資料自動儲存於瀏覽器，重新開啟後仍保留</li>
+          <li>建議每月定期匯出 XML，再上傳至 Google Drive</li>
+          <li>匯入 XML 時若有重複月份，系統會詢問是否覆蓋</li>
+          <li>
+            民國年換算：民國 115 年 = 西元 2026 年（115 + 1911 = 2026）
+          </li>
+        </ul>
       </div>
-    </div>`;
+
+    </div>
+  );
 }
 
-function initWorkspace(category){
-  const root = document.getElementById(`workspace-${category}`);
-  root.innerHTML = buildWorkspaceMarkup(category);
 
-  const rocYearInput = root.querySelector('.roc-year-input');
-  const monthSelect = root.querySelector('.month-select');
-  const resultArea = root.querySelector('.result-area');
-  const pdfInput = root.querySelector('.pdf-input');
-  const excelInput = root.querySelector('.excel-input');
-  const importPreview = root.querySelector('.import-preview');
-  const importWarningSlot = root.querySelector('.import-warning-slot');
-  const importRocYear = root.querySelector('.import-roc-year');
-  const importMonth = root.querySelector('.import-month');
-  const previewSummary = root.querySelector('.preview-summary');
-  const previewTableArea = root.querySelector('.preview-table-area');
-  const overwriteWarningSlot = root.querySelector('.overwrite-warning-slot');
-  const personalPanel = root.querySelector('.personal-panel');
-  const personalTitle = root.querySelector('.personal-title');
-  const weekStartSelect = root.querySelector('.week-start-select');
-  const personalCalendarArea = root.querySelector('.personal-calendar-area');
-  const btnPrevEmp = root.querySelector('.btn-prev-emp');
-  const btnNextEmp = root.querySelector('.btn-next-emp');
+// ═══════════════════════════════════════
+// 九、手機版班表元件（月曆式 + 員工選擇）
+// ═══════════════════════════════════════
 
-  let pendingSchedule = null; // 使用者確認前，暫存解析出來的班表
-  let currentSchedule = null; // 目前查詢區顯示中的月班表，供點選姓名查看個人班表使用
-  let currentEmpId = null;    // 目前個人班表面板顯示的是哪一位員工
-  let currentWeekStart = 0;   // 每週起始星期(0=日,1=一,...6=六)，切換類別/查詢時不重置，維持使用者上次的選擇
+/**
+ * MobileScheduleTab：手機版月曆班表
+ * - 上方下拉選擇員工
+ * - 月曆格子顯示班別（7欄：日一二三四五六）
+ * - 點格子可修改班別
+ * - 底部顯示當月出勤統計
+ */
+function MobileScheduleTab({ employees, shiftDefs, schedule, year, month, onUpdate }) {
+  // 預設選第一位員工
+  const [selEmpId, setSelEmpId] = useState(employees[0]?.id || "");
+  const [editing, setEditing]   = useState(null); // dayIdx
 
-  function hidePersonalPanel(){
-    personalPanel.style.display = 'none';
-    currentEmpId = null;
-  }
+  const days     = daysInMonth(year, month);
+  const firstDow = new Date(year, month - 1, 1).getDay(); // 1日是星期幾（0=日）
+  const emp      = employees.find((e) => e.id === selEmpId) || employees[0];
+  const empShifts = emp ? (schedule[emp.id] || Array(days).fill("-")) : [];
 
-  function renderPersonalPanel(){
-    if(!currentSchedule || !currentEmpId) return;
-    const employees = currentSchedule.employees;
-    const index = employees.findIndex(e => e.empId === currentEmpId);
-    const emp = employees[index];
-    if(!emp){ hidePersonalPanel(); return; }
-    personalTitle.textContent = `${currentSchedule.westYear}年${currentSchedule.month}月${emp.name}月班表`;
-    personalCalendarArea.innerHTML = `<div class="calendar-scroll">${renderPersonalCalendarTable(currentSchedule, emp, currentWeekStart)}</div>${renderPersonalStatTable(emp, currentSchedule.daysInMonth)}`;
-    // 頭尾各自停用上一筆/下一筆按鈕，不循環跳到另一端，避免使用者搞不清楚目前在哪一位
-    btnPrevEmp.disabled = (index <= 0);
-    btnNextEmp.disabled = (index === -1 || index >= employees.length - 1);
-  }
-
-  btnPrevEmp.addEventListener('click', () => {
-    if(!currentSchedule) return;
-    const index = currentSchedule.employees.findIndex(e => e.empId === currentEmpId);
-    if(index > 0){
-      currentEmpId = currentSchedule.employees[index - 1].empId;
-      renderPersonalPanel();
-    }
-  });
-
-  btnNextEmp.addEventListener('click', () => {
-    if(!currentSchedule) return;
-    const index = currentSchedule.employees.findIndex(e => e.empId === currentEmpId);
-    if(index !== -1 && index < currentSchedule.employees.length - 1){
-      currentEmpId = currentSchedule.employees[index + 1].empId;
-      renderPersonalPanel();
-    }
-  });
-
-  weekStartSelect.addEventListener('change', () => {
-    currentWeekStart = parseInt(weekStartSelect.value, 10);
-    renderPersonalPanel();
-  });
-
-  async function runQuery(){
-    const rocYear = parseInt(rocYearInput.value, 10);
-    const month = parseInt(monthSelect.value, 10);
-    if(!rocYear || !month){ showToast('請輸入正確的年份與月份', true); return; }
-    const westYear = rocToWest(rocYear);
-    const schedule = await ScheduleRepository.load(category, westYear, month);
-    currentSchedule = schedule;
-    hidePersonalPanel(); // 換了查詢的年月，先收起個人班表面板，避免顯示到舊資料
-    if(!schedule || schedule.employees.length === 0){
-      resultArea.innerHTML = `<div class="empty-hint">尚無 民國${rocYear}年${month}月 的${CATEGORY_LABEL[category]}班表，請於下方上傳PDF匯入</div>`;
-    }else{
-      resultArea.innerHTML = `<div class="table-scroll">${renderScheduleTable(schedule)}</div>${LEGEND_HTML}`;
-    }
-  }
-
-  root.querySelector('.btn-query').addEventListener('click', runQuery);
-
-  // 點擊表格裡的姓名，開啟該員工的個人月班表(月曆樣式)
-  resultArea.addEventListener('click', (e) => {
-    const cell = e.target.closest('td.clickable-name');
-    if(!cell || !currentSchedule) return;
-    const empId = cell.dataset.empid;
-    const emp = currentSchedule.employees.find(x => x.empId === empId);
-    if(!emp) return;
-    currentEmpId = empId;
-    weekStartSelect.value = String(currentWeekStart);
-    personalPanel.style.display = '';
-    renderPersonalPanel();
-  });
-
-  // 點擊表格裡的班別代碼儲存格，就地修改該員工該天的班別代碼；
-  // Enter 或點擊別處＝確定修改（存檔＋重新整理統計），Esc＝取消不存檔
-  resultArea.addEventListener('click', (e) => {
-    const cell = e.target.closest('td.editable-shift');
-    if(!cell || !currentSchedule) return;
-    if(cell.classList.contains('editing')) return; // 編輯中點輸入框本身，不要重新進入編輯
-    startEditShiftCell(cell);
-  });
-
-  function startEditShiftCell(cell){
-    const empId = cell.dataset.empid;
-    const day = parseInt(cell.dataset.day, 10);
-    const emp = currentSchedule.employees.find(x => x.empId === empId);
-    if(!emp) return;
-    const oldCode = emp.shifts[day] || '';
-
-    cell.classList.add('editing');
-
-    const restoreCellDisplay = (code) => {
-      cell.classList.remove('editing');
-      cell.className = `shift editable-shift ${shiftClass(code)}`;
-      cell.textContent = code;
+  /** 查找班別定義 */
+  const findSt = (code) =>
+    shiftDefs.find((s) => s.code === code) || {
+      code, fg: "#9ca3af", bg: "#f3f4f6", name: code,
     };
 
-    let settled = false;
-    const commitValue = async (newCode) => {
-      if(settled) return;
-      settled = true;
+  /** 當月統計 */
+  const MOBILE_WORK = ["D", "E", "N", "S"];
+  const cnt = { D: 0, E: 0, N: 0, OFF: 0 };
+  empShifts.forEach((s) => {
+    if (!s || s === "-" || !MOBILE_WORK.includes(s.toUpperCase())) {
+      cnt.OFF++; // 國、休、休假、颱風、地震、-、空值 全計為OFF
+    } else if (cnt[s] !== undefined) {
+      cnt[s]++;
+    }
+  });
 
-      if(newCode === oldCode){
-        restoreCellDisplay(oldCode); // 沒有變更，還原顯示即可，不用存檔
+  // 補全月曆前面的空格（上個月的日期）
+  const blanks = Array(firstDow).fill(null);
+  // 每格資料 [day, shift] 或 null（空格）
+  const cells  = [
+    ...blanks,
+    ...Array.from({ length: days }, (_, i) => i),
+  ];
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+
+      {/* ── 操作說明 ── */}
+      <div style={{
+        background: "#eff6ff", border: "1px solid #bfdbfe",
+        borderRadius: 8, padding: "10px 14px",
+        fontSize: 17, color: "#1d4ed8", lineHeight: 1.8,
+      }}>
+        <strong>如何修改班別：</strong><br/>
+        ① 下方選擇員工　② 點擊月曆格子　③ 選擇新班別
+      </div>
+
+      {/* ── 員工選擇器 ── */}
+      <div style={{ ...card, padding: "12px 16px" }}>
+        <label style={{ ...lbl, marginBottom: 6 }}>選擇員工</label>
+        <select
+          value={selEmpId}
+          onChange={(e) => { setSelEmpId(e.target.value); setEditing(null); }}
+          style={{
+            width: "100%", padding: "9px 12px", borderRadius: 8,
+            border: "1px solid #d1d5db", fontSize: 21,
+            background: "#fff", color: "#1f2937",
+            fontFamily: "inherit", appearance: "auto",
+          }}
+        >
+          {employees.map((e) => (
+            <option key={e.id} value={e.id}>
+              {e.name}　{e.id}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* ── 月曆格子 ── */}
+      <div style={card}>
+        {/* 星期標頭 */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 3, marginBottom: 4 }}>
+          {WEEKDAY.map((w, i) => (
+            <div
+              key={w}
+              style={{
+                textAlign: "center", fontSize: 17, fontWeight: 500, padding: "4px 0",
+                color: i === 0 ? "#b91c1c" : i === 6 ? "#1d4ed8" : "#6b7280",
+              }}
+            >
+              {w}
+            </div>
+          ))}
+        </div>
+
+        {/* 日期格子 */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 3 }}>
+          {cells.map((di, ci) => {
+            if (di === null) {
+              // 空白格（補前月日期）
+              return <div key={`blank-${ci}`} style={{ height: 52 }} />;
+            }
+            const d   = di + 1;
+            const sh  = empShifts[di] || "-";
+            const st  = findSt(sh);
+            const dow = new Date(year, month - 1, d).getDay();
+            const isWeekend = dow === 0 || dow === 6;
+            const isEditing = editing === di;
+            const today = new Date();
+            const isToday =
+              today.getFullYear() === year &&
+              today.getMonth() + 1 === month &&
+              today.getDate() === d;
+
+            return (
+              <div
+                key={di}
+                style={{
+                  borderRadius: 8,
+                  border: isToday ? "2px solid #1b6ca8" : "1px solid #e5e7eb",
+                  background: isEditing ? "#dbeafe" : isWeekend ? "#fffbeb" : "#fff",
+                  overflow: "hidden",
+                  cursor: "pointer",
+                }}
+                title={`點擊修改：${month}/${di+1} 目前班別：${sh === "-" ? "（無）" : sh}`}
+                onClick={() => setEditing(isEditing ? null : di)}
+              >
+                {/* 日期數字 */}
+                <div
+                  style={{
+                    textAlign: "center",
+                    fontSize: 15,
+                    color: dow === 0 ? "#b91c1c" : dow === 6 ? "#1d4ed8" : "#6b7280",
+                    padding: "3px 0 1px",
+                    fontWeight: isToday ? 700 : 400,
+                  }}
+                >
+                  {d}
+                </div>
+                {/* 班別徽章 */}
+                <div
+                  style={{
+                    margin: "0 3px 3px",
+                    borderRadius: 4,
+                    background: sh === "-" ? "transparent" : st.bg,
+                    color: sh === "-" ? "transparent" : st.fg,
+                    textAlign: "center",
+                    fontSize: 15,
+                    fontWeight: 700,
+                    padding: "3px 0",
+                    minHeight: 22,
+                  }}
+                >
+                  {sh === "-" ? "" : sh}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── 班別選擇面板（點格子後出現） ── */}
+      {editing !== null && emp && (
+        <div style={{ ...card, background: "#eff6ff", border: "1px solid #bfdbfe" }}>
+          <div style={{ fontSize: 18, color: "#1d4ed8", fontWeight: 500, marginBottom: 8 }}>
+            {emp.name}・{month}/{editing + 1} 修改班別：
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {shiftDefs.map((st) => (
+              <button
+                key={st.code}
+                onClick={() => { onUpdate(emp.id, editing, st.code); setEditing(null); }}
+                style={{
+                  padding: "8px 14px",
+                  border: empShifts[editing] === st.code ? "2px solid #1e3a5f" : "1px solid transparent",
+                  borderRadius: 6,
+                  background: st.bg, color: st.fg,
+                  fontSize: 20, fontWeight: 700,
+                  cursor: "pointer", fontFamily: "inherit",
+                }}
+              >
+                {st.code}　{st.name}
+              </button>
+            ))}
+            <button
+              onClick={() => { onUpdate(emp.id, editing, "-"); setEditing(null); }}
+              style={{
+                padding: "8px 14px", border: "1px solid #d1d5db", borderRadius: 6,
+                background: "#f9fafb", color: "#6b7280", fontSize: 20,
+                cursor: "pointer", fontFamily: "inherit",
+              }}
+            >
+              清除
+            </button>
+            <button
+              onClick={() => setEditing(null)}
+              style={{
+                padding: "8px 14px", border: "1px solid #d1d5db", borderRadius: 6,
+                background: "#fff", color: "#9ca3af", fontSize: 20,
+                cursor: "pointer", fontFamily: "inherit",
+              }}
+            >
+              取消
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── 當月出勤統計 ── */}
+      <div style={card}>
+        <div style={{ fontSize: 18, color: "#6b7280", marginBottom: 10 }}>
+          {emp?.name} 本月出勤統計
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
+          {[
+            { label: "白班", code: "D", color: "#1d4ed8", bg: "#eff6ff" },
+            { label: "小夜", code: "E", color: "#c2410c", bg: "#fff7ed" },
+            { label: "大夜", code: "N", color: "#4338ca", bg: "#eef2ff" },
+            { label: "例休", code: "OFF", color: "#6b7280", bg: "#f9fafb" },
+          ].map(({ label, code, color, bg }) => (
+            <div
+              key={code}
+              style={{
+                textAlign: "center", padding: "10px 4px",
+                background: bg, borderRadius: 8,
+                border: "1px solid #e5e7eb",
+              }}
+            >
+              <div style={{ fontSize: 31, fontWeight: 700, color }}>{cnt[code]}</div>
+              <div style={{ fontSize: 15, color: "#9ca3af", marginTop: 3 }}>{label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+// ═══════════════════════════════════════
+// 十、Google Drive 備份/還原列
+// ═══════════════════════════════════════
+
+/**
+ * 設定值
+ * ★ client_secret 不可放前端，瀏覽器 OAuth 只需 client_id
+ * ★ 需在 Google Cloud Console 加入授權來源：https://achir1015.github.io
+ */
+const GDRIVE_CONFIG = {
+  CLIENT_ID:  "296426745832-tnu06fpo35b9buevtedfah0kg73mtbl9.apps.googleusercontent.com",
+  FOLDER_ID:  "1KaFaTW_YDupDZ2JpMuxHMu77fBVgXv2d",
+  SCOPE:      "https://www.googleapis.com/auth/drive.file",
+  DISCOVERY:  "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",
+};
+
+/**
+ * GDriveBar：最頂端的備份/還原操作列
+ * 使用 Google Identity Services（GIS）Token 模式，無需 client_secret
+ */
+function GDriveBar({ employees, shiftDefs, schedules, onImport }) {
+  const [status, setStatus]   = useState(null);  // { type: "info"|"ok"|"err", msg }
+  const [loading, setLoading] = useState(false);
+  const [token, setToken]     = useState(null);   // Google OAuth access token
+
+  // ── 動態載入 Google Identity Services + GAPI ──
+  const loadGoogle = () =>
+    new Promise((resolve, reject) => {
+      // 同時載入 GIS 與 GAPI
+      let gisReady = false, gapiReady = false;
+      const tryResolve = () => { if (gisReady && gapiReady) resolve(); };
+
+      if (!window.google?.accounts?.oauth2) {
+        const s = document.createElement("script");
+        s.src = "https://accounts.google.com/gsi/client";
+        s.onload = () => { gisReady = true; tryResolve(); };
+        s.onerror = () => reject(new Error("GIS 載入失敗"));
+        document.head.appendChild(s);
+      } else { gisReady = true; }
+
+      if (!window.gapi) {
+        const s = document.createElement("script");
+        s.src = "https://apis.google.com/js/api.js";
+        s.onload = () => {
+          window.gapi.load("client", () => {
+            window.gapi.client
+              .init({ discoveryDocs: [GDRIVE_CONFIG.DISCOVERY] })
+              .then(() => { gapiReady = true; tryResolve(); })
+              .catch(reject);
+          });
+        };
+        s.onerror = () => reject(new Error("GAPI 載入失敗"));
+        document.head.appendChild(s);
+      } else if (window.gapi.client) { gapiReady = true; }
+      else {
+        window.gapi.load("client", () => {
+          window.gapi.client
+            .init({ discoveryDocs: [GDRIVE_CONFIG.DISCOVERY] })
+            .then(() => { gapiReady = true; tryResolve(); })
+            .catch(reject);
+        });
+      }
+      tryResolve();
+    });
+
+  // ── 取得 OAuth Token（彈出授權視窗）──
+  const getToken = () =>
+    new Promise((resolve, reject) => {
+      const client = window.google.accounts.oauth2.initTokenClient({
+        client_id: GDRIVE_CONFIG.CLIENT_ID,
+        scope:     GDRIVE_CONFIG.SCOPE,
+        callback:  (resp) => {
+          if (resp.error) reject(new Error("授權失敗：" + resp.error));
+          else resolve(resp.access_token);
+        },
+      });
+      client.requestAccessToken({ prompt: token ? "" : "consent" });
+    });
+
+  // ── 產生備份檔名：msYYYYMMDD + 兩位流水號 ──
+  const genFilename = async (accessToken) => {
+    const today = new Date();
+    const ymd =
+      today.getFullYear() +
+      String(today.getMonth() + 1).padStart(2, "0") +
+      String(today.getDate()).padStart(2, "0");
+    const prefix = "ms" + ymd;
+
+    // 查詢同日期已有的檔案
+    window.gapi.client.setToken({ access_token: accessToken });
+    const res = await window.gapi.client.drive.files.list({
+      q: `name contains '${prefix}' and '${GDRIVE_CONFIG.FOLDER_ID}' in parents and trashed=false`,
+      fields: "files(name)",
+      orderBy: "name desc",
+    });
+    const files = res.result.files || [];
+    // 取最大流水號 + 1
+    let maxSeq = 0;
+    files.forEach((f) => {
+      const m = f.name.match(/ms\d{8}(\d{2})\.xml$/);
+      if (m) maxSeq = Math.max(maxSeq, parseInt(m[1]));
+    });
+    return prefix + String(maxSeq + 1).padStart(2, "0") + ".xml";
+  };
+
+  // ── 備份：序列化 → 上傳至 Google Drive ──
+  const handleBackup = async () => {
+    setLoading(true);
+    setStatus({ type: "info", msg: "連線 Google Drive 中..." });
+    try {
+      await loadGoogle();
+      const accessToken = await getToken();
+      setToken(accessToken);
+      window.gapi.client.setToken({ access_token: accessToken });
+
+      setStatus({ type: "info", msg: "產生備份檔案..." });
+      const xmlContent = serializeToXml({ employees, shiftDefs, schedules });
+      const filename   = await genFilename(accessToken);
+
+      setStatus({ type: "info", msg: `上傳 ${filename} ...` });
+
+      // 使用 multipart upload 上傳 XML 檔
+      const metadata = {
+        name:    filename,
+        parents: [GDRIVE_CONFIG.FOLDER_ID],
+        mimeType: "application/xml",
+      };
+      const boundary = "rcw_backup_boundary";
+      const body = [
+        "--" + boundary,
+        "Content-Type: application/json; charset=UTF-8",
+        "",
+        JSON.stringify(metadata),
+        "--" + boundary,
+        "Content-Type: application/xml; charset=UTF-8",
+        "",
+        xmlContent,
+        "--" + boundary + "--",
+      ].join("\r\n");
+
+      const resp = await fetch(
+        "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+        {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + accessToken,
+            "Content-Type": `multipart/related; boundary=${boundary}`,
+          },
+          body,
+        }
+      );
+      if (!resp.ok) throw new Error("上傳失敗（HTTP " + resp.status + "）");
+
+      setStatus({ type: "ok", msg: "✓ 備份完成：" + filename });
+    } catch (err) {
+      setStatus({ type: "err", msg: "✗ 備份失敗：" + err.message });
+    }
+    setLoading(false);
+  };
+
+  // ── 還原：取最新備份 → 下載 → 解析 → 匯入 ──
+  const handleRestore = async () => {
+    setLoading(true);
+    setStatus({ type: "info", msg: "連線 Google Drive 中..." });
+    try {
+      await loadGoogle();
+      const accessToken = await getToken();
+      setToken(accessToken);
+      window.gapi.client.setToken({ access_token: accessToken });
+
+      setStatus({ type: "info", msg: "搜尋最新備份..." });
+
+      // 列出資料夾內 ms 開頭的 xml 檔，取名稱最大（即最新）的
+      const res = await window.gapi.client.drive.files.list({
+        q: `name contains 'ms' and '${GDRIVE_CONFIG.FOLDER_ID}' in parents and trashed=false and mimeType='application/xml'`,
+        fields: "files(id,name)",
+        orderBy: "name desc",
+        pageSize: 1,
+      });
+      const files = res.result.files || [];
+
+      if (files.length === 0) {
+        setStatus({ type: "err", msg: "✗ 無還原檔案，請先備份系統資料" });
+        setLoading(false);
         return;
       }
 
-      if(newCode) emp.shifts[day] = newCode;
-      else delete emp.shifts[day]; // 清空代表這天沒有班別代碼
+      const latest = files[0];
+      const confirm = window.confirm(
+        "【還原確認】\n\n" +
+        "將從 Google Drive 還原以下備份：\n" +
+        "「" + latest.name + "」\n\n" +
+        "目前系統資料將被覆蓋，確定繼續？"
+      );
+      if (!confirm) { setStatus(null); setLoading(false); return; }
 
-      try{
-        await ScheduleRepository.save(currentSchedule);
-        showToast(`已更新 ${emp.name} ${currentSchedule.month}/${day} 的班別為「${newCode || '(空白)'}」`);
-        // 整張表重新渲染，統計列(D白班/E小夜/N大夜/合計)會依最新資料重新計算
-        resultArea.innerHTML = `<div class="table-scroll">${renderScheduleTable(currentSchedule)}</div>${LEGEND_HTML}`;
-      }catch(err){
-        console.error(err);
-        showToast('儲存失敗，請再試一次', true);
-        if(oldCode) emp.shifts[day] = oldCode; else delete emp.shifts[day]; // 存檔失敗就還原回原本的資料
-        restoreCellDisplay(oldCode);
-      }
-    };
+      setStatus({ type: "info", msg: "下載 " + latest.name + " ..." });
 
-    // 收集這份班表目前用過的所有班別代碼（加上幾個常見代碼），做成下拉選單選項，
-    // 選單一定會把「目前的代碼」排進去，就算它不在常見清單裡
-    const codeSet = new Set(['D', 'D1', 'E', 'N', 'OFF', '例', '國']);
-    for(const e2 of currentSchedule.employees){
-      for(const d2 in e2.shifts){
-        const c = (e2.shifts[d2] || '').trim();
-        if(c) codeSet.add(c);
-      }
+      const dlResp = await fetch(
+        "https://www.googleapis.com/drive/v3/files/" + latest.id + "?alt=media",
+        { headers: { Authorization: "Bearer " + accessToken } }
+      );
+      if (!dlResp.ok) throw new Error("下載失敗（HTTP " + dlResp.status + "）");
+      const xmlStr = await dlResp.text();
+
+      setStatus({ type: "info", msg: "解析資料..." });
+      const data = parseFromXml(xmlStr);
+      onImport(data);
+
+      setStatus({ type: "ok", msg: "✓ 還原完成：" + latest.name });
+    } catch (err) {
+      setStatus({ type: "err", msg: "✗ 還原失敗：" + err.message });
     }
-    if(oldCode) codeSet.add(oldCode);
-    const codes = Array.from(codeSet).sort((a, b) => a.localeCompare(b, 'zh-Hant'));
+    setLoading(false);
+  };
 
-    const CUSTOM_VALUE = '__custom__';
-    const optionsHtml = [
-      `<option value="">(清空)</option>`,
-      ...codes.map(c => `<option value="${escapeHtml(c)}" ${c === oldCode ? 'selected' : ''}>${escapeHtml(c)}</option>`),
-      `<option value="${CUSTOM_VALUE}">✏ 自訂輸入...</option>`
-    ].join('');
+  const statusColor = {
+    info: { bg: "#eff6ff", border: "#bfdbfe", color: "#1d4ed8" },
+    ok:   { bg: "#f0fdf4", border: "#bbf7d0", color: "#15803d" },
+    err:  { bg: "#fef2f2", border: "#fecaca", color: "#b91c1c" },
+  }[status?.type] || {};
 
-    cell.innerHTML = `<select class="shift-edit-select">${optionsHtml}</select>`;
-    const select = cell.querySelector('select');
-    select.focus();
+  return (
+    <div style={{
+      background: "#1e3a5f",
+      padding: "8px 16px",
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      flexWrap: "wrap",
+    }}>
+      {/* 區塊標題 */}
+      <span style={{ fontSize: 13, color: "#93c5fd", fontWeight: 500, whiteSpace: "nowrap" }}>
+        ☁ Google Drive：
+      </span>
 
-    // 切換成文字輸入框，給清單裡沒有的全新代碼使用
-    const switchToCustomInput = () => {
-      cell.innerHTML = `<input type="text" class="shift-edit-input" value="${escapeHtml(oldCode)}" autocomplete="off">`;
-      const input = cell.querySelector('input');
-      input.focus();
-      input.select();
-      input.addEventListener('keydown', (ev) => {
-        if(ev.key === 'Enter'){ ev.preventDefault(); commitValue(input.value.trim()); }
-        else if(ev.key === 'Escape'){ ev.preventDefault(); settled = true; restoreCellDisplay(oldCode); }
+      {/* 備份按鈕 */}
+      <button
+        onClick={handleBackup}
+        disabled={loading}
+        style={{
+          padding: "6px 16px",
+          background: loading ? "#374151" : "#16a34a",
+          color: "#fff", border: "none", borderRadius: 6,
+          cursor: loading ? "not-allowed" : "pointer",
+          fontSize: 14, fontWeight: 500, fontFamily: "inherit",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {loading ? "處理中..." : "☁ 備份系統資料"}
+      </button>
+
+      {/* 還原按鈕 */}
+      <button
+        onClick={handleRestore}
+        disabled={loading}
+        style={{
+          padding: "6px 16px",
+          background: loading ? "#374151" : "#d97706",
+          color: "#fff", border: "none", borderRadius: 6,
+          cursor: loading ? "not-allowed" : "pointer",
+          fontSize: 14, fontWeight: 500, fontFamily: "inherit",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {loading ? "處理中..." : "☁ 還原系統資料"}
+      </button>
+
+      {/* 狀態訊息 */}
+      {status && (
+        <div style={{
+          padding: "4px 12px", borderRadius: 6, fontSize: 13,
+          background: statusColor.bg,
+          border: "1px solid " + statusColor.border,
+          color: statusColor.color,
+          flex: 1, minWidth: 180,
+        }}>
+          {status.msg}
+        </div>
+      )}
+
+      {/* 關閉狀態訊息 */}
+      {status && (
+        <button
+          onClick={() => setStatus(null)}
+          style={{
+            background: "transparent", border: "none",
+            color: "#9ca3af", cursor: "pointer",
+            fontSize: 16, padding: "0 4px",
+          }}
+        >✕</button>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════
+// 九、主應用程式元件
+// ═══════════════════════════════════════
+
+function App() {
+  // 核心狀態
+  const [employees, setEmployees] = useState(DEFAULT_EMPLOYEES);
+  const [shiftDefs, setShiftDefs] = useState(DEFAULT_SHIFT_DEFS);
+  const [schedules, setSchedules] = useState(buildInitialSchedule);
+
+  // UI 狀態
+  // 預設顯示當下系統月份（開啟即到當月）
+  const [year, setYear]       = useState(() => new Date().getFullYear());
+  const [month, setMonth]     = useState(() => new Date().getMonth() + 1);
+  const [tab, setTab]         = useState("schedule");
+  const [ready, setReady]     = useState(false); // 資料是否載入完成
+  // 版面模式：auto 偵測視窗寬度，可手動覆蓋
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+  // 還原計數器：每次 XML 還原後遞增，強制手機版元件重新掛載並清除內部狀態
+  const [restoreKey, setRestoreKey] = useState(0);
+
+  const key = monthKey(year, month); // 目前月份的資料 key
+
+  // ── 環境偵測：Claude artifact 使用 window.storage，其他環境（GitHub Pages 等）使用 localStorage ──
+  const isClaudeEnv = typeof window.storage !== "undefined" &&
+                      typeof window.storage.get === "function";
+
+  // ── 從持久化儲存載入資料 ──
+  useEffect(() => {
+    (async () => {
+      try {
+        let data = null;
+        if (isClaudeEnv) {
+          // Claude artifact 環境
+          const res = await window.storage.get("rcw_schedule_v1");
+          if (res?.value) data = JSON.parse(res.value);
+        } else {
+          // GitHub Pages / 本機等一般瀏覽器環境
+          const raw = localStorage.getItem("rcw_schedule_v1");
+          if (raw) data = JSON.parse(raw);
+        }
+        if (data) {
+          if (data.employees) setEmployees(data.employees);
+          if (data.shiftDefs) setShiftDefs(data.shiftDefs);
+          if (data.schedules) setSchedules(data.schedules);
+        }
+      } catch {
+        // 無儲存資料或解析失敗，使用預設值
+      }
+      setReady(true);
+    })();
+  }, []);
+
+  // ── 監聽視窗大小變化，自動切換版面 ──
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  /**
+   * 儲存至持久化儲存
+   * - Claude artifact 環境：使用 window.storage（跨 session 保留）
+   * - GitHub Pages / 本機環境：使用 localStorage
+   */
+  const persist = useCallback(
+    (emp, sd, sch) => {
+      const data = JSON.stringify({
+        employees: emp,
+        shiftDefs: sd,
+        schedules: sch,
       });
-      input.addEventListener('blur', () => commitValue(input.value.trim()));
-    };
+      try {
+        if (isClaudeEnv) {
+          // Claude artifact：非同步儲存，錯誤靜默忽略
+          window.storage.set("rcw_schedule_v1", data).catch(() => {});
+        } else {
+          // 一般瀏覽器：localStorage 同步儲存
+          localStorage.setItem("rcw_schedule_v1", data);
+        }
+      } catch {
+        // 儲存失敗（例如無痕模式 localStorage 被封鎖），靜默忽略
+      }
+    },
+    [isClaudeEnv]
+  );
 
-    // 下拉選單：選了就直接算「確定」，馬上存檔並更新統計
-    select.addEventListener('change', () => {
-      if(select.value === CUSTOM_VALUE){ switchToCustomInput(); return; }
-      commitValue(select.value);
+  // ── 確保切換月份時有空白資料 ──
+  useEffect(() => {
+    if (!ready || schedules[key]) return;
+    const days = daysInMonth(year, month);
+    const empMap = {};
+    employees.forEach((emp) => {
+      empMap[emp.id] = Array(days).fill("-");
     });
-    select.addEventListener('blur', () => {
-      // 延遲一下再檢查：如果已經切換成自訂輸入框（select已經不在這個儲存格裡了），就不要再處理
-      setTimeout(() => {
-        if(settled || select.parentNode !== cell) return;
-        settled = true;
-        restoreCellDisplay(oldCode);
-      }, 150);
-    });
+    setSchedules((prev) => ({ ...prev, [key]: empMap }));
+  }, [key, ready, schedules, employees, year, month]);
+
+  // ── 更新某員工某天的班別 ──
+  const onUpdate = useCallback(
+    (empId, dayIdx, shift) => {
+      // ★ 只做純粹的狀態更新，不在 updater 內呼叫 side effect（persist）
+      // ★ persist 由下方的 useEffect 監聽 schedules 變化後自動觸發
+      setSchedules((prev) => {
+        const empShifts = [
+          ...(prev[key]?.[empId] || Array(daysInMonth(year, month)).fill("-")),
+        ];
+        empShifts[dayIdx] = shift;
+        return {
+          ...prev,
+          [key]: { ...prev[key], [empId]: empShifts },
+        };
+      });
+    },
+    [key, year, month]
+  );
+
+  // ── 員工/班別/完整資料的更新函數 ──
+  const setEmp = useCallback(
+    (e) => { setEmployees(e); persist(e, shiftDefs, schedules); },
+    [shiftDefs, schedules, persist]
+  );
+  const setSd = useCallback(
+    (sd) => { setShiftDefs(sd); persist(employees, sd, schedules); },
+    [employees, schedules, persist]
+  );
+  const onImport = useCallback(
+    (d) => {
+      setEmployees(d.employees);
+      setShiftDefs(d.shiftDefs);
+      setSchedules(d.schedules);
+      persist(d.employees, d.shiftDefs, d.schedules);
+      // ★ 遞增 restoreKey：強制手機版 MobileScheduleTab 重新掛載
+      // ★ 清除舊的 selEmpId / editing 狀態，避免還原後畫面空白
+      setRestoreKey((k) => k + 1);
+    },
+    [persist]
+  );
+
+  /**
+   * PDF 轉入：新增或覆蓋單一月份班表
+   * @param {number}  yr          西元年
+   * @param {number}  mo          月份
+   * @param {object}  empMap      { empId: string[] }
+   * @param {boolean} wasOverwrite 是否為覆蓋（true 時先刪除舊資料再寫入）
+   */
+  const onAddSchedule = useCallback(
+    (yr, mo, empMap, wasOverwrite = false) => {
+      const k = monthKey(yr, mo);
+      // ★ updater 內只做純資料操作，persist 交由 useEffect 處理
+      setSchedules((prev) => {
+        const { [k]: _old, ...rest } = prev;
+        return { ...rest, [k]: empMap };
+      });
+      setYear(yr);
+      setMonth(mo);
+      setTab("schedule");
+    },
+    []
+  );
+
+  // ── 自動 persist：schedules/employees/shiftDefs 任一變化時儲存 ──
+  // ★ 把 side effect 從 state updater 移到這裡，解決 React StrictMode 雙呼叫問題
+  useEffect(() => {
+    if (!ready) return; // 初始載入完成前不儲存（避免覆蓋載入中的資料）
+    persist(employees, shiftDefs, schedules);
+  }, [schedules, employees, shiftDefs, ready]);
+
+  // ── 月份切換 ──
+  const prevMonth = () => {
+    if (month === 1) { setYear((y) => y - 1); setMonth(12); }
+    else setMonth((m) => m - 1);
+  };
+  const nextMonth = () => {
+    if (month === 12) { setYear((y) => y + 1); setMonth(1); }
+    else setMonth((m) => m + 1);
+  };
+
+  // 載入中畫面
+  if (!ready) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: 200,
+          color: "#9ca3af",
+          fontFamily: '"Noto Sans TC", "Microsoft JhengHei", sans-serif',
+        }}
+      >
+        載入中...
+      </div>
+    );
   }
 
-  root.querySelector('.btn-clear').addEventListener('click', async () => {
-    const rocYear = parseInt(rocYearInput.value, 10);
-    const month = parseInt(monthSelect.value, 10);
-    if(!rocYear || !month) return;
-    if(!confirm(`確定要清除 民國${rocYear}年${month}月 的${CATEGORY_LABEL[category]}班表嗎？`)) return;
-    await ScheduleRepository.remove(category, rocToWest(rocYear), month);
-    showToast('已清除該月份資料');
-    runQuery();
-  });
+  const TABS = [
+    { k: "schedule",   label: "班表" },
+    { k: "employees",  label: "員工管理" },
+    { k: "shifttypes", label: "班別設定" },
+    { k: "data",       label: "資料管理" },
+  ];
 
-  // PDF 與 Excel 匯入共用同一套「解析結果 -> 預覽畫面」的處理邏輯
-  async function presentParseResult(parsePromise, fileLabel){
-    previewSummary.textContent = `正在解析${fileLabel}，請稍候...`;
-    importPreview.classList.add('show');
-    previewTableArea.innerHTML = '';
-    importWarningSlot.innerHTML = '';
-    overwriteWarningSlot.innerHTML = '';
-    pendingSchedule = null;
+  return (
+    <div
+      style={{
+        fontFamily: '"Noto Sans TC", "Microsoft JhengHei", sans-serif',
+        background: "#f3f4f6",
+        minHeight: "100vh",
+      }}
+    >
+      {/* ═══ Google Drive 備份/還原列（最頂端）═══ */}
+      <GDriveBar
+        employees={employees}
+        shiftDefs={shiftDefs}
+        schedules={schedules}
+        onImport={onImport}
+      />
 
-    try{
-      const { schedule, categoryMismatch, rowsFound } = await parsePromise;
-      pendingSchedule = schedule;
+      {/* ═══ 標頭 ═══ */}
+      <div
+        style={{
+          background: "linear-gradient(135deg, #0f4c75, #1b6ca8)",
+          color: "#fff",
+          padding: "12px 16px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: 8,
+        }}
+      >
+        {/* 系統標題 */}
+        <div>
+          <div style={{ fontSize: 22, fontWeight: 500, letterSpacing: 0.5 }}>
+            月班表管理系統
+          </div>
+          <div style={{ fontSize: 15, opacity: 0.75, marginTop: 2 }}>
+            呼吸照護病房（RCW）・病房助理
+          </div>
+        </div>
 
-      if(rowsFound === 0){
-        previewSummary.innerHTML = `<span style="color:var(--shift-e)">未能從此檔案辨識出任何員工資料，請確認內容是否為班表表格，或改用其他檔案。</span>`;
-        importRocYear.value = '';
-        previewTableArea.innerHTML = '';
-        return;
-      }
+        {/* 右側：版面切換 + 月份導覽 */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+          {/* 桌機/手機版切換按鈕 */}
+          <button
+            onClick={() => setIsMobile((v) => !v)}
+            title={isMobile ? "切換桌機版" : "切換手機版"}
+            style={{
+              background: "rgba(255,255,255,0.15)",
+              border: "1px solid rgba(255,255,255,0.4)",
+              color: "#fff",
+              borderRadius: 6,
+              padding: "5px 10px",
+              cursor: "pointer",
+              fontSize: 18,
+              fontFamily: "inherit",
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+            }}
+          >
+            {isMobile ? "💻 桌機版" : "📱 手機版"}
+          </button>
 
-      if(categoryMismatch){
-        importWarningSlot.innerHTML = `<div class="import-warning">這份檔案內容看起來像是「${category === 'nurse' ? '病房助理' : '護理師'}」班表，但目前選擇的類別是「${CATEGORY_LABEL[category]}」，請確認是否選錯類別。</div>`;
-      }
+          {/* 月份導覽（只在班表頁顯示） */}
+          {tab === "schedule" && (
+          <div
+            style={{ display: "flex", alignItems: "center", gap: 10 }}
+          >
+            <button
+              onClick={prevMonth}
+              style={{
+                background: "rgba(255,255,255,0.2)",
+                border: "none",
+                color: "#fff",
+                borderRadius: 6,
+                padding: "4px 12px",
+                cursor: "pointer",
+                fontSize: 25,
+                lineHeight: 1,
+              }}
+            >
+              ‹
+            </button>
+            <div style={{ textAlign: "center", lineHeight: 1.4 }}>
+              <div style={{ fontSize: 21, fontWeight: 500 }}>
+                民國 {toROC(year)} 年 {month} 月
+              </div>
+              <div style={{ fontSize: 14, opacity: 0.7 }}>
+                西元 {year} 年
+              </div>
+            </div>
+            <button
+              onClick={nextMonth}
+              style={{
+                background: "rgba(255,255,255,0.2)",
+                border: "none",
+                color: "#fff",
+                borderRadius: 6,
+                padding: "4px 12px",
+                cursor: "pointer",
+                fontSize: 25,
+                lineHeight: 1,
+              }}
+            >
+              ›
+            </button>
+          </div>
+        )}
+        </div> {/* 右側: 切換按鈕+月份導覽 */}
+      </div>
 
-      const rocYear = schedule.westYear ? westToRoc(schedule.westYear) : '';
-      importRocYear.value = rocYear;
-      if(schedule.month) importMonth.value = schedule.month;
+      {/* ═══ 分頁導覽列 ═══ */}
+      <div
+        style={{
+          background: "#fff",
+          borderBottom: "1px solid #e5e7eb",
+          display: "flex",
+          overflowX: "auto",
+          paddingLeft: 4,
+        }}
+      >
+        {TABS.map((t) => (
+          <button
+            key={t.k}
+            onClick={() => setTab(t.k)}
+            style={{
+              padding: "10px 16px",
+              border: "none",
+              borderBottom:
+                tab === t.k ? "2px solid #1b6ca8" : "2px solid transparent",
+              background: "none",
+              color: tab === t.k ? "#1b6ca8" : "#6b7280",
+              fontWeight: tab === t.k ? 500 : 400,
+              cursor: "pointer",
+              fontSize: 18,
+              fontFamily: "inherit",
+              whiteSpace: "nowrap",
+              marginBottom: -1,
+            }}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
 
-      previewSummary.textContent = `辨識到 ${schedule.employees.length} 位員工的班表資料，請確認年份/月份後匯入。`;
-      previewTableArea.innerHTML = schedule.month
-        ? renderScheduleTable(schedule)
-        : '<div class="empty-hint">無法自動辨識年份/月份，請於上方手動輸入</div>';
-
-      await refreshOverwriteWarning();
-    }catch(err){
-      console.error(err);
-      previewSummary.innerHTML = `<span style="color:var(--shift-e)">檔案解析失敗：${escapeHtml(err.message || err)}</span>`;
-    }
-  }
-
-  // 規則：匯入前若該「類別＋年＋月」已有資料，需明確提示——匯入會完全取代舊資料，而不是疊加
-  async function refreshOverwriteWarning(){
-    const rocYear = parseInt(importRocYear.value, 10);
-    const month = parseInt(importMonth.value, 10);
-    if(!rocYear || !month){ overwriteWarningSlot.innerHTML = ''; return; }
-    const existing = await ScheduleRepository.load(category, rocToWest(rocYear), month);
-    if(existing && existing.employees.length > 0){
-      overwriteWarningSlot.innerHTML = `<div class="import-warning">
-        民國${rocYear}年${month}月 已經有 ${CATEGORY_LABEL[category]}的班表資料（${existing.employees.length} 位員工）。
-        依規則：匯入時會先刪除該年月${CATEGORY_LABEL[category]}的舊資料，再整批寫入這次的新資料，請確認無誤。
-      </div>`;
-    }else{
-      overwriteWarningSlot.innerHTML = '';
-    }
-  }
-  importRocYear.addEventListener('change', refreshOverwriteWarning);
-  importMonth.addEventListener('change', refreshOverwriteWarning);
-
-  pdfInput.addEventListener('change', () => {
-    const file = pdfInput.files[0];
-    if(!file) return;
-    excelInput.value = '';
-    presentParseResult(parsePdfToSchedule(file, category), 'PDF');
-  });
-
-  excelInput.addEventListener('change', () => {
-    const file = excelInput.files[0];
-    if(!file) return;
-    pdfInput.value = '';
-    presentParseResult(parseExcelToSchedule(file, category), 'Excel');
-  });
-
-  root.querySelector('.btn-confirm-import').addEventListener('click', async () => {
-    if(!pendingSchedule){ showToast('尚未解析任何檔案', true); return; }
-    const rocYear = parseInt(importRocYear.value, 10);
-    const month = parseInt(importMonth.value, 10);
-    if(!rocYear || !month){ showToast('請輸入正確的民國年與月份', true); return; }
-    const westYear = rocToWest(rocYear);
-
-    // 規則：同一「類別＋年＋月」的舊資料，匯入前必須先清除，再整批寫入新資料（而非疊加合併）
-    const existing = await ScheduleRepository.load(category, westYear, month);
-    if(existing && existing.employees.length > 0){
-      const ok = confirm(`民國${rocYear}年${month}月 已有 ${CATEGORY_LABEL[category]}班表資料，匯入後會先刪除舊資料再寫入新資料，確定要繼續嗎？`);
-      if(!ok) return;
-      await ScheduleRepository.remove(category, westYear, month);
-    }
-
-    pendingSchedule.category = category;
-    pendingSchedule.westYear = westYear;
-    pendingSchedule.month = month;
-
-    try{
-      await ScheduleRepository.save(pendingSchedule);
-      showToast(`已匯入 民國${rocYear}年${month}月 ${CATEGORY_LABEL[category]}班表`);
-      importPreview.classList.remove('show');
-      pdfInput.value = '';
-      excelInput.value = '';
-      pendingSchedule = null;
-
-      // 若目前查詢區正好顯示同一個月份，順便刷新畫面
-      if(parseInt(rocYearInput.value, 10) === rocYear && parseInt(monthSelect.value, 10) === month){
-        runQuery();
-      }
-    }catch(err){
-      showToast('儲存失敗：' + (err.message || err), true);
-    }
-  });
-
-  root.querySelector('.btn-cancel-import').addEventListener('click', () => {
-    importPreview.classList.remove('show');
-    pdfInput.value = '';
-    excelInput.value = '';
-    pendingSchedule = null;
-  });
-
-  runQuery(); // 進入畫面即先查詢一次當月資料
+      {/* ═══ 頁面內容 ═══ */}
+      <div
+        style={{
+          padding: 16,
+          maxWidth: 1200,
+          margin: "0 auto",
+        }}
+      >
+        {tab === "schedule" && (
+          isMobile ? (
+            // 手機版：月曆式 + 員工選擇
+            <MobileScheduleTab
+              key={restoreKey}
+              employees={employees}
+              shiftDefs={shiftDefs}
+              schedule={schedules[key] || {}}
+              year={year}
+              month={month}
+              onUpdate={onUpdate}
+            />
+          ) : (
+            // 桌機版：橫向全員班表
+            <ScheduleTab
+              employees={employees}
+              shiftDefs={shiftDefs}
+              schedule={schedules[key] || {}}
+              year={year}
+              month={month}
+              onUpdate={onUpdate}
+            />
+          )
+        )}
+        {tab === "employees" && (
+          <EmployeeTab employees={employees} onChange={setEmp} />
+        )}
+        {tab === "shifttypes" && (
+          <ShiftTypeTab shiftDefs={shiftDefs} onChange={setSd} />
+        )}
+        {tab === "data" && (
+          <DataTab
+            employees={employees}
+            shiftDefs={shiftDefs}
+            schedules={schedules}
+            onImport={onImport}
+            onAddSchedule={onAddSchedule}
+          />
+        )}
+      </div>
+    </div>
+  );
 }
 
-/* =========================================================================
-   七、類別切換控制
-   ========================================================================= */
+// 掛載 App 到 #root
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
 
-let workspacesBuilt = { nurse: false, assistant: false };
-
-function selectCategory(category){
-  document.getElementById('emptyHint').style.display = 'none';
-  document.querySelectorAll('.category-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.cat === category);
-  });
-  document.querySelectorAll('.workspace').forEach(w => {
-    w.classList.toggle('active', w.dataset.cat === category);
-  });
-  if(!workspacesBuilt[category]){
-    initWorkspace(category);
-    workspacesBuilt[category] = true;
-  }
-}
-
-document.querySelectorAll('.category-btn').forEach(btn => {
-  btn.addEventListener('click', () => selectCategory(btn.dataset.cat));
-});
-
-document.getElementById('btnExportXml').addEventListener('click', exportXmlBackup);
-document.getElementById('importXmlInput').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  if(!file) return;
-  await importXmlBackup(file);
-  e.target.value = ''; // 清空選取，讓同一個檔案可以再次觸發change事件
-});
-
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-</script>
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+document.getElementById('loading').style.display = 'none';
+  </script>
+  <script>
+    setTimeout(() => {
+      const el = document.getElementById('loading');
+      if (el) { el.innerHTML = '<p style="color:#ef4444">載入逾時，請重新整理頁面</p>'; }
+    }, 15000);
+  </script>
 </body>
 </html>
