@@ -758,26 +758,65 @@ const PdfTableExtractor = {
     return pages;
   },
 
-  // 從整頁文字中，找出「9/1」「9/2」...這種日期格式最集中的那一個y座標，當作日期表頭列
+  // 從整頁文字中，找出日期表頭列最集中的那一個y座標。
+  // 有的醫院用「9/1」「9/2」這種完整日期格式，有的只用「1」「2」...「31」這種純數字格式，
+  // 兩種都要能找到，才不會因為格式不同就整份PDF解析失敗。
   buildDateAnchors(items){
-    const dateItems = items.filter(it => /^\d{1,2}\/\d{1,2}$/.test(it.text));
-    const buckets = new Map();
-    for(const it of dateItems){
-      const key = Math.round(it.y);
-      if(!buckets.has(key)) buckets.set(key, []);
-      buckets.get(key).push(it);
+    // 優先找「9/1」這種完整日期格式(比較不會跟內文其他數字搞混)
+    const slashDateItems = items.filter(it => /^\d{1,2}\/\d{1,2}$/.test(it.text));
+    const slashResult = PdfTableExtractor.pickBestDateBucket(slashDateItems, it => {
+      const m = it.text.match(/^(\d{1,2})\/(\d{1,2})$/);
+      return parseInt(m[2], 10);
+    });
+    if(slashResult.anchors.length > 0) return slashResult;
+
+    // 找不到完整日期格式時，改找「1」「2」...這種純數字格式的日期表頭列：
+    // 要求同一列裡由左到右的數字嚴格遞增、而且從1開始，避免跟班表下方其他統計數字(例如每日人數小計)搞混
+    const plainNumItems = items.filter(it => /^\d{1,2}$/.test(it.text));
+    const plainGroups = PdfTableExtractor.clusterByY(plainNumItems, 1.5);
+    let bestKey = null, bestSorted = [];
+    for(const g of plainGroups){
+      if(g.items.length < 20) continue; // 一整個月至少快30天，太少的不像日期表頭列
+      const sorted = g.items.slice().sort((a, b) => a.x - b.x);
+      if(parseInt(sorted[0].text, 10) !== 1) continue; // 日期一定從1號開始
+      let increasing = true, prevVal = 0;
+      for(const it of sorted){
+        const v = parseInt(it.text, 10);
+        if(v <= prevVal){ increasing = false; break; }
+        prevVal = v;
+      }
+      if(!increasing) continue;
+      if(sorted.length > bestSorted.length){ bestKey = g.y; bestSorted = sorted; }
     }
-    let bestKey = null, bestList = [];
-    for(const [key, list] of buckets){
-      if(list.length > bestList.length){ bestKey = key; bestList = list; }
-    }
-    const anchors = bestList
-      .map(it => {
-        const m = it.text.match(/^(\d{1,2})\/(\d{1,2})$/);
-        return { day: parseInt(m[2], 10), x: it.x };
-      })
-      .sort((a, b) => a.x - b.x);
+    if(bestSorted.length === 0) return { anchors: [], headerY: null };
+    const anchors = bestSorted.map(it => ({ day: parseInt(it.text, 10), x: it.x }));
     return { anchors, headerY: bestKey };
+  },
+
+  // 共用：把一組文字依y座標聚成一列一列(容許些許誤差，避免剛好卡在四捨五入邊界被拆成兩列)
+  clusterByY(items, tolerance){
+    const sorted = items.slice().sort((a, b) => b.y - a.y);
+    const groups = [];
+    for(const it of sorted){
+      let g = groups.find(g => Math.abs(g.y - it.y) < tolerance);
+      if(!g){ g = { y: it.y, items: [] }; groups.push(g); }
+      g.items.push(it);
+    }
+    return groups;
+  },
+
+  // 共用：在一組候選文字裡，找出同一個y座標出現最多次的那一列，當作日期表頭列
+  pickBestDateBucket(dateItems, getDayFn){
+    const groups = PdfTableExtractor.clusterByY(dateItems, 1.5);
+    let best = null;
+    for(const g of groups){
+      if(!best || g.items.length > best.items.length) best = g;
+    }
+    if(!best) return { anchors: [], headerY: null };
+    const anchors = best.items
+      .map(it => ({ day: getDayFn(it), x: it.x }))
+      .sort((a, b) => a.x - b.x);
+    return { anchors, headerY: best.y };
   },
 
   // 找出日期列正下方、由星期文字組成的那一列的y座標，做為表頭與員工資料的分界線
@@ -961,16 +1000,31 @@ async function parsePdfToSchedule(file, category){
       }
 
       const firstDateX = anchors[0].x - 8; // 日期欄最左側再留一點緩衝，做為姓名欄與日期欄的分界
+      // 日期欄最右側也要有邊界：有些PDF在最後一天的日期欄位之後，還會有「簽名欄(重複姓名)」、
+      // 「事假/病假/公假/喪假時數」等統計欄位，範圍要排除，不然這些內容會被誤認成班別代碼
+      const colSpacing = anchors.length > 1
+        ? (anchors[anchors.length - 1].x - anchors[0].x) / (anchors.length - 1)
+        : 20;
+      const lastDateX = anchors[anchors.length - 1].x + colSpacing / 2;
       const cutoffY = PdfTableExtractor.findHeaderCutoffY(items, headerY);
 
       // 用班別代碼本身的y座標聚成一列一列，一列＝一位員工（見 groupShiftRows 說明：
       // 不依賴員編是否存在，所以新進人員就算還沒有員編，也不會被吃掉或跟別人混在一起）
-      const shiftItemsAll = items.filter(it => it.y < cutoffY && it.x >= firstDateX);
+      const shiftItemsAll = items.filter(it => it.y < cutoffY && it.x >= firstDateX && it.x <= lastDateX);
       const rows = PdfTableExtractor.groupShiftRows(shiftItemsAll).sort((a, b) => b.y - a.y); // 由上而下
 
-      // 員編／姓名候選字：都在日期欄左側，員編是固定格式，姓名是其餘文字
+      // 員編／姓名候選字：都在日期欄左側，員編是固定格式，姓名是其餘文字。
+      // 排除規則：
+      // 1) 含數字的字串都排除，例如有些PDF姓名欄左邊還有一欄「序號1、2、3...」(純數字)，
+      //    或是「9月30日」上月最後一天的帶班別參考欄(例如「1D」「3N」「2OFF」，混合數字字母)，
+      //    這些都不是姓名的一部分
+      // 2) 單一個中文字且屬於常見休假/班別代碼者(例如「例」)也排除——這通常是上述參考欄的值
+      const NON_NAME_SINGLE_CHARS = new Set(['例', '國', '休', '公', '喪', '事', '病', '產', '假', '白', '值', '夜']);
       const empIdCandidates = items.filter(it => it.y < cutoffY && it.x < firstDateX && EMP_ID_PATTERN.test(it.text));
-      const nameCandidates = items.filter(it => it.y < cutoffY && it.x < firstDateX && !EMP_ID_PATTERN.test(it.text));
+      const nameCandidates = items.filter(it =>
+        it.y < cutoffY && it.x < firstDateX && !EMP_ID_PATTERN.test(it.text) && !/\d/.test(it.text) &&
+        !(it.text.length === 1 && NON_NAME_SINGLE_CHARS.has(it.text))
+      );
 
       // 依「上下順序＋整體落差最小」把員編配對到資料列，而不是單純比對單一列的距離
       // (見 alignIdsToRows 說明：這樣才不會因為某一列的員編位置有誤差，就整批配錯)
@@ -996,9 +1050,19 @@ async function parsePdfToSchedule(file, category){
         if(best) best.nameFragments.push(cand);
       }
 
+      // 表格下方常常還有簽名欄、休假時數統計、圖例說明(例如「D=白班 E=小夜 N=大夜」)等額外內容，
+      // 這些列不屬於真正的員工資料列，要濾掉；判斷依據：沒有員編、姓名也不像一個正常的中文姓名
+      // (真實姓名是2~8個純中文字，不會是單一英文字母、空白，或帶標點符號的說明文字)
+      const PLAUSIBLE_NAME_PATTERN = /^[一-龥]{2,8}$/;
+
       for(const row of rows){
         row.nameFragments.sort((a, b) => (b.y - a.y) || (a.x - b.x)); // 由上而下、同一行由左而右
-        const name = row.nameFragments.map(it => it.text).join('').trim();
+        row.resolvedName = row.nameFragments.map(it => it.text).join('').trim();
+      }
+      const validRows = rows.filter(row => row.empId || PLAUSIBLE_NAME_PATTERN.test(row.resolvedName));
+
+      for(const row of validRows){
+        const name = row.resolvedName;
 
         const shifts = {};
         for(const it of row.shiftItems){
