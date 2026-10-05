@@ -1019,10 +1019,15 @@ async function parsePdfToSchedule(file, category){
       //    或是「9月30日」上月最後一天的帶班別參考欄(例如「1D」「3N」「2OFF」，混合數字字母)，
       //    這些都不是姓名的一部分
       // 2) 單一個中文字且屬於常見休假/班別代碼者(例如「例」)也排除——這通常是上述參考欄的值
+      // 3) x座標要在「員編欄」右側才算姓名候選字：有些PDF員編欄左邊還有「編號」「專業進階(丙/照/
+      //    臨床/教師)」「單位支援(七東支援)」之類的註記欄，這些都比員編欄更靠左，不是姓名的一部分
       const NON_NAME_SINGLE_CHARS = new Set(['例', '國', '休', '公', '喪', '事', '病', '產', '假', '白', '值', '夜']);
       const empIdCandidates = items.filter(it => it.y < cutoffY && it.x < firstDateX && EMP_ID_PATTERN.test(it.text));
+      const idRefX = empIdCandidates.length > 0 ? Math.min(...empIdCandidates.map(it => it.x)) : null;
+      const nameMinX = idRefX != null ? idRefX + 5 : -Infinity;
       const nameCandidates = items.filter(it =>
-        it.y < cutoffY && it.x < firstDateX && !EMP_ID_PATTERN.test(it.text) && !/\d/.test(it.text) &&
+        it.y < cutoffY && it.x < firstDateX && it.x > nameMinX &&
+        !EMP_ID_PATTERN.test(it.text) && !/\d/.test(it.text) &&
         !(it.text.length === 1 && NON_NAME_SINGLE_CHARS.has(it.text))
       );
 
@@ -1050,8 +1055,9 @@ async function parsePdfToSchedule(file, category){
         if(best) best.nameFragments.push(cand);
       }
 
-      // 表格下方常常還有簽名欄、休假時數統計、圖例說明(例如「D=白班 E=小夜 N=大夜」)等額外內容，
-      // 這些列不屬於真正的員工資料列，要濾掉；判斷依據：沒有員編、姓名也不像一個正常的中文姓名
+      // 表格下方常常還有簽名欄、休假時數統計、圖例說明(例如「D=白班 E=小夜 N=大夜」)、
+      // 「出勤/備註」「加班時數」等額外註記列，這些列不屬於真正的員工資料列，要濾掉；
+      // 判斷依據：沒有員編、姓名也不像一個正常的中文姓名
       // (真實姓名是2~8個純中文字，不會是單一英文字母、空白，或帶標點符號的說明文字)
       const PLAUSIBLE_NAME_PATTERN = /^[一-龥]{2,8}$/;
 
@@ -1059,7 +1065,29 @@ async function parsePdfToSchedule(file, category){
         row.nameFragments.sort((a, b) => (b.y - a.y) || (a.x - b.x)); // 由上而下、同一行由左而右
         row.resolvedName = row.nameFragments.map(it => it.text).join('').trim();
       }
-      const validRows = rows.filter(row => row.empId || PLAUSIBLE_NAME_PATTERN.test(row.resolvedName));
+
+      // 有些PDF會在日期欄最右側(簽名欄)把姓名重複印一次；這個規律可以拿來二次驗證「沒有員編」
+      // 的列是不是真的員工(例如剛到職、姓名碰巧是2~8個中文字的「出勤」「備註」「加班時數」等
+      // 註記列，也會通過上面的姓名格式判斷，但這些列在簽名欄不會出現對應的姓名文字)
+      const signatureCandidates = items.filter(it => it.y < cutoffY && it.x > lastDateX && PLAUSIBLE_NAME_PATTERN.test(it.text));
+      const sigXGroups = new Map();
+      for(const it of signatureCandidates){
+        const key = Math.round(it.x);
+        if(!sigXGroups.has(key)) sigXGroups.set(key, []);
+        sigXGroups.get(key).push(it);
+      }
+      let sigColumn = null;
+      for(const list of sigXGroups.values()){
+        if(!sigColumn || list.length > sigColumn.length) sigColumn = list;
+      }
+      const hasSignatureColumn = sigColumn && sigColumn.length >= 3; // 至少三列才當作有簽名欄規律，避免誤判
+
+      const validRows = rows.filter(row => {
+        if(row.empId) return true; // 有員編的一定算
+        if(!PLAUSIBLE_NAME_PATTERN.test(row.resolvedName)) return false;
+        if(!hasSignatureColumn) return true; // 沒有簽名欄規律可用時，只能依賴姓名格式判斷
+        return sigColumn.some(it => Math.abs(it.y - row.y) < 10 && it.text === row.resolvedName);
+      });
 
       for(const row of validRows){
         const name = row.resolvedName;
