@@ -1373,14 +1373,15 @@ function shiftClass(code){
 
 /* =========================================================================
    統計規則（依需求文件定義）：看代碼「內容中是否含有」對應字元/字串，
-   不要求完全相等，例如 D/W、D/學 都算 D白班，OFF、國、休 都算 OFF休假。
+   不要求完全相等，例如 D/W、D/學 都算 D白班，OFF、國、休、例 都算 OFF休假。
+   （「例」＝例假，是台灣勞基法常見的休假代碼，跟 OFF/國/休 一樣都算休假天數）
    ========================================================================= */
 function isDayShiftCode(code){ return !!code && (code.includes('D') || code.includes('白值')); }
 function isEveningShiftCode(code){ return !!code && code.includes('E'); }
 function isNightShiftCode(code){ return !!code && (code.includes('N') || code.includes('夜8')); }
 function isOffShiftCode(code){
   if(!code) return false;
-  return code.toLowerCase().includes('off') || code.includes('國') || code.includes('休');
+  return code.toLowerCase().includes('off') || code.includes('國') || code.includes('休') || code.includes('例');
 }
 
 // 全員班表下方的「統計」列：逐日計算 D白班/E小夜/N大夜 各有幾位員工是該班別，
