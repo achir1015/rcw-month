@@ -575,8 +575,10 @@ function ScheduleTab({ employees, shiftDefs, schedule, year, month, onUpdate }) 
                       whiteSpace: "nowrap",
                     }}
                   >
+                    {/* 兩行排列，避免統計欄過寬被擠出畫面 */}
                     <span style={{ color: "#1d4ed8" }}>白{cnt.D}</span>{" "}
-                    <span style={{ color: "#c2410c" }}>夜{cnt.E}</span>{" "}
+                    <span style={{ color: "#c2410c" }}>夜{cnt.E}</span>
+                    <br />
                     <span style={{ color: "#4338ca" }}>大{cnt.N}</span>{" "}
                     <span style={{ color: "#6b7280" }}>休{cnt.OFF}</span>
                   </td>
@@ -2475,10 +2477,14 @@ function GDriveBar({ employees, shiftDefs, schedules, onImport }) {
 // ═══════════════════════════════════════
 
 function App({ orgInfo, onLogout }) {
+  // 只有原始的呼吸照護病房（storageKey = rcw_schedule_v1）帶預載員工與班表；
+  // 其他新建的公司/部門一律從空白開始，各自獨立
+  const isLegacyOrg = !orgInfo || orgInfo.storageKey === "rcw_schedule_v1";
+
   // 核心狀態
-  const [employees, setEmployees] = useState(DEFAULT_EMPLOYEES);
+  const [employees, setEmployees] = useState(() => (isLegacyOrg ? DEFAULT_EMPLOYEES : []));
   const [shiftDefs, setShiftDefs] = useState(DEFAULT_SHIFT_DEFS);
-  const [schedules, setSchedules] = useState(buildInitialSchedule);
+  const [schedules, setSchedules] = useState(() => (isLegacyOrg ? buildInitialSchedule() : {}));
 
   // UI 狀態
   // 預設顯示當下系統月份（開啟即到當月）
@@ -3304,3 +3310,9 @@ function Root() {
 
 // 掛載 Root 到 #root
 ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Root));
+
+// 系統已啟動：移除「載入中」遮罩（否則遮罩會蓋住畫面、按鈕無法點選）
+(function hideLoading() {
+  const el = document.getElementById('loading');
+  if (el) el.remove();
+})();
