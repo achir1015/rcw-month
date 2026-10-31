@@ -1662,12 +1662,24 @@ async function exportXmlBackup(){
   if(schedules.length === 0){ showToast('目前沒有任何班表資料可以匯出', true); return; }
 
   const xml = serializeSchedulesToXml(schedules);
+  const d = new Date();
+  const fileName = `月班表備份_${currentOrg ? currentOrg.department + '_' : ''}${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}.xml`;
+
+  // iPhone／iPad App：交給 iOS 分享選單（儲存到檔案、AirDrop、LINE、郵件…）
+  if(window.RcwIOS && window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.rcw){
+    try{
+      const r = await window.webkit.messageHandlers.rcw.postMessage({ cmd: 'save_file', args: { name: fileName, text: xml } });
+      if(r && r.status === 'ok') showToast(`已匯出 ${schedules.length} 個月份的班表資料`);
+      else if(r && r.status === 'error') showToast('匯出失敗：' + (r.message || ''), true);
+    }catch(err){ showToast('匯出失敗：' + (err.message || err), true); }
+    return;
+  }
+
   const blob = new Blob([xml], { type: 'application/xml;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  const d = new Date();
   a.href = url;
-  a.download = `月班表備份_${currentOrg ? currentOrg.department + '_' : ''}${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}.xml`;
+  a.download = fileName;
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -2505,8 +2517,45 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
    發布新版時：同時修改這裡的 APP_VERSION 與 sw.js 的 VERSION（兩邊要一樣）。
    ========================================================================= */
 
-const APP_VERSION = '2026.10.31';
-document.getElementById('appVersionLabel').textContent = APP_VERSION;
+const APP_VERSION = '2026.10.31.2';
+const IOS_INSTALL_PAGE = 'https://achir1015.github.io/rcw-month/ios/';
+const IN_IOS_APP = !!window.RcwIOS; // 在 iPhone／iPad App（比照小柯圍棋的安裝方式）裡執行
+document.getElementById('appVersionLabel').textContent =
+  IN_IOS_APP ? `網頁 ${APP_VERSION}・App ${window.RcwIOS.version}` : APP_VERSION;
+
+// 比較版本號：'1.2.0' 與 '1.10.0' 逐段比數字
+function compareVersion(a, b){
+  const pa = String(a).split('.').map(n => parseInt(n, 10) || 0), pb = String(b).split('.').map(n => parseInt(n, 10) || 0);
+  for(let i = 0; i < Math.max(pa.length, pb.length); i++){
+    const d = (pa[i] || 0) - (pb[i] || 0);
+    if(d) return d > 0 ? 1 : -1;
+  }
+  return 0;
+}
+
+// iPhone／iPad App：網頁會自動是最新版；App 本身（外殼）有新版時，提示回安裝頁重新安裝
+async function checkIosAppUpdate(manual){
+  try{
+    const r = await fetch(IOS_INSTALL_PAGE + 'manifest.plist', { cache: 'no-cache' });
+    const m = (await r.text()).match(/<key>bundle-version<\/key>\s*<string>([^<]+)<\/string>/);
+    if(m && compareVersion(m[1], window.RcwIOS.version) > 0){
+      updateBannerEl.querySelector('span').textContent = `月班表 App 有新版本 ${m[1]}`;
+      document.getElementById('btnApplyUpdate').textContent = '前往安裝頁';
+      waitingWorker = null;
+      updateBannerEl.classList.add('show');
+      return;
+    }
+    if(manual) showToast(`目前已是最新版本（網頁 ${APP_VERSION}・App ${window.RcwIOS.version}）`);
+  }catch(err){
+    if(manual) showToast('無法連線檢查更新，請確認網路', true);
+  }
+}
+function openIosInstallPage(){
+  const h = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.rcw;
+  if(h) h.postMessage({ cmd: 'open_url', args: { url: IOS_INSTALL_PAGE } });
+  else location.href = IOS_INSTALL_PAGE;
+}
+if(IN_IOS_APP) setTimeout(() => checkIosAppUpdate(false), 3000);
 
 const updateBannerEl = document.getElementById('updateBanner');
 let waitingWorker = null;
@@ -2518,6 +2567,7 @@ function showUpdateBanner(worker){
 }
 
 document.getElementById('btnApplyUpdate').addEventListener('click', () => {
+  if(IN_IOS_APP){ openIosInstallPage(); updateBannerEl.classList.remove('show'); return; }
   if(waitingWorker) waitingWorker.postMessage({ type: 'SKIP_WAITING' });
   else location.reload();
 });
@@ -2545,9 +2595,11 @@ if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
       console.warn('背景小幫手註冊失敗（不影響一般使用）:', err);
     }
   });
+  // 第一次開啟時小幫手接手不需要重新整理（避免打字打到一半被刷新）；只有「舊版換新版」才重新載入
+  const hadController = !!navigator.serviceWorker.controller;
   let reloading = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if(reloading) return;
+    if(reloading || !hadController) return;
     reloading = true;
     location.reload();
   });
@@ -2555,6 +2607,7 @@ if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
 
 // 手動「檢查更新」
 document.getElementById('btnCheckUpdate').addEventListener('click', async () => {
+  if(IN_IOS_APP){ showToast('正在檢查更新…'); checkIosAppUpdate(true); return; }
   if(!swRegistration){ showToast('此瀏覽器不支援自動更新，請重新整理頁面取得最新版'); return; }
   showToast('正在檢查更新…');
   try{
@@ -2614,17 +2667,17 @@ const INSTALL_GUIDE = {
     '按右上角「⋮」→「安裝應用程式」（或「加到主畫面」）。',
     '按「安裝」，桌面就會出現「月班表」圖示。'
   ]},
-  iphone: { name: 'iPhone', steps: [
-    '用 Safari 開啟本系統網址（其他瀏覽器在 iOS 也可以，但建議 Safari）。',
-    '按畫面下方中間的「分享」按鈕（方框加向上箭頭）。',
-    '往下滑，點「加入主畫面」，再按右上角「新增」。',
-    '主畫面就會出現「月班表」圖示，點開即可全螢幕使用。'
+  iphone: { name: 'iPhone', installPage: true, steps: [
+    '用 Safari 開啟 iPhone／iPad 安裝頁（下方綠色按鈕，或在電腦上開安裝頁掃 QR Code）。',
+    '按「安裝到這台 iPad／iPhone」，跳出視窗再按「安裝」。',
+    '回到主畫面，等「月班表」圖示的進度跑完，點開即可使用。',
+    '若顯示「無法安裝」（裝置未登記）：改用 Safari 開本系統網址 → 下方「分享」→「加入主畫面」→「新增」。'
   ]},
-  ipad: { name: 'iPad', steps: [
-    '用 Safari 開啟本系統網址。',
-    '按網址列右上角的「分享」按鈕（方框加向上箭頭）。',
-    '點「加入主畫面」，再按「新增」。',
-    '主畫面就會出現「月班表」圖示，直向、橫向都能使用。'
+  ipad: { name: 'iPad', installPage: true, steps: [
+    '用 Safari 開啟 iPhone／iPad 安裝頁（下方綠色按鈕，或在電腦上開安裝頁掃 QR Code）。',
+    '按「安裝到這台 iPad／iPhone」，跳出視窗再按「安裝」。',
+    '回到主畫面，等「月班表」圖示的進度跑完，直向、橫向都能使用。',
+    '若顯示「無法安裝」（裝置未登記）：改用 Safari 開本系統網址 → 右上「分享」→「加入主畫面」→「新增」。'
   ]},
   other: { name: '這台裝置', steps: [
     '請改用 Chrome、Edge 或 Safari 開啟本系統網址，再依照下方對應裝置的方式安裝。'
@@ -2638,10 +2691,11 @@ function renderInstallSheet(){
   document.getElementById('installBody').innerHTML = `
     <span class="install-platform">偵測到：${escapeHtml(g.name)}</span>
     ${canOneClick ? '<p style="font-size:17px; margin:4px 0 12px;">這個瀏覽器可以一鍵安裝：</p><button type="button" class="btn btn-primary" id="btnOneClickInstall">安裝「月班表」</button><p style="font-size:15px; color:var(--ink-muted); margin-top:14px;">或依下列步驟手動安裝：</p>' : ''}
-    <ol class="install-steps">${g.steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ol>`;
+    <ol class="install-steps">${g.steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ol>
+    ${g.installPage ? `<p style="margin:14px 0 0;"><a class="btn btn-primary" style="display:inline-block; text-decoration:none;" href="${IOS_INSTALL_PAGE}">前往 iPhone／iPad 安裝頁</a></p>` : ''}`;
   document.getElementById('installAll').innerHTML = ['windows','mac','android','iphone','ipad']
     .filter(k => k !== pf)
-    .map(k => `<dt>${escapeHtml(INSTALL_GUIDE[k].name)}</dt>${INSTALL_GUIDE[k].steps.map(s => `<dd>・${escapeHtml(s)}</dd>`).join('')}`).join('');
+    .map(k => `<dt>${escapeHtml(INSTALL_GUIDE[k].name)}</dt>${INSTALL_GUIDE[k].steps.map(s => `<dd>・${escapeHtml(s)}</dd>`).join('')}${INSTALL_GUIDE[k].installPage ? `<dd>・安裝頁：<a href="${IOS_INSTALL_PAGE}">${IOS_INSTALL_PAGE}</a></dd>` : ''}`).join('');
   const one = document.getElementById('btnOneClickInstall');
   if(one) one.addEventListener('click', async () => {
     deferredInstallPrompt.prompt();
@@ -2655,14 +2709,14 @@ function renderInstallSheet(){
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();             // 改由我們的「安裝 App」按鈕觸發
   deferredInstallPrompt = e;
-  if(!isStandalone()) btnInstallEl.style.display = '';
+  if(!isStandalone() && !IN_IOS_APP) btnInstallEl.style.display = '';
 });
 window.addEventListener('appinstalled', () => {
   btnInstallEl.style.display = 'none';
   deferredInstallPrompt = null;
 });
 // Safari（iPhone／iPad／Mac）沒有一鍵安裝事件，也顯示按鈕，點開看步驟
-if(!isStandalone() && (isSafariBrowser() || ['iphone','ipad'].includes(detectPlatform()))){
+if(!isStandalone() && !IN_IOS_APP && (isSafariBrowser() || ['iphone','ipad'].includes(detectPlatform()))){
   btnInstallEl.style.display = '';
 }
 btnInstallEl.addEventListener('click', () => { renderInstallSheet(); openSheet('installSheet'); });
@@ -2723,13 +2777,15 @@ const VOICE_TOPICS = {
   install: { title: '安裝成 App', lines: [
     '本系統可以安裝成 App，放在電腦或手機的桌面上。',
     'Windows 電腦或 Android 手機，用 Chrome 或 Edge 開啟，按左下角「安裝 App」，再按「安裝」。',
-    'iPhone 和 iPad，請用 Safari 開啟，按「分享」按鈕，選「加入主畫面」。',
+    'iPhone 和 iPad，請用 Safari 開啟 iPhone／iPad 安裝頁，按「安裝到這台 iPad／iPhone」，再按「安裝」。和小柯機器人圍棋競賽的安裝方式一樣。',
+    '如果 iPhone 或 iPad 顯示無法安裝，代表這台裝置還沒登記，可以改用 Safari 的「分享」，選「加入主畫面」。',
     'MacBook 用 Chrome 可以直接安裝；用 Safari 請選上方選單「檔案」，再選「加入 Dock」。'
   ]},
   update: { title: '更新', lines: [
     '系統有新版本時，畫面最上方會出現「月班表有新版本可以更新」。',
     '按「立即更新」就會換成新版；正在編輯時可以先按「稍後」，等一下再更新。',
-    '您也可以在這個語音說明面板的最下方，按「檢查更新」，手動檢查有沒有新版本。'
+    '您也可以在這個語音說明面板的最下方，按「檢查更新」，手動檢查有沒有新版本。',
+    '在 iPhone 和 iPad 的月班表 App 裡，網頁內容會自動保持最新；只有 App 本身有新版本時，才會提示您前往安裝頁重新安裝。'
   ]}
 };
 

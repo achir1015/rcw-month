@@ -1,0 +1,59 @@
+# 月班表管理系統 — iPhone／iPad App（用 xcodegen 產生 Xcode 專案：xcodegen generate）
+name: RcwMonth
+options:
+  bundleIdPrefix: com.achir
+  deploymentTarget:
+    iOS: "16.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "10000"
+targets:
+  RcwMonth:
+    type: application
+    platform: iOS
+    sources:
+      - path: RcwMonth
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.achir.rcwmonth
+        TARGETED_DEVICE_FAMILY: "1,2"     # iPhone 與 iPad
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 7BN6XJ59KP      # 和小柯圍棋同一個 Apple Developer Program 帳號；換帳號就改這裡
+        GENERATE_INFOPLIST_FILE: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    info:
+      path: RcwMonth/Info.plist
+      properties:
+        CFBundleDisplayName: 月班表
+        CFBundleDevelopmentRegion: zh_TW
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        ITSAppUsesNonExemptEncryption: false
+        UILaunchScreen:
+          UIColorName: ""
+        UIStatusBarStyle: UIStatusBarStyleDarkContent
+        UIViewControllerBasedStatusBarAppearance: false
+        UIUserInterfaceStyle: Light
+        # iPhone、iPad 直放橫放都可以
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: true
+schemes:
+  RcwMonth:
+    build:
+      targets:
+        RcwMonth: all
+    run:
+      config: Debug
+    archive:
+      config: Release

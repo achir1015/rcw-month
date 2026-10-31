@@ -39,10 +39,28 @@ Firebase 帳號登入
 | **Windows 11** | 用 Edge 或 Chrome 開啟 → 網址列右側「安裝」圖示（或右上「⋯」→「應用程式」→「將此網站安裝為應用程式」）→ 開始功能表出現「月班表」，可釘選到工作列 |
 | **MacBook Pro** | Chrome／Edge：網址列「安裝」圖示；Safari（macOS Sonoma 以上）：選單「檔案」→「加入 Dock」 |
 | **Android 手機／平板** | 用 Chrome 開啟 → 右上「⋮」→「安裝應用程式」→ 桌面出現「月班表」 |
-| **iPhone** | 用 Safari 開啟 → 下方「分享」按鈕 →「加入主畫面」→「新增」 |
-| **iPad** | 用 Safari 開啟 → 右上「分享」按鈕 →「加入主畫面」→「新增」 |
+| **iPhone／iPad** | 比照「小柯機器人圍棋競賽」：用 Safari 開 [安裝頁](https://achir1015.github.io/rcw-month/ios/) → 按「安裝到這台 iPad／iPhone」→「安裝」（限開發者帳號登記過的裝置；電腦開安裝頁會顯示 QR Code 給手機掃） |
+| iPhone／iPad（未登記的裝置） | 用 Safari 開啟系統網址 →「分享」按鈕 →「加入主畫面」→「新增」 |
 
 版面會依螢幕自動調整：電腦是完整寬版；iPad 直向／橫向都適用；手機版字級、按鈕與表格都縮成適合單手操作的大小。
+
+### iPhone／iPad App（比照小柯圍棋）
+
+把 App 想成一個「相框」：相框（`ios-app/` 的 Swift 程式）幾乎不用換，裡面放的照片是 GitHub Pages 上最新的月班表網頁。
+
+- **網頁更新**：推上 GitHub 後，App 下次開啟就是新版，**不用重新安裝**。
+- **App 本身更新**（改了 `ios-app/`）：在 MacBook 重新建置 `.ipa`，App 會提示「月班表 App 有新版本」→ 前往安裝頁再按一次「安裝」，登入狀態都會保留。
+- App 補上的 iPhone／iPad 功能：網頁的確認視窗改用 iOS 對話框；匯出 XML 改用 iOS 分享選單（儲存到檔案、AirDrop、LINE）；靜音開關打開時語音說明照樣有聲音；往下拉可重新整理；沒網路時顯示說明與「重新載入」。
+
+**在 MacBook 建置 .ipa（維護者）**：需要 Xcode（登入 Apple ID，Team `7BN6XJ59KP`，和小柯圍棋同一個帳號）與 xcodegen（`brew install xcodegen`）。
+
+```bash
+cd ~/Developer && git clone https://github.com/achir1015/rcw-month.git   # 第一次
+cd ~/Developer/rcw-month && git pull
+bash ios-app/build-ipa.sh --publish     # 建置 → 放到 ios/rcw-month-ios.ipa → 推上 GitHub
+```
+
+新增可以安裝的 iPhone／iPad：把裝置的 UDID 加到 Apple Developer 帳號（或用 Xcode 對該裝置執行一次），再重新建置一次 `.ipa`。
 
 ## 更新功能
 
@@ -163,9 +181,12 @@ service cloud.firestore {
 | `sw.js` | 背景小幫手：離線快取與新版偵測（版本號 `VERSION`） |
 | `manifest.webmanifest` | App 名稱、圖示、顏色，讓各裝置可以「安裝」 |
 | `icons/` | 「班」字 App 圖示（192、512、Android 圓形裁切用、iPhone／iPad 用） |
+| `ios/` | iPhone／iPad 安裝頁（`index.html`）、線上安裝設定（`manifest.plist`）、`.ipa` |
+| `ios-app/` | iPhone／iPad App 原始碼（Swift，xcodegen 的 `project.yml`、`build-ipa.sh`） |
 
 ## 版本紀錄
 
+-   **2026.10.31.2**：iPhone／iPad 比照小柯圍棋，改用 App 安裝頁（Ad Hoc .ipa）；App 內匯出 XML 改用分享選單；修正第一次開啟時頁面會自動重新整理一次的問題。
 -   **2026.10.31**：可安裝成 App（Windows 11、MacBook、Android、iPhone、iPad）；新增更新提示與「檢查更新」；新增中文語音說明；手機與 iPad 版面調整；選擇單位畫面記住上次選的單位。
 
 -   **2026-10-28**：新增「公司／部門」單位層與管理者密碼；各單位班表資料分開；新增「切換單位」；XML 備份帶單位資訊。
