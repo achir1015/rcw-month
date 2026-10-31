@@ -1,0 +1,20 @@
+{
+  "id": "./",
+  "name": "月班表管理系統",
+  "short_name": "月班表",
+  "description": "查詢護理師／病房助理的月班表，並可上傳 PDF／Excel 自動匯入",
+  "lang": "zh-Hant-TW",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "any",
+  "background_color": "#F4F7F6",
+  "theme_color": "#1F6F63",
+  "categories": ["medical", "productivity", "business"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
